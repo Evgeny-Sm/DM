@@ -12,10 +12,10 @@ namespace DM.DAL.Models
         public DMContext(DbContextOptions<DMContext> options) : base(options)
         { 
         }
-        public DbSet<Department> Departments { get; set; }
-        public DbSet<FileUnit> FileUnits { get; set; }
-        public DbSet<Person> Persons { get; set; }
-        public DbSet<Project> Projects { get; set; }
-        public DbSet<Worker> Workers { get; set; }
+        public DbSet<Department>? Departments { get; set; }
+        public DbSet<FileUnit>? FileUnits { get; set; }
+        public DbSet<Person>? Persons { get; set; }
+        public DbSet<Project>? Projects { get; set; }
+        public DbSet<Worker>? Worker { get; set; }
     }
 }

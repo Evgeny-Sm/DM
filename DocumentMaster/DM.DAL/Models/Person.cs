@@ -21,6 +21,6 @@ namespace DM.DAL.Models
         public string? Password { get; set; }
         [StringLength(30)]
         public string? Role { get; set; }
-        public Worker Worker { get; set; }
+        public Worker? Worker { get; set; }
     }
 }
