@@ -17,5 +17,6 @@ namespace DM.DAL.Models
         public DbSet<Person>? Persons { get; set; }
         public DbSet<Project>? Projects { get; set; }
         public DbSet<Worker>? Worker { get; set; }
+
     }
 }

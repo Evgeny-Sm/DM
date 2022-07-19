@@ -10,7 +10,7 @@ namespace DM.DAL.Models
 {
     public static class SeedData
     {
-        /*
+        
         public static void Initialize(IServiceProvider serviceProvider)
         {
             using (var context = new DMContext(serviceProvider.GetRequiredService<DbContextOptions<DMContext>>()))
@@ -32,33 +32,49 @@ namespace DM.DAL.Models
                     {
                         Name = "CO"
                     });
+                context.SaveChanges();
+
+                context.Worker.AddRange(
+                    new Worker
+                    {
+                        FirstName = "Евгений",
+                        LastName = "Смирнов",
+                        DepartmentId = 1,
+                        PersonId = 1
+                    });
+                context.SaveChanges();
+
+                context.Projects.AddRange(
+               new Project
+               {
+                   Name = "Волна",
+                   Description = "проект реконструкции",
+                   Client = "ЛСР",
+                   WorkerId=1
+
+
+               });
+                context.SaveChanges();
+
                 context.FileUnits.AddRange(
                     new FileUnit
                     {
                         Name = "План демонтажа",
                         Description = "Описание",
-                        PathFile = AppDomain.CurrentDomain.BaseDirectory
+                        PathFile = AppDomain.CurrentDomain.BaseDirectory,
+                        DepartmentId=1,
+                        ProjectId=1,
+                        WorkerCreatorId=1
+
 
                     });
-                context.Projects.AddRange(
-                    new Project
-                    {
-                        Name = "Волна",
-                        Description = "проект реконструкции",
-                        Client = "ЛСР"
 
-                    });
-                context.Workers.AddRange(
-                    new Worker
-                    {
-                        FirstName = "Евгений",
-                        LastName = "Смирнов",
-                        DepartmentId = 1
-                    });
+
                 context.SaveChanges();
+                
 
             }
         }
-        */
+        
     }
 }
