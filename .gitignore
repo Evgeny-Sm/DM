@@ -1,10 +1,10 @@
 /DocumentMaster/.vs/*
 /DocumentMaster/DocumentMaster/bin/*
 /DocumentMaster/DocumentMaster/obj/*
-/DocumentMaster/DocumentMaster.DAL/bin/*
-/DocumentMaster/DocumentMaster.DAL/obj/*
-/DocumentMaster/DocumentMaster.BLL/bin/*
-/DocumentMaster/DocumentMaster.BLL/obj/*
-/DocumentMaster/DocumentMaster.Models/bin/*
-/DocumentMaster/DocumentMaster.Models/obj/*
+/DocumentMaster/DM.DAL/bin/*
+/DocumentMaster/DM.DAL/obj/*
+/DocumentMaster/DM.BLL/bin/*
+/DocumentMaster/DM.BLL/obj/*
+/DocumentMaster/DM.Models/bin/*
+/DocumentMaster/DM.Models/obj/*
 
