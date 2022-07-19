@@ -23,8 +23,8 @@ namespace DM.DAL.Models
         public int DepartmentId { get; set; }
         public Worker? WorkerCreator { get; set; }
         public int WorkerCreatorId { get; set; }
-        public Worker? Inspector { get; set; }
-        public int InspectorId{ get; set; }
+        /*public Worker? Inspector { get; set; }
+        public int InspectorId{ get; set; }*/
         public Project? Project { get; set; }
         public int ProjectId { get; set; }
 

@@ -10,6 +10,7 @@ namespace DM.DAL.Models
 {
     public static class SeedData
     {
+        /*
         public static void Initialize(IServiceProvider serviceProvider)
         {
             using (var context = new DMContext(serviceProvider.GetRequiredService<DbContextOptions<DMContext>>()))
@@ -58,5 +59,6 @@ namespace DM.DAL.Models
 
             }
         }
+        */
     }
 }
