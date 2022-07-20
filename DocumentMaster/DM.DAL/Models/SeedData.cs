@@ -19,21 +19,22 @@ namespace DM.DAL.Models
                 {
                     return;
                 }
+                context.Departments.AddRange(
+                    new Department
+                    {
+                        Name = "CO",
+                        Description = "Строительный отдел"
+                    });
+                context.SaveChanges();
                 context.Persons.AddRange(
                     new Person
                     {
                         Login = "user@user.com",
                         Password = "1111",
-                        Role = "admin"
+                        Role = "admin",
+                        DepartmentId=1
                     }
                     );
-                context.SaveChanges();
-
-                context.Departments.AddRange(
-                    new Department
-                    {
-                        Name = "CO"
-                    });
                 context.SaveChanges();
 
                 context.UserProfiles.AddRange(
@@ -41,7 +42,6 @@ namespace DM.DAL.Models
                     {
                         FirstName = "Евгений",
                         LastName = "Смирнов",
-                        DepartmentId = 1,
                         PersonId = 1
                     });
                 context.SaveChanges();

@@ -13,8 +13,8 @@ namespace Models
         public int Id { get; set; }
         [JsonPropertyName("FileUnitId")]
         public int FileUnitId { get; set; }
-        [JsonPropertyName("UserProfileId")]
-        public int UserProfileId { get; set; }
+        [JsonPropertyName("PersonId")]
+        public int PersonId { get; set; }
         [JsonPropertyName("ActionNumber")]
         public int ActionNumber { get; set; }
         [JsonPropertyName("CreatedDate")]

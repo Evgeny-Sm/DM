@@ -13,8 +13,8 @@ namespace DM.BLL.Services
 {
     public class PersonService
     {
-        private readonly DMContext _db;
-        private readonly IMapper _mapper;
+        private readonly DMContext? _db;
+        private readonly IMapper? _mapper;
         public PersonService(DMContext context, IMapper mapper)
         {
             _db = context;
@@ -23,7 +23,7 @@ namespace DM.BLL.Services
 
         public ClaimsIdentity GetIdentity(string username, string password)
         {
-            Person person = _db.Persons.FirstOrDefault(x => x.Login == username && x.Password == password);
+            Person? person = _db.Persons.FirstOrDefault(x => x.Login == username && x.Password == password);
             if (person != null)
             {
                 var claims = new List<Claim>
@@ -46,7 +46,8 @@ namespace DM.BLL.Services
         }
         public async Task<PersonDTO> GetPersonByIdAsync(int id)
         {
-            var person = await _db.Persons.FindAsync(id);
+            
+            var person =await _db.Persons.Include(p => p.UserProfile).Where(p=>p.Id==id).SingleAsync();
             if (person == null)
             {
                 return null;

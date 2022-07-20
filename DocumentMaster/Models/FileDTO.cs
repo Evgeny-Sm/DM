@@ -23,13 +23,7 @@ namespace Models
         public int DepartmentId { get; set; }
         [JsonPropertyName("ProjectId")]
         public int ProjectId { get; set; }
-        [JsonPropertyName("UserActionDTOs")]
-        public IEnumerable<UserActionDTO>? UserActionDTOs { get; set; }
-        public FileDTO()
-        {
-            UserActionDTOs = new List<UserActionDTO>();
-        }
-
+      
 
     }
 }

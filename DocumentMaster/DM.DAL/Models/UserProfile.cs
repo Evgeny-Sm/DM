@@ -11,8 +11,6 @@ namespace DM.DAL.Models
         public int Id { get; set; }
         public string FirstName { get; set; }=String.Empty;
         public string LastName { get; set; }=String.Empty;
-        public Department? Department { get; set; }
-        public int DepartmentId { get; set; }
         public Person? Person { get; set; }
         public int PersonId { get; set; }
 

@@ -21,12 +21,15 @@ namespace DM.DAL.Models
         public string? Password { get; set; }
         [StringLength(30)]
         public string? Role { get; set; }
-        public UserProfile? UserProfile { get; set; }
+        public UserProfile UserProfile { get; set; }
+        public Department? Department { get; set; }
+        public int DepartmentId { get; set; }
         public ICollection<UserAction> UserActions { get; set; }
         public bool IsDeleted { get; set; } = false;
         public Person()
         { 
             UserActions= new List<UserAction>();
+            UserProfile= new UserProfile();
         }
     }
 }

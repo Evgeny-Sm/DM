@@ -15,15 +15,8 @@ namespace Models
         public bool IsDeleted { get; set; }=false;
         [JsonPropertyName("Name")]
         public string Name { get; set; } = String.Empty;
-        [JsonPropertyName("UserProfileDTOs")]
-        public IEnumerable<PersonDTO> PersonDTOs { get; set; }
-        [JsonPropertyName("FileDTOs")]
-        public IEnumerable<FileDTO> FileDTOs { get; set; }
-        public DepartmentDTO()
-        { 
-            PersonDTOs = new List<PersonDTO>();
-            FileDTOs = new List<FileDTO>();
-        }
+        [JsonPropertyName("Description")]
+        public string Description { get; set; }=string.Empty;
 
     }
 }

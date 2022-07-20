@@ -13,6 +13,7 @@ namespace DM.DAL.Models
         public int Id { get; set; }
         public bool IsDeleted { get; set; }
         public string Name { get; set; }=String.Empty;
+        public string Description { get; set; }=String.Empty;
         public ICollection<Person> Persons { get; set; }        
         public ICollection<FileUnit> FileUnits { get; set; }
         public Department()
