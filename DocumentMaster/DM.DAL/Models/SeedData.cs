@@ -34,7 +34,7 @@ namespace DM.DAL.Models
                     });
                 context.SaveChanges();
 
-                context.Worker.AddRange(
+                context.Workers.AddRange(
                     new Worker
                     {
                         FirstName = "Евгений",

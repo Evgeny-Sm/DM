@@ -12,12 +12,16 @@ namespace DM.DAL.Models
     {
         [Key]
         public int Id { get; set; }
+        public bool IsDeleted { get; set; } = false;
         public string Name { get; set; }=String.Empty;
-        [AllowNull]
-        public string Description { get; set; }
+        public string Description { get; set; } = String.Empty;
         public string Client { get; set; }=String.Empty;
         public Worker? WorkerMainIng { get; set; }
         public int WorkerId { get; set; }
         public ICollection<FileUnit>? FileUnits { get; set; }
+        public Project()
+        { 
+            FileUnits = new List<FileUnit>();
+        }
     }
 }
