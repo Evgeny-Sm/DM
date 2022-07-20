@@ -15,7 +15,7 @@ namespace DM.DAL.Models
         {
             using (var context = new DMContext(serviceProvider.GetRequiredService<DbContextOptions<DMContext>>()))
             {
-                if (context.Projects.Any())
+                if (context.Persons.Any())
                 {
                     return;
                 }
@@ -27,6 +27,8 @@ namespace DM.DAL.Models
                         Role = "admin"
                     }
                     );
+                context.SaveChanges();
+
                 context.Departments.AddRange(
                     new Department
                     {
@@ -51,8 +53,6 @@ namespace DM.DAL.Models
                    Description = "проект реконструкции",
                    Client = "ЛСР",
                    WorkerId=1
-
-
                });
                 context.SaveChanges();
 
@@ -64,13 +64,16 @@ namespace DM.DAL.Models
                         PathFile = AppDomain.CurrentDomain.BaseDirectory,
                         DepartmentId=1,
                         ProjectId=1,
-                        WorkerCreatorId=1
-
-
                     });
-
-
                 context.SaveChanges();
+
+                context.WorkerActions.AddRange(
+                    new WorkerAction
+                    {
+                        FileUnitId = 1,
+                        WorkerId = 1,
+                        ActionNumber = 1
+                    });
                 
 
             }
