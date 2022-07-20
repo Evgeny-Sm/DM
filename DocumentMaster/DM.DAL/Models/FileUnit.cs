@@ -19,12 +19,12 @@ namespace DM.DAL.Models
         public string PathFile { get; set; } = String.Empty;
         public Department? Department { get; set; }
         public int DepartmentId { get; set; }
-        public ICollection<WorkerAction>? WorkerActions { get; set; }
+        public ICollection<UserAction>? UserActions { get; set; }
         public Project? Project { get; set; }
         public int ProjectId { get; set; }
         public FileUnit()
         { 
-            WorkerActions = new List<WorkerAction>();
+            UserActions = new List<UserAction>();
         }
 
     }

@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace Models
 {
-    public class WorkerActionDTO
+    public class UserActionDTO
     {
         [JsonPropertyName("Id")]
         public int Id { get; set; }
         [JsonPropertyName("FileUnitId")]
         public int FileUnitId { get; set; }
-        [JsonPropertyName("WorkerId")]
-        public int WorkerId { get; set; }
+        [JsonPropertyName("UserProfileId")]
+        public int UserProfileId { get; set; }
         [JsonPropertyName("ActionNumber")]
         public int ActionNumber { get; set; }
         [JsonPropertyName("CreatedDate")]

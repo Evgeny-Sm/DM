@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Models
 {
-    public class WorkerDTO
+    public class UserProfileDTO
     {
         [JsonPropertyName("Id")]
         public int Id { get; set; }
@@ -21,12 +21,12 @@ namespace Models
         public bool IsDeleted { get; set; }= false;
         [JsonPropertyName("DepartmentId")]
         public int DepartmentId { get; set; }
-        [JsonPropertyName("WorkerActionDTOs")]
-        public IEnumerable<WorkerActionDTO>? WorkerActionDTOs { get; set; }
+        [JsonPropertyName("UserActionDTOs")]
+        public IEnumerable<UserActionDTO>? UserActionDTOs { get; set; }
 
-        public WorkerDTO()
+        public UserProfileDTO()
         {
-            WorkerActionDTOs = new List<WorkerActionDTO>();
+            UserActionDTOs = new List<UserActionDTO>();
         }
 
     }

@@ -17,5 +17,14 @@ namespace Models
         public string Password { get; set; }=String.Empty;
         [JsonPropertyName("Role")]
         public string Role { get; set; }=String.Empty ;
+        [JsonPropertyName("FirstName")]
+        public string FirstName { get; set; } = String.Empty;
+        [JsonPropertyName("LastName")]
+        public string LastName { get; set; } = String.Empty;
+        [JsonPropertyName("DepartmentId")]
+        public int DepartmentId { get; set; }
+        [JsonPropertyName("IsDeleted")]
+        public bool IsDeleted { get; set; } = false;
+
     }
 }

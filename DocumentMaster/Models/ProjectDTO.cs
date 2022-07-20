@@ -19,8 +19,8 @@ namespace Models
         public string Description { get; set; }= String.Empty;
         [JsonPropertyName("Client")]
         public string Client { get; set; } = String.Empty;
-        [JsonPropertyName("WorkerId")]
-        public int WorkerId { get; set; }
+        [JsonPropertyName("UserProfilerId")]
+        public int UserProfilerId { get; set; }
         [JsonPropertyName("FileDTOs")]
         public IEnumerable<FileDTO> FileDTOs { get; set; }
         public ProjectDTO()

@@ -36,8 +36,8 @@ namespace DM.DAL.Models
                     });
                 context.SaveChanges();
 
-                context.Workers.AddRange(
-                    new Worker
+                context.UserProfiles.AddRange(
+                    new UserProfile
                     {
                         FirstName = "Евгений",
                         LastName = "Смирнов",
@@ -52,7 +52,7 @@ namespace DM.DAL.Models
                    Name = "Волна",
                    Description = "проект реконструкции",
                    Client = "ЛСР",
-                   WorkerId=1
+                   PersonId=1
                });
                 context.SaveChanges();
 
@@ -67,11 +67,11 @@ namespace DM.DAL.Models
                     });
                 context.SaveChanges();
 
-                context.WorkerActions.AddRange(
-                    new WorkerAction
+                context.UserActions.AddRange(
+                    new UserAction
                     {
                         FileUnitId = 1,
-                        WorkerId = 1,
+                        PersonId = 1,
                         ActionNumber = 1
                     });
                 context.SaveChanges();

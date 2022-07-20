@@ -16,8 +16,8 @@ namespace DM.DAL.Models
         public string Name { get; set; }=String.Empty;
         public string Description { get; set; } = String.Empty;
         public string Client { get; set; }=String.Empty;
-        public Worker? WorkerMainIng { get; set; }
-        public int WorkerId { get; set; }
+        public Person? MainIng { get; set; }
+        public int PersonId { get; set; }
         public ICollection<FileUnit>? FileUnits { get; set; }
         public Project()
         { 

@@ -13,11 +13,11 @@ namespace DM.DAL.Models
         public int Id { get; set; }
         public bool IsDeleted { get; set; }
         public string Name { get; set; }=String.Empty;
-        public ICollection<Worker> Workers { get; set; }        
+        public ICollection<Person> Persons { get; set; }        
         public ICollection<FileUnit> FileUnits { get; set; }
         public Department()
         {
-            Workers = new List<Worker>();
+            Persons = new List<Person>();
             FileUnits = new List<FileUnit>();
             IsDeleted = false;
         }

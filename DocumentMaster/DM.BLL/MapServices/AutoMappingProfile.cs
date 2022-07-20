@@ -18,8 +18,8 @@ namespace DM.BLL.MapServices
             CreateMap<FileUnit, FileDTO>();
             CreateMap<Person, PersonDTO>();
             CreateMap<Project, ProjectDTO>();
-            CreateMap<WorkerAction, WorkerActionDTO>();
-            CreateMap<Worker, WorkerDTO>();
+            CreateMap<UserAction, UserActionDTO>();
+            CreateMap<UserProfile, UserProfileDTO>();
 
         }
     }
