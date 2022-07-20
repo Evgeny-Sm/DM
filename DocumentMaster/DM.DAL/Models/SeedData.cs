@@ -74,8 +74,7 @@ namespace DM.DAL.Models
                         WorkerId = 1,
                         ActionNumber = 1
                     });
-                
-
+                context.SaveChanges();
             }
         }
         

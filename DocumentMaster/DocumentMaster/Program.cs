@@ -44,12 +44,14 @@ builder.Services.AddCors(options =>
     options.AddPolicy("Open", builder => builder.AllowAnyOrigin().AllowAnyHeader());
 });
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Finance", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "DM", Version = "v1" });
 });
 
 var app = builder.Build();
+app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "DM"));
 
 using (var scope = app.Services.CreateScope())
 {
@@ -59,11 +61,11 @@ using (var scope = app.Services.CreateScope())
 
 }
 
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error");
-    app.UseHsts();
+    app.UseDeveloperExceptionPage();
 }
+app.UseSwagger(x=>x.SerializeAsV2=true);
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

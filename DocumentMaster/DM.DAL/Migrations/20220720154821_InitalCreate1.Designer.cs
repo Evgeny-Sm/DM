@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DM.DAL.Migrations
 {
     [DbContext(typeof(DMContext))]
-    [Migration("20220719170826_InitalCreate")]
-    partial class InitalCreate
+    [Migration("20220720154821_InitalCreate1")]
+    partial class InitalCreate1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -52,9 +52,6 @@ namespace DM.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("DepartmentId")
                         .HasColumnType("int");
 
@@ -76,16 +73,11 @@ namespace DM.DAL.Migrations
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
-                    b.Property<int>("WorkerCreatorId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentId");
 
                     b.HasIndex("ProjectId");
-
-                    b.HasIndex("WorkerCreatorId");
 
                     b.ToTable("FileUnits");
                 });
@@ -136,6 +128,9 @@ namespace DM.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -182,7 +177,36 @@ namespace DM.DAL.Migrations
                     b.HasIndex("PersonId")
                         .IsUnique();
 
-                    b.ToTable("Worker");
+                    b.ToTable("Workers");
+                });
+
+            modelBuilder.Entity("DM.DAL.Models.WorkerAction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("ActionNumber")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FileUnitId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WorkerId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FileUnitId");
+
+                    b.HasIndex("WorkerId");
+
+                    b.ToTable("WorkerActions");
                 });
 
             modelBuilder.Entity("DM.DAL.Models.FileUnit", b =>
@@ -199,17 +223,9 @@ namespace DM.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DM.DAL.Models.Worker", "WorkerCreator")
-                        .WithMany("FileUnits")
-                        .HasForeignKey("WorkerCreatorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Department");
 
                     b.Navigation("Project");
-
-                    b.Navigation("WorkerCreator");
                 });
 
             modelBuilder.Entity("DM.DAL.Models.Project", b =>
@@ -242,11 +258,35 @@ namespace DM.DAL.Migrations
                     b.Navigation("Person");
                 });
 
+            modelBuilder.Entity("DM.DAL.Models.WorkerAction", b =>
+                {
+                    b.HasOne("DM.DAL.Models.FileUnit", "FileUnit")
+                        .WithMany("WorkerActions")
+                        .HasForeignKey("FileUnitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DM.DAL.Models.Worker", "Worker")
+                        .WithMany("WorkerActions")
+                        .HasForeignKey("WorkerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FileUnit");
+
+                    b.Navigation("Worker");
+                });
+
             modelBuilder.Entity("DM.DAL.Models.Department", b =>
                 {
                     b.Navigation("FileUnits");
 
                     b.Navigation("Workers");
+                });
+
+            modelBuilder.Entity("DM.DAL.Models.FileUnit", b =>
+                {
+                    b.Navigation("WorkerActions");
                 });
 
             modelBuilder.Entity("DM.DAL.Models.Person", b =>
@@ -261,7 +301,7 @@ namespace DM.DAL.Migrations
 
             modelBuilder.Entity("DM.DAL.Models.Worker", b =>
                 {
-                    b.Navigation("FileUnits");
+                    b.Navigation("WorkerActions");
                 });
 #pragma warning restore 612, 618
         }
