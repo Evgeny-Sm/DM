@@ -26,13 +26,22 @@ namespace DM.DAL.Models
                         Description = "Строительный отдел"
                     });
                 context.SaveChanges();
+
+                context.Positions.AddRange(
+                    new Position
+                    {
+                        Name = "Начальнике",
+                        
+                    });
+                context.SaveChanges();
                 context.Persons.AddRange(
                     new Person
                     {
                         Login = "user@user.com",
                         Password = "1111",
                         Role = "admin",
-                        DepartmentId=1
+                        DepartmentId=1,
+                        PositionId=1
                     }
                     );
                 context.SaveChanges();

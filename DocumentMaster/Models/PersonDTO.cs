@@ -23,6 +23,8 @@ namespace Models
         public string LastName { get; set; } = String.Empty;
         [JsonPropertyName("DepartmentId")]
         public int DepartmentId { get; set; }
+        [JsonPropertyName("PositionId")]
+        public int PositionId { get; set; }
         [JsonPropertyName("IsDeleted")]
         public bool IsDeleted { get; set; } = false;
 

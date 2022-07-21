@@ -24,6 +24,8 @@ namespace DM.DAL.Models
         public UserProfile UserProfile { get; set; }
         public Department? Department { get; set; }
         public int DepartmentId { get; set; }
+        public Position? Position { get; set; }
+        public int PositionId { get; set; }
         public ICollection<UserAction> UserActions { get; set; }
         public bool IsDeleted { get; set; } = false;
         public Person()
