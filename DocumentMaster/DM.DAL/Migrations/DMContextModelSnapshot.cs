@@ -92,6 +92,9 @@ namespace DM.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<int>("AccessLevel")
+                        .HasColumnType("int");
+
                     b.Property<int>("DepartmentId")
                         .HasColumnType("int");
 
@@ -108,6 +111,9 @@ namespace DM.DAL.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int>("PositionId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Role")
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
@@ -119,7 +125,26 @@ namespace DM.DAL.Migrations
                     b.HasIndex("Login")
                         .IsUnique();
 
+                    b.HasIndex("PositionId");
+
                     b.ToTable("Persons");
+                });
+
+            modelBuilder.Entity("DM.DAL.Models.Position", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Positions");
                 });
 
             modelBuilder.Entity("DM.DAL.Models.Project", b =>
@@ -238,7 +263,15 @@ namespace DM.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("DM.DAL.Models.Position", "Position")
+                        .WithMany("Persons")
+                        .HasForeignKey("PositionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Department");
+
+                    b.Navigation("Position");
                 });
 
             modelBuilder.Entity("DM.DAL.Models.Project", b =>
@@ -300,6 +333,11 @@ namespace DM.DAL.Migrations
 
                     b.Navigation("UserProfile")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("DM.DAL.Models.Position", b =>
+                {
+                    b.Navigation("Persons");
                 });
 
             modelBuilder.Entity("DM.DAL.Models.Project", b =>

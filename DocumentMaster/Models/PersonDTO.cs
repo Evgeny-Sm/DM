@@ -25,6 +25,8 @@ namespace Models
         public int DepartmentId { get; set; }
         [JsonPropertyName("PositionId")]
         public int PositionId { get; set; }
+        [JsonPropertyName("AccessLevel")]
+        public int AccessLevel { get; set; }
         [JsonPropertyName("IsDeleted")]
         public bool IsDeleted { get; set; } = false;
 

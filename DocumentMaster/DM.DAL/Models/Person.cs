@@ -27,6 +27,7 @@ namespace DM.DAL.Models
         public Position? Position { get; set; }
         public int PositionId { get; set; }
         public ICollection<UserAction> UserActions { get; set; }
+        public int AccessLevel { get; set; }
         public bool IsDeleted { get; set; } = false;
         public Person()
         { 

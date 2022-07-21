@@ -1,6 +1,7 @@
 using AutoMapper;
 using DM.BLL.Authorization;
 using DM.BLL.MapServices;
+using DM.BLL.Services;
 using DM.DAL.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,10 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddDbContext<DMContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DMContext")
     ?? throw new InvalidOperationException("Connection string 'RazorPagesMovieContext' not found.")));
+
+builder.Services.AddScoped<PersonService>();
+builder.Services.AddScoped<DepartmentService>();
+builder.Services.AddScoped<ProjectService>();
 
 //Auto Mapper Config
 var mapperConfig = new MapperConfiguration(cfg =>

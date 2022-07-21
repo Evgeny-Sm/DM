@@ -41,7 +41,8 @@ namespace DM.DAL.Models
                         Password = "1111",
                         Role = "admin",
                         DepartmentId=1,
-                        PositionId=1
+                        PositionId=1,
+                        AccessLevel=1
                     }
                     );
                 context.SaveChanges();

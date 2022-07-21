@@ -40,14 +40,14 @@ namespace DM.BLL.Services
         }
         public async Task<IEnumerable<PersonDTO>> GetPersonsAsync()
         {
-            var persons = await _db.Persons.Include(p=>p.UserProfile).ToListAsync();
+            var persons = await _db.Persons.Include(p=>p.UserProfile).Where(p=>p.IsDeleted==false).ToListAsync();
             var result = _mapper.Map<IEnumerable<PersonDTO>>(persons);
             return result;
         }
         public async Task<PersonDTO> GetPersonByIdAsync(int id)
         {
             
-            var person =await _db.Persons.Include(p => p.UserProfile).Where(p=>p.Id==id).SingleAsync();
+            var person =await _db.Persons.Include(p => p.UserProfile).Where(p => p.IsDeleted == false).Where(p=>p.Id==id).FirstOrDefaultAsync();
             if (person == null)
             {
                 return null;
@@ -101,6 +101,11 @@ namespace DM.BLL.Services
                 await _db.SaveChangesAsync();
             }
 
+        }
+        public Task<string> GetRole(string name)
+        {
+            var role = _db.Persons.Where(p => p.Login == name).Single().Role;
+            return Task.FromResult(role);
         }
         public void Dispose()
         {
