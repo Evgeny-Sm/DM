@@ -21,14 +21,14 @@ namespace DM.BLL.Services
         }
         public async Task<IEnumerable<UserActionDTO>> GetAllAsync()
         {
-            var element = await _db.UserActions.ToListAsync();
+            var element = await _db.UserActions.Include(f => f.Person).Include(t => t.FileUnit).ToListAsync();
             var result = _mapper.Map<IEnumerable<UserActionDTO>>(element);
             return result;
         }
 
         public async Task<UserActionDTO> GetActionByIdAsync(int id)
         {
-            UserAction element = await _db.UserActions.FindAsync(id);
+            UserAction element = await _db.UserActions.Where(e=>e.Id==id).Include(f=>f.Person).Include(t=>t.FileUnit).SingleAsync();
             if (element == null )
             {
                 return null;
@@ -38,7 +38,7 @@ namespace DM.BLL.Services
         }
         public async Task<IEnumerable<UserActionDTO>> GetAllActionsByNumberAsync(int actionNumber)
         {
-            var element = await _db.UserActions.Where(a=>a.ActionNumber==actionNumber).ToListAsync();
+            var element = await _db.UserActions.Where(a=>a.ActionNumber==actionNumber).Include(f => f.Person).Include(t => t.FileUnit).ToListAsync();
             var result = _mapper.Map<IEnumerable<UserActionDTO>>(element);
             return result;
         }
@@ -53,7 +53,7 @@ namespace DM.BLL.Services
                 dateTo = new DateTime(2200, 1, 1);
             }
 
-            var element = await _db.UserActions.Where(d => d.CreatedDate > dateFrom && d.CreatedDate < dateTo).Include(f=>f.FileUnit).ToListAsync();
+            var element = await _db.UserActions.Where(d => d.CreatedDate > dateFrom && d.CreatedDate < dateTo).Include(f => f.Person).Include(t => t.FileUnit).ToListAsync();
             var result = _mapper.Map<IEnumerable<UserActionDTO>>(element);
             return result;
         }
