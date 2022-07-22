@@ -57,6 +57,23 @@ namespace DM.BLL.Services
             var result = _mapper.Map<IEnumerable<UserActionDTO>>(element);
             return result;
         }
+        public async Task<bool> Delete(int id)
+        {
+            UserAction element = await _db.UserActions.FindAsync(id);
+            if (element != null)
+            {
+                _db.UserActions.Remove(element);
+                await _db.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+
+
+        public void Dispose()
+        {
+            _db.Dispose();
+        }
 
 
 

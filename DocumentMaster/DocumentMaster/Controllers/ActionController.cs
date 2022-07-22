@@ -49,7 +49,7 @@ namespace DocumentMaster.API.Controllers
 
             return Ok(result);
         }
-        // GET: api/Action?dateFrom=date1&dateTo=date2
+        // GET: api/Action/ActionOndate?dateFrom=date1&dateTo=date2
         [Authorize(Roles = "admin")]
         [HttpGet("ActionOndate")]
         public async Task<ActionResult> GetActionsByDate([FromQuery] DateTime? dateFrom, [FromQuery] DateTime? dateTo)
@@ -61,6 +61,27 @@ namespace DocumentMaster.API.Controllers
                 return NotFound();
             }
             return Ok(result);
+        }
+
+        // DELETE: api/Department/5
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            try
+            {
+                var result = await _actionService.Delete(id);
+                if (result)
+                {
+                    return NoContent();
+                }
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Exception {ex.Message}");
+            }
+
         }
 
 
