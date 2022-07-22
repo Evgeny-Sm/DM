@@ -19,6 +19,7 @@ builder.Services.AddDbContext<DMContext>(opt => opt.UseSqlServer(builder.Configu
 builder.Services.AddScoped<PersonService>();
 builder.Services.AddScoped<DepartmentService>();
 builder.Services.AddScoped<ProjectService>();
+builder.Services.AddScoped<ActionService>();
 
 //Auto Mapper Config
 var mapperConfig = new MapperConfiguration(cfg =>

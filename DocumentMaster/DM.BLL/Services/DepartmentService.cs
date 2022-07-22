@@ -50,7 +50,7 @@ namespace DM.BLL.Services
             return await GetDepartmentByIdAsync(department.Id);
         }
 
-        public async Task UpdateDeviceAsync(int id, DepartmentDTO departmentDTO)
+        public async Task UpdateDepartmentAsync(int id, DepartmentDTO departmentDTO)
         {
             var element = _db.Departments.FirstOrDefault(c => c.Id == id);
             if (element is null)
@@ -66,7 +66,7 @@ namespace DM.BLL.Services
             await _db.SaveChangesAsync();
 
         }
-        public async Task<bool> DeleteDevice(int id)
+        public async Task<bool> DeleteDepartment(int id)
         {
             Department department = await _db.Departments.FindAsync(id);
             if (department != null)

@@ -8,27 +8,27 @@ namespace DocumentMaster.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class ProjectController : ControllerBase
+    public class DepartmentController: ControllerBase
     {
-        private readonly ProjectService _projectService;
-        public ProjectController(ProjectService projectService)
-        { 
-            _projectService = projectService;
+        private readonly DepartmentService _departmentService;
+        public DepartmentController(DepartmentService departmentService)
+        {
+            _departmentService = departmentService;
         }
-        // GET: api/Project
+        // GET: api/Department
         [Authorize(Roles = "admin")]
         [HttpGet]
-        public async Task<ActionResult> GetProjects()
+        public async Task<ActionResult> GetDepartments()
         {
-            var result = await _projectService.GetProjectsListAsync();
+            var result = await _departmentService.GetDepartmentsListAsync();
             return Ok(result);
         }
 
-        // GET: api/Project/5
+        // GET: api/Department/5
         [HttpGet("{id}")]
-        public async Task<ActionResult> GetProject(int id)
+        public async Task<ActionResult> GetDepartment(int id)
         {
-            var result = await _projectService.GetProjectByIdAsync(id);
+            var result = await _departmentService.GetDepartmentByIdAsync(id);
 
             if (result == null)
             {
@@ -38,14 +38,14 @@ namespace DocumentMaster.API.Controllers
             return Ok(result);
         }
 
-        // PUT: api/Project/5
+        // PUT: api/Department/5
         [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
-        public async Task<ActionResult> PutProject([FromRoute] int id, [FromBody] ProjectDTO unit)
+        public async Task<ActionResult> PutDepartment([FromRoute] int id, [FromBody] DepartmentDTO unit)
         {
             try
             {
-                await _projectService.UpdateProjectAsync(id, unit);
+                await _departmentService.UpdateDepartmentAsync(id, unit);
             }
             catch (Exception ex)
             {
@@ -55,14 +55,14 @@ namespace DocumentMaster.API.Controllers
 
         }
 
-        // POST: api/Project
+        // POST: api/Department
         [Authorize(Roles = "admin")]
         [HttpPost]
-        public async Task<ActionResult> PostProject(ProjectDTO unit)
+        public async Task<ActionResult> PostDepartment(DepartmentDTO unit)
         {
             try
             {
-                var result = await _projectService.AddProjectAsync(unit);
+                var result = await _departmentService.AddDepartmentAsync(unit);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -71,14 +71,14 @@ namespace DocumentMaster.API.Controllers
             }
         }
 
-        // DELETE: api/Project/5
+        // DELETE: api/Department/5
         [HttpDelete("{id}")]
         [Authorize(Roles = "admin")]
-        public async Task<ActionResult> DeleteProject(int id)
+        public async Task<ActionResult> DeleteDepartment(int id)
         {
             try
             {
-                var result = await _projectService.DeleteDevice(id);
+                var result = await _departmentService.DeleteDepartment(id);
                 if (result)
                 {
                     return NoContent();
@@ -91,7 +91,5 @@ namespace DocumentMaster.API.Controllers
             }
 
         }
-
-
     }
 }
