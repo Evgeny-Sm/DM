@@ -20,6 +20,9 @@ builder.Services.AddScoped<PersonService>();
 builder.Services.AddScoped<DepartmentService>();
 builder.Services.AddScoped<ProjectService>();
 builder.Services.AddScoped<ActionService>();
+builder.Services.AddScoped<FileService>();
+builder.Services.AddScoped<PositionService>();
+
 
 //Auto Mapper Config
 var mapperConfig = new MapperConfiguration(cfg =>

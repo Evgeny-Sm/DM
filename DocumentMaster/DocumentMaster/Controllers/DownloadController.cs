@@ -23,7 +23,7 @@ namespace DocumentMaster.API.Controllers
 
             var fullPath = Path.Combine("~/", $"{filePath}");
 
-            return File(fullPath, "application/octet-stream");
+            return File(fullPath, "application/pdf");
 
         }
     }
