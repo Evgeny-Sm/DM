@@ -33,4 +33,8 @@
     <ProjectReference Include="..\DM.DAL\DM.DAL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\4\" />
+  </ItemGroup>
+
 </Project>

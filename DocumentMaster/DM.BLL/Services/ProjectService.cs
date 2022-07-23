@@ -49,6 +49,7 @@ namespace DM.BLL.Services
             };
             await _db.Projects.AddAsync(element);
             await _db.SaveChangesAsync();
+
             string path = "wwwroot";
             if (!Directory.Exists(path))
             { 
@@ -92,12 +93,7 @@ namespace DM.BLL.Services
             }
             return false;
         }
-        private void CreateFolder(int id)
-        {
-            string path =$"~/{id}";
 
-
-        }
 
 
         public void Dispose()

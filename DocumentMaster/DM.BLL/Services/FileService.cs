@@ -15,10 +15,12 @@ namespace DM.BLL.Services
     {
         private readonly DMContext? _db;
         private readonly IMapper? _mapper;
+
         public FileService(DMContext context, IMapper mapper)
         {
             _db = context;
             _mapper = mapper;
+
         }
         public async Task<IEnumerable<FileDTO>> GetAllAsync()
         {
@@ -43,12 +45,44 @@ namespace DM.BLL.Services
             var result = _mapper.Map<FileDTO>(element);
             return result;
         }
-        /*public VirtualFileResult GetFileAsync(int id)
+
+        public async Task<FileDTO> AddFileAsync(FileDTO fileDTO, int personId)
         {
-            var element = _db.FileUnits.Find(id);
-            var filePath = Path.Combine("~/Files", "КМ.dwg");
-            return File(filePath, " application/octet-stream");
-        }*/
+            FileUnit element = new FileUnit
+            {
+                Name = fileDTO.Name,
+                Description = fileDTO.Description,
+                ProjectId = fileDTO.ProjectId,
+                DepartmentId = fileDTO.DepartmentId,
+                PathFile = $"{fileDTO.ProjectId}/{fileDTO.Name}"
+            };
+
+            await _db.FileUnits.AddAsync(element);
+            await _db.SaveChangesAsync();
+
+            var action = new UserAction
+            {
+                FileUnitId = element.Id,
+                PersonId = personId,
+                ActionNumber = 1
+            };
+            await _db.UserActions.AddAsync(action);          
+            await _db.SaveChangesAsync();
+
+            return await GetItemByIdAsync(element.Id);
+        }
+
+        public async Task<string> GetFullFilePathAsync(int id)
+        {
+            var element = await _db.FileUnits.FindAsync(id);
+            
+            if (element == null)
+            {
+                return null;
+            }
+            return element.PathFile;
+
+        }
 
 
     }
