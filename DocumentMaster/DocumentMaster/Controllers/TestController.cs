@@ -48,19 +48,11 @@ namespace DocumentMaster.API.Controllers
         }
         // GET: api/Test/GetFile
         [HttpGet("GetFile")]
-        public IActionResult GetFile()
+        public async Task<VirtualFileResult> GetFileAsync()
         {
-            /*var filePath = Path.Combine("~/Files", "КМ.dwg");
-            var f= File(filePath, "application/octet-stream");
-            return Ok(f);*/
-            string file_path = Path.Combine(_appEnvironment.ContentRootPath, "Files/hello.pdf");
-            // Тип файла - content-type
-            string file_type = "application/pdf";
-            // Имя файла - необязательно
-            string file_name = "hello.pdf";
-            var f = PhysicalFile(file_path, file_type, file_name);
-            return f;
-
+            var filePath = Path.Combine("~/Files", "hello.pdf");
+            return File(filePath, "application/pdf", "hello.pdf");
+            
         }
 
 

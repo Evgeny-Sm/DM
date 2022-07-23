@@ -49,6 +49,17 @@ namespace DM.BLL.Services
             };
             await _db.Projects.AddAsync(element);
             await _db.SaveChangesAsync();
+            string path = "wwwroot";
+            if (!Directory.Exists(path))
+            { 
+                Directory.CreateDirectory(path);
+            }        
+            string subPath = $"{element.Id}";
+            if (!Directory.Exists($"{path}/{subPath}"))
+            {
+                Directory.CreateDirectory($"{path}/{subPath}");
+            }
+
             return await GetProjectByIdAsync(element.Id);
         }
 
@@ -80,6 +91,12 @@ namespace DM.BLL.Services
                 return true;
             }
             return false;
+        }
+        private void CreateFolder(int id)
+        {
+            string path =$"~/{id}";
+
+
         }
 
 
