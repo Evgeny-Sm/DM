@@ -64,7 +64,8 @@ namespace DM.BLL.Services
             {
                 FileUnitId = element.Id,
                 PersonId = personId,
-                ActionNumber = 1
+                ActionNumber = 1,
+                IsConfirmed = true
             };
             await _db.UserActions.AddAsync(action);          
             await _db.SaveChangesAsync();

@@ -197,6 +197,9 @@ namespace DM.DAL.Migrations
                     b.Property<int>("FileUnitId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsConfirmed")
+                        .HasColumnType("bit");
+
                     b.Property<int>("PersonId")
                         .HasColumnType("int");
 

@@ -7,4 +7,6 @@
 /DocumentMaster/DM.BLL/obj/*
 /DocumentMaster/DM.Models/bin/*
 /DocumentMaster/DM.Models/obj/*
+/DocumentMaster/DocumentMaster.BlazorServer/bin/*
+/DocumentMaster/DocumentMaster.BlazorServer/obj/*
 

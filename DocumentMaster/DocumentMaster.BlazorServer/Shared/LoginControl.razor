@@ -1,0 +1,44 @@
+﻿@page "/loginControl"
+
+
+@using System.Web;
+
+<AuthorizeView>
+    <Authorized>
+        <b> @context.User.Identity.Name </b>
+        &nbsp; &nbsp;&nbsp;&nbsp;
+        <a class="ml-md-auto btn btn-primary"
+           href="/logout?returnUrl=/"
+           target="_top">Logout</a>
+    </Authorized>
+    <NotAuthorized>
+        <input type="text"
+               placeholder="User Name"
+               @bind="@Username" />
+        &nbsp; &nbsp;&nbsp;&nbsp;
+        <input type="password"
+               placeholder="Password"
+               @bind="@Password" />
+        &nbsp; &nbsp;&nbsp;&nbsp;
+        @if (!context.User.Identity.IsAuthenticated)
+        {
+             State="не авторизован";
+        }
+        <b>@State</b>
+        <a class="ml-md-auto btn btn-primary"
+           href="/login?paramUsername=@encode(@Username)&paramPassword=@encode(@Password)"
+           target="_top">Login</a>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    string State="";
+    string Username = "";
+    string Password = "";
+    private string encode(string param)
+    {
+        return HttpUtility.UrlEncode(param);
+    }
+
+
+}
