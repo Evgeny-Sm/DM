@@ -48,5 +48,25 @@
 
             return Task.FromResult(responce);
         }
+        public Task<HttpResponseMessage> CreateAuthRequest(string endpoint, IFormFile file)
+        {
+            string requestUri = _configuration.GetConnectionString("ApiHost") + endpoint;
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
+            request.Headers.Add("Accept", "multipart/form-data");
+            request.Headers.Add("User-Agent", "HTTPClient-client");
+            request.ContentType
+
+
+
+            string token = _httpContextAccessor.HttpContext.Request.Cookies["token"];
+
+            request.Headers.Add("Authorization", $"Bearer {token}");
+            request.Content.Fil = file;
+
+            var client = new HttpClient();
+            var responce = client.SendAsync(request).Result;
+
+            return Task.FromResult(responce);
+        }
     }
 }

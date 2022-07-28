@@ -1,11 +1,56 @@
 ﻿@page "/"
 @attribute [Authorize]
 
+@inject IConfiguration Configuration
+@inject IHttpContextAccessor HttpContextAccessor
+<RadzenDialog />
+<RadzenNotification />
+<RadzenContextMenu />
+<RadzenTooltip />
+
 <PageTitle>Index</PageTitle>
 
 <h1>Hello, world!</h1>
 
+
 Welcome to your new app.
+<div class="row px-3">
+    <div class="col-md-9">
+        <div class="row">
+            <div class="col-md-4 p-3">
+                <RadzenCard>
+                    <h4 class="mb-4">Single file upload</h4>
+                    <RadzenUpload Url="upload/single" Progress=@(args => OnProgress(args, "Single file upload")) class="w-100">
+                    </RadzenUpload>
+                </RadzenCard>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 <SurveyPrompt Title="How is Blazor working for you?" />
+
+@code
+{
+
+    RadzenUpload upload;
+    int progress;
+    bool showProgress;
+    bool showComplete;
+
+    void OnProgress(UploadProgressArgs args, string name)
+    {
+        
+
+        if (args.Progress == 100)
+        {
+            foreach (var file in args.Files)
+            {
+
+                
+            }
+        }
+    }
+
+}
