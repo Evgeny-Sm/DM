@@ -1,4 +1,6 @@
-﻿namespace DocumentMaster.BlazorServer.Services
+﻿using System.Net.Http.Headers;
+
+namespace DocumentMaster.BlazorServer.Services
 {
     public class ApiRequestService<T> where T : class
     {
@@ -48,20 +50,23 @@
 
             return Task.FromResult(responce);
         }
-        public Task<HttpResponseMessage> CreateAuthRequest(string endpoint, IFormFile file)
+        public Task<HttpResponseMessage> PostFormDataAcync<R>(string endpoint, R data,string filename)
         {
             string requestUri = _configuration.GetConnectionString("ApiHost") + endpoint;
+
+            var content = new MultipartFormDataContent();
+            content.Add(data as ByteArrayContent, "pdfFile", filename);
+
+            //content.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data") { Name = prop.Name, FileName = file.FileName };
+
             var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
             request.Headers.Add("Accept", "multipart/form-data");
             request.Headers.Add("User-Agent", "HTTPClient-client");
-            request.ContentType
-
-
 
             string token = _httpContextAccessor.HttpContext.Request.Cookies["token"];
 
             request.Headers.Add("Authorization", $"Bearer {token}");
-            request.Content.Fil = file;
+            request.Content = content;
 
             var client = new HttpClient();
             var responce = client.SendAsync(request).Result;

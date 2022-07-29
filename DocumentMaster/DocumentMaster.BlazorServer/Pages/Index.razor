@@ -1,8 +1,13 @@
 ﻿@page "/"
+@using DocumentMaster.BlazorServer.Services
 @attribute [Authorize]
+
+@inject NavigationManager Navigation
+
 
 @inject IConfiguration Configuration
 @inject IHttpContextAccessor HttpContextAccessor
+
 <RadzenDialog />
 <RadzenNotification />
 <RadzenContextMenu />
@@ -14,6 +19,7 @@
 
 
 Welcome to your new app.
+@ResponsMes
 <div class="row px-3">
     <div class="col-md-9">
         <div class="row">
@@ -38,19 +44,46 @@ Welcome to your new app.
     int progress;
     bool showProgress;
     bool showComplete;
+    string ResponsMes="привет";
+    string RequestUri;
+    string Token;
+
+
+    protected override async void OnInitialized()
+    {
+        //RequestUri = Configuration.GetConnectionString("ApiHost") + "/File/Upload?fileUnitId=1";
+        //Token = HttpContextAccessor.HttpContext.Request.Cookies["token"];
+
+    }
 
     void OnProgress(UploadProgressArgs args, string name)
     {
         
+        /*var req = new ApiRequestService<FormFile>(Configuration, HttpContextAccessor);
 
-        if (args.Progress == 100)
+
+        foreach (var file in args.Files)
         {
-            foreach (var file in args.Files)
-            {
+            var gg = File.ReadAllBytes(file.Name);
+            var byteArrayContent = new ByteArrayContent(gg);
+            var content = new MultipartFormDataContent();
+            content.Add(byteArrayContent, "pdfFile", file.Name);
 
-                
-            }
-        }
+            string requestUri = Configuration.GetConnectionString("ApiHost") + "/Upload?id=1";
+            string token = HttpContextAccessor.HttpContext.Request.Cookies["token"];
+
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
+            request.Headers.Add("Accept", "multipart/form-data");
+            request.Headers.Add("User-Agent", "HTTPClient-client");
+            request.Headers.Add("Authorization", $"Bearer {token}");
+            request.Content = content;
+            var client = new HttpClient();
+            var responce = client.SendAsync(request).Result;
+            ResponsMes = responce.IsSuccessStatusCode.ToString();
+            
+            ResponsMes = file.Name;
+        }*/
+        
     }
 
 }

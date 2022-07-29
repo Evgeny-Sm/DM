@@ -35,6 +35,8 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\4\" />
+    <Folder Include="wwwroot\1\" />
+    <Folder Include="wwwroot\2\" />
   </ItemGroup>
 
 </Project>
