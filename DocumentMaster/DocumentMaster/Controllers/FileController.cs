@@ -67,14 +67,14 @@ namespace DocumentMaster.API.Controllers
 
         // POST: api/File/Upload?fileUnitId=1
         [Authorize]
-        [HttpPost("Upload")]
+        [HttpPost("Upload/{id}")]
 
-        public async Task<ActionResult> UploadFile(IFormFile file, [FromQuery] int fileUnitId)
+        public async Task<ActionResult> UploadFile(IFormFile file,int id)
         {
             if (file != null)
             {
                 
-                var f = await _fileService.GetItemByIdAsync(fileUnitId);
+                var f = await _fileService.GetItemByIdAsync(id);
 
                 string path = $"/{f.ProjectId}/" + file.FileName;
               

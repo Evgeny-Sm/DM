@@ -1,17 +1,21 @@
 ﻿@page "/"
 @using DocumentMaster.BlazorServer.Services
+@using Models
+
 @attribute [Authorize]
 
 @inject NavigationManager Navigation
 
-
 @inject IConfiguration Configuration
 @inject IHttpContextAccessor HttpContextAccessor
+@inject NavigationManager Navigation
+
 
 <RadzenDialog />
 <RadzenNotification />
 <RadzenContextMenu />
 <RadzenTooltip />
+
 
 <PageTitle>Index</PageTitle>
 
@@ -19,19 +23,26 @@
 
 
 Welcome to your new app.
-@ResponsMes
 <div class="row px-3">
-    <div class="col-md-9">
-        <div class="row">
-            <div class="col-md-4 p-3">
-                <RadzenCard>
-                    <h4 class="mb-4">Single file upload</h4>
-                    <RadzenUpload Url="upload/single" Progress=@(args => OnProgress(args, "Single file upload")) class="w-100">
-                    </RadzenUpload>
-                </RadzenCard>
-            </div>
-        </div>
+    <div class="col-md-6">
+        <RadzenButton Text="Upload" Click=@(args => Dounload()) class="d-block mt-4" />
     </div>
+</div>
+
+<div class="row px-3">
+    <div class="col-md-6">
+        <h3>Single File upload</h3>
+        <RadzenUpload Url="https://localhost:7194/api/File/Upload/1" Style="margin-bottom:20px" Progress=@((args) => OnProgress(args, "Single file upload")) class="w-100">
+            <RadzenUploadHeader Name="Authorization" Value="Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidXNlckB1c2VyLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6ImFkbWluIiwibmJmIjoxNjU5MjY4Mzk2LCJleHAiOjE2NTkyODI3OTYsImlzcyI6IlNtaXJub3ZBdXRoU2VydmVyIiwiYXVkIjoiQW55Q2xpZW50In0.3G3ZPr7aQfz_x438ueCarBE_EmNwECnFrRo0sOCaYZk" />
+        </RadzenUpload>
+    </div>
+</div>
+
+<div class="col-md-6">
+    <h3> Event</h3>
+    <RadzenCard Style="overflow:auto;height:500px;">
+        <RadzenProgressBar Value="@progress" Unit="@info" Visible="@(progress>0)" Style="margin-bottom:20px"></RadzenProgressBar>       
+    </RadzenCard>
 </div>
 
 
@@ -42,48 +53,27 @@ Welcome to your new app.
 
     RadzenUpload upload;
     int progress;
+    string info;
+    string Nname;
     bool showProgress;
     bool showComplete;
-    string ResponsMes="привет";
-    string RequestUri;
-    string Token;
 
 
-    protected override async void OnInitialized()
-    {
-        //RequestUri = Configuration.GetConnectionString("ApiHost") + "/File/Upload?fileUnitId=1";
-        //Token = HttpContextAccessor.HttpContext.Request.Cookies["token"];
 
-    }
 
     void OnProgress(UploadProgressArgs args, string name)
     {
-        
-        /*var req = new ApiRequestService<FormFile>(Configuration, HttpContextAccessor);
+        this.info = $"%'{name}'/{args.Loaded} of {args.Total} bytes";
+        this.progress = args.Progress;
+    }
+    IFormFile Dounload()
+    {
+        var req = new ApiRequestService<FileDTO>(Configuration, HttpContextAccessor);
+        var resp = req.CreateAuthRequest("/Download/4", HttpMethod.Get);
+        var result = resp.Result.Content as IFormFile;
+        return result; 
 
 
-        foreach (var file in args.Files)
-        {
-            var gg = File.ReadAllBytes(file.Name);
-            var byteArrayContent = new ByteArrayContent(gg);
-            var content = new MultipartFormDataContent();
-            content.Add(byteArrayContent, "pdfFile", file.Name);
-
-            string requestUri = Configuration.GetConnectionString("ApiHost") + "/Upload?id=1";
-            string token = HttpContextAccessor.HttpContext.Request.Cookies["token"];
-
-            var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
-            request.Headers.Add("Accept", "multipart/form-data");
-            request.Headers.Add("User-Agent", "HTTPClient-client");
-            request.Headers.Add("Authorization", $"Bearer {token}");
-            request.Content = content;
-            var client = new HttpClient();
-            var responce = client.SendAsync(request).Result;
-            ResponsMes = responce.IsSuccessStatusCode.ToString();
-            
-            ResponsMes = file.Name;
-        }*/
-        
     }
 
 }

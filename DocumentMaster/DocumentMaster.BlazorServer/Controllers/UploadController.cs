@@ -12,7 +12,7 @@ namespace DocumentMaster.BlazorServer.Controllers
            _webHostEnvironment = webHostEnvironment;
         }
         [HttpPost("upload/single")]
-        public async Task<IActionResult> Single(IFormFile file)
+        public IActionResult Single(IFormFile file)
         {
             try
             {
@@ -24,17 +24,18 @@ namespace DocumentMaster.BlazorServer.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-        public async Task UploadFile(IFormFile file)
+        public async void UploadFile(IFormFile file)
         {
+
             if (file != null && file.Length > 0)
             {
-                string path = @"/Upload";
+                string path = "\\Upload";
                 var uploadPath=_webHostEnvironment.WebRootPath + path;
                 if (!Directory.Exists(uploadPath))
                 { 
                     Directory.CreateDirectory(uploadPath);
                 }
-                var fullPath=Path.Combine(uploadPath, file.Name);
+                var fullPath=Path.Combine(uploadPath, file.FileName);
                 using (var fileStream = new FileStream(fullPath, FileMode.Create,FileAccess.Write))
                 {
                     await file.CopyToAsync(fileStream);

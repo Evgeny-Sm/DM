@@ -36,7 +36,7 @@ namespace DocumentMaster.BlazorServer.Services
         {
             string requestUri = _configuration.GetConnectionString("ApiHost") + endpoint;
             var request = new HttpRequestMessage(httpMethod, requestUri);
-            request.Headers.Add("Accept", "application/json; charset=utf-8");
+            //request.Headers.Add("Accept", "application/json; charset=utf-8");
             request.Headers.Add("User-Agent", "HTTPClient-client");
 
 

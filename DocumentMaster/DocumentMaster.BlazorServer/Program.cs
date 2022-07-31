@@ -13,6 +13,8 @@ builder.Services.ConfigureApplicationCookie(options => {
     options.SlidingExpiration = true;
 });
 
+
+
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession();
 
@@ -28,7 +30,11 @@ builder.Services.AddAuthentication(
                 .AddCookie();
 
 builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
+builder.Services.AddServerSideBlazor().AddHubOptions(options =>
+{
+    // maximum message size of 20MB
+    options.MaximumReceiveMessageSize = 20000000;
+}); ;
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<HttpContextAccessor>();
 builder.Services.AddHttpClient();
@@ -52,7 +58,6 @@ app.UseStaticFiles();
 app.UseCookiePolicy();
 app.UseAuthentication();
 
-app.UseRouting();
 app.UseAuthorization();
 
 app.UseRouting();
