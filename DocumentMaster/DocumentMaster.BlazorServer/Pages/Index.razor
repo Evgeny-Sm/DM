@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using DocumentMaster.BlazorServer.Services
 @using Models
+@using System.IO
 
 @attribute [Authorize]
 
@@ -9,6 +10,7 @@
 @inject IConfiguration Configuration
 @inject IHttpContextAccessor HttpContextAccessor
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
 
 
 <RadzenDialog />
@@ -25,7 +27,7 @@
 Welcome to your new app.
 <div class="row px-3">
     <div class="col-md-6">
-        <RadzenButton Text="Upload" Click=@(args => Dounload()) class="d-block mt-4" />
+        <RadzenButton Text="Download" Click=@(args => Dounload()) class="d-block mt-4" />
     </div>
 </div>
 
@@ -66,13 +68,16 @@ Welcome to your new app.
         this.info = $"%'{name}'/{args.Loaded} of {args.Total} bytes";
         this.progress = args.Progress;
     }
-    IFormFile Dounload()
+    async void Dounload()
     {
         var req = new ApiRequestService<FileDTO>(Configuration, HttpContextAccessor);
         var resp = req.CreateAuthRequest("/Download/4", HttpMethod.Get);
-        var result = resp.Result.Content as IFormFile;
-        return result; 
+        var bytes = await resp.Result.Content.ReadAsByteArrayAsync();
+        var fileStream = new MemoryStream(bytes);
+        var fileName = "1.pdf";
+        using var streamRef = new DotNetStreamReference(stream: fileStream);
 
+        await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
 
     }
 
