@@ -14,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 
 builder.Services.AddDbContext<DMContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DMContext")
-    ?? throw new InvalidOperationException("Connection string 'RazorPagesMovieContext' not found.")));
+    ?? throw new InvalidOperationException("Connection string 'DMContext' not found.")));
 
 builder.Services.AddScoped<PersonService>();
 builder.Services.AddScoped<DepartmentService>();

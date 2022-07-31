@@ -27,15 +27,18 @@
 Welcome to your new app.
 <div class="row px-3">
     <div class="col-md-6">
-        <RadzenButton Text="Download" Click=@(args => Dounload()) class="d-block mt-4" />
+        <RadzenButton Text="Download" Click=@(args => Download()) class="d-block mt-4" />
     </div>
 </div>
+<a id="export" class="btn" href="https://localhost:7194/api/Download/4" download="MyFile.pdf" 
+   role="button" target="=_top">Download</a>
+
 
 <div class="row px-3">
     <div class="col-md-6">
         <h3>Single File upload</h3>
         <RadzenUpload Url="https://localhost:7194/api/File/Upload/1" Style="margin-bottom:20px" Progress=@((args) => OnProgress(args, "Single file upload")) class="w-100">
-            <RadzenUploadHeader Name="Authorization" Value="Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidXNlckB1c2VyLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6ImFkbWluIiwibmJmIjoxNjU5MjY4Mzk2LCJleHAiOjE2NTkyODI3OTYsImlzcyI6IlNtaXJub3ZBdXRoU2VydmVyIiwiYXVkIjoiQW55Q2xpZW50In0.3G3ZPr7aQfz_x438ueCarBE_EmNwECnFrRo0sOCaYZk" />
+            <RadzenUploadHeader Name="Authorization" Value="Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidXNlckB1c2VyLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6ImFkbWluIiwibmJmIjoxNjU5Mjg5MDg4LCJleHAiOjE2NTkzMDM0ODgsImlzcyI6IlNtaXJub3ZBdXRoU2VydmVyIiwiYXVkIjoiQW55Q2xpZW50In0.QQQtEzSsu2URJ_re8o6pxiKEBEZ3A8vY9uJyv4Aqkes" />
         </RadzenUpload>
     </div>
 </div>
@@ -68,7 +71,7 @@ Welcome to your new app.
         this.info = $"%'{name}'/{args.Loaded} of {args.Total} bytes";
         this.progress = args.Progress;
     }
-    async void Dounload()
+    async void Download()
     {
         var req = new ApiRequestService<FileDTO>(Configuration, HttpContextAccessor);
         var resp = req.CreateAuthRequest("/Download/4", HttpMethod.Get);
