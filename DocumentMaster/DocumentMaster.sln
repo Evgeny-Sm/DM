@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Models", "Models\Models.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DM.BLL", "DM.BLL\DM.BLL.csproj", "{DD048A2B-3E0A-472D-BA6E-8887EAB7968B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentMaster.BlazorServer", "DocumentMaster.BlazorServer\DocumentMaster.BlazorServer.csproj", "{EA383027-1071-4068-B181-5B408123510D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentMaster.BlazorServer", "DocumentMaster.BlazorServer\DocumentMaster.BlazorServer.csproj", "{EA383027-1071-4068-B181-5B408123510D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
