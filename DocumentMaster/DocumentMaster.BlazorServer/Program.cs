@@ -1,15 +1,20 @@
+using AutoMapper;
+using DM.BLL.MapServices;
+using DM.BLL.Services;
+using DM.DAL.Models;
 using DocumentMaster.BlazorServer.Data;
 using DocumentMaster.BlazorServer.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.EntityFrameworkCore;
 using Radzen;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.ConfigureApplicationCookie(options => {
     options.Cookie.HttpOnly = true;
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(480);
     options.SlidingExpiration = true;
 });
 
@@ -23,6 +28,27 @@ builder.Services.AddScoped<NotificationService>();
 builder.Services.AddScoped<TooltipService>();
 builder.Services.AddScoped<ContextMenuService>();
 builder.Services.AddScoped<InvalidUserService>();
+
+builder.Services.AddDbContext<DMContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DMContext")
+    ?? throw new InvalidOperationException("Connection string 'DMContext' not found.")));
+
+builder.Services.AddScoped<PersonService>();
+builder.Services.AddScoped<DepartmentService>();
+builder.Services.AddScoped<ProjectService>();
+builder.Services.AddScoped<ActionService>();
+builder.Services.AddScoped<FileService>();
+builder.Services.AddScoped<PositionService>();
+builder.Services.AddScoped<AccountService>();
+
+
+//Auto Mapper Config
+var mapperConfig = new MapperConfiguration(cfg =>
+{
+    cfg.AddProfile(new AutoMappingProfile());
+});
+
+IMapper mapper = mapperConfig.CreateMapper();
+builder.Services.AddSingleton(mapper);
 
 
 builder.Services.AddAuthentication(
@@ -46,6 +72,13 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    SeedData.Initialize(services);
+
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

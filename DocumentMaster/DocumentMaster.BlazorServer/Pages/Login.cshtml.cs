@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
-
+using Models;
 
 namespace BlazorServerSideApp.Pages
 {
@@ -55,7 +55,7 @@ namespace BlazorServerSideApp.Pages
             var responce = await client.SendAsync(request);
             if ((int)responce.StatusCode == 200)
             {
-                var person = await responce.Content.ReadFromJsonAsync<PersonDTO>();
+                var person = await responce.Content.ReadFromJsonAsync<Person1DTO>();
                 HttpContext.Response.Cookies.Append("token", person.ShortToken);
                 
                 // In this example we just log the user in
