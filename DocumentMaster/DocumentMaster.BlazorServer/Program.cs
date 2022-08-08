@@ -4,7 +4,6 @@ using DM.BLL.MapServices;
 using DM.BLL.Services;
 using DM.DAL.Models;
 using DocumentMaster.BlazorServer.Authentication;
-using DocumentMaster.BlazorServer.Data;
 using DocumentMaster.BlazorServer.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components;
@@ -55,9 +54,7 @@ IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
 
 
-/*builder.Services.AddAuthentication(
-                CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie();*/
+
 builder.Services.AddAuthenticationCore();
 
 builder.Services.AddRazorPages();

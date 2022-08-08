@@ -21,23 +21,6 @@ namespace DM.BLL.Services
             _mapper = mapper;
         }
 
-        public ClaimsIdentity GetIdentity(string username, string password)
-        {
-            Person? person = _db.Persons.FirstOrDefault(x => x.Login == username && x.Password == password);
-            if (person != null)
-            {
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimsIdentity.DefaultNameClaimType,person.Login),
-                    new Claim(ClaimsIdentity.DefaultRoleClaimType, person.Role)
-                };
-                ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "Token",
-                                                    ClaimsIdentity.DefaultNameClaimType,
-                                                    ClaimsIdentity.DefaultRoleClaimType);
-                return claimsIdentity;
-            }
-            return null;
-        }
         public async Task<IEnumerable<PersonDTO>> GetPersonsAsync()
         {
             var persons = await _db.Persons.Include(p=>p.UserProfile).Where(p=>p.IsDeleted==false).ToListAsync();

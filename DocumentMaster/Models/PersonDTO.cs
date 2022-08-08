@@ -29,8 +29,7 @@ namespace Models
         public int AccessLevel { get; set; }
         [JsonPropertyName("IsDeleted")]
         public bool IsDeleted { get; set; } = false;
-        [JsonPropertyName("access_token")]
-        public string Token { get; set; } = String.Empty;
+
 
     }
 }

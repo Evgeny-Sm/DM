@@ -3,7 +3,6 @@
 @using Models
 @using System.IO
 
-@attribute [Authorize]
 
 @inject NavigationManager Navigation
 
@@ -20,9 +19,6 @@
 
 
 <PageTitle>Index</PageTitle>
-
-<h1>Hello, world!</h1>
-<h1>@HttpContextAccessor.HttpContext.User.Identity.IsAuthenticated.ToString()</h1>
 
 <AuthorizeView>
     <Authorized>
@@ -70,18 +66,6 @@ Welcome to your new app.
     {
         this.info = $"%'{name}'/{args.Loaded} of {args.Total} bytes";
         this.progress = args.Progress;
-    }
-    async void Download()
-    {
-        var req = new ApiRequestService<FileDTO>(Configuration, HttpContextAccessor);
-        var resp = req.CreateAuthRequest("/Download/4", HttpMethod.Get);
-        var bytes = await resp.Result.Content.ReadAsByteArrayAsync();
-        var fileStream = new MemoryStream(bytes);
-        var fileName = "1.pdf";
-        using var streamRef = new DotNetStreamReference(stream: fileStream);
-
-        await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
-
     }
 
 }

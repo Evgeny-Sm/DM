@@ -70,37 +70,7 @@ namespace DocumentMaster.API.Controllers
             }
         }
 
-        [HttpPost("token")]
-        public IActionResult Token([FromBody] PersonDTO person)
-        {
-            if (person == null)
-            {
-                return BadRequest(new { errorText = "Invalid username or password" });
-            }
-            var identity = _personService.GetIdentity(person.Login, person.Password);
-
-            if (identity == null)
-            {
-                return BadRequest(new { errorText = "Invalid username or password" });
-            }
-            var now = DateTime.UtcNow;
-            var jwt = new JwtSecurityToken(
-                issuer: AuthOptions.ISSUER,
-                audience: AuthOptions.AUDIENCE,
-                notBefore: now,
-                claims: identity.Claims,
-                expires: now.Add(TimeSpan.FromMinutes(AuthOptions.LIFETIME)),
-                signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
-            var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-            var responce = new
-            {
-                access_token = encodedJwt,
-                username = identity.Name,
-                role = _personService.GetRole(person.Login).Result
-            };
-
-            return new JsonResult(responce);
-        }
+        
         [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteAccount(int id)
