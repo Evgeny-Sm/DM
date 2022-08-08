@@ -1,11 +1,15 @@
 using AutoMapper;
+using DM.BLL.Authorization;
 using DM.BLL.MapServices;
 using DM.BLL.Services;
 using DM.DAL.Models;
+using DocumentMaster.BlazorServer.Authentication;
 using DocumentMaster.BlazorServer.Data;
 using DocumentMaster.BlazorServer.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
@@ -51,16 +55,20 @@ IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
 
 
-builder.Services.AddAuthentication(
+/*builder.Services.AddAuthentication(
                 CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie();
+                .AddCookie();*/
+builder.Services.AddAuthenticationCore();
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor().AddHubOptions(options =>
 {
-    // maximum message size of 20MB
-    options.MaximumReceiveMessageSize = 20000000;
+    // maximum message size of 100MB
+    options.MaximumReceiveMessageSize = 100000000;
 }); ;
+builder.Services.AddScoped<ProtectedSessionStorage>();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<HttpContextAccessor>();
 builder.Services.AddHttpClient();
