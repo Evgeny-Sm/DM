@@ -1,0 +1,96 @@
+﻿@page "/Files/{files?}"
+@using DocumentMaster.BlazorServer.Services
+@using Models
+@using System.Text.Json
+@attribute [Authorize]
+
+@inject IConfiguration Configuration
+@inject IHttpContextAccessor HttpContextAccessor
+@inject NavigationManager Navigation
+
+<RadzenDialog />
+<RadzenNotification />
+<RadzenContextMenu />
+<RadzenTooltip />
+
+<h3>Files</h3>
+
+<RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Добавить" Click="@NavigatetoToAddFile" />
+<div class="row">
+        <div class="col-md-6">
+        <RadzenDataGrid ColumnWidth="200px" AllowFiltering="true" AllowPaging="true" PageSize="15" AllowSorting="true" Data="@files" TItem="FileDTO" @bind-Value="@SelectedFiles">
+            <Columns>
+                <RadzenDataGridColumn TItem="FileDTO" Property="Id" Title="Id" Width="120px" />
+                <RadzenDataGridColumn TItem="FileDTO" Property="Name" Title="Название" Width="120px" />
+                <RadzenDataGridColumn TItem="FileDTO" Property="ProjectName" Title="Название" Width="200px">
+                    <Template Context="file">
+                        @GetProject(file.Id).Name
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="FileDTO" Property="DepartmentName" Title="Required Date" FormatString="{0:d}" Width="140px">
+                    <Template Context="file">
+                        @GetDepartment(file.Id).Name
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
+        </div>
+        </div>
+
+@code {
+    IList<FileDTO> SelectedFiles { get; set; }
+    [Parameter] public List<FileDTO>? files{ get; set; }
+
+
+
+
+    protected override async void OnParametersSet()
+    {
+        if (files is null)
+        {
+            var req = new ApiRequestService<FileDTO>(Configuration,  HttpContextAccessor);          
+            var resp = await req.CreateAuthRequest("/File", HttpMethod.Get);
+            if ((int)resp.StatusCode == 200)
+            {
+                var responceStream = resp.Content.ReadAsStreamAsync().Result;
+                files = JsonSerializer.DeserializeAsync<IEnumerable<FileDTO>>(responceStream).Result.ToList();
+                SelectedFiles = new List<FileDTO>() { files.FirstOrDefault() };
+            }
+        }
+
+
+    }
+    private ProjectDTO GetProject(int id)
+    {
+        var req = new ApiRequestService<ProjectDTO>(Configuration,  HttpContextAccessor);
+        var resp=req.CreateAuthRequest($"/Project/{id}", HttpMethod.Get).Result;
+
+        if ((int)resp.StatusCode == 200)
+        {
+            var responceStream = resp.Content.ReadAsStreamAsync().Result;
+            var result = JsonSerializer.DeserializeAsync<ProjectDTO>(responceStream).Result;
+            return result;
+        }
+        return new ProjectDTO();
+
+    }
+        private DepartmentDTO GetDepartment(int id)
+    {
+        var req = new ApiRequestService<DepartmentDTO>(Configuration,  HttpContextAccessor);
+        var resp=req.CreateAuthRequest($"/Department/{id}", HttpMethod.Get).Result;
+        if ((int)resp.StatusCode == 200)
+        {
+            var responceStream = resp.Content.ReadAsStreamAsync().Result;
+            var result = JsonSerializer.DeserializeAsync<DepartmentDTO>(responceStream).Result;
+            return result;
+        }
+        return new DepartmentDTO();
+
+    }
+
+
+        private void NavigatetoToAddFile()
+    {
+        Navigation.NavigateTo("/addFile");
+    }
+}

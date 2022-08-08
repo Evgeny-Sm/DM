@@ -2,7 +2,7 @@
 
 namespace DocumentMaster.BlazorServer.ModelsDTO
 {
-    public class PersonDTO
+    public class Person1DTO
     {
 
         public int Id { get; set; }

@@ -22,9 +22,11 @@
 <PageTitle>Index</PageTitle>
 
 <h1>Hello, world!</h1>
+<h1>@HttpContextAccessor.HttpContext.User.Identity.IsAuthenticated.ToString()</h1>
 
 
 Welcome to your new app.
+
 <div class="row px-3">
     <div class="col-md-6">
         <RadzenButton Text="Download" Click=@(args => Download()) class="d-block mt-4" />
@@ -38,7 +40,7 @@ Welcome to your new app.
     <div class="col-md-6">
         <h3>Single File upload</h3>
         <RadzenUpload Url="https://localhost:7194/api/File/Upload/1" Style="margin-bottom:20px" Progress=@((args) => OnProgress(args, "Single file upload")) class="w-100">
-            <RadzenUploadHeader Name="Authorization" Value="Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidXNlckB1c2VyLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6ImFkbWluIiwibmJmIjoxNjU5NzEyNjYyLCJleHAiOjE2NTk3MjcwNjIsImlzcyI6IlNtaXJub3ZBdXRoU2VydmVyIiwiYXVkIjoiQW55Q2xpZW50In0.Heeo0WR2tibQLjUwBAxyqxzFyEvO79m4it5sHne0QWY" />
+            <RadzenUploadHeader Name="Authorization" Value="Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidXNlckB1c2VyLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6ImFkbWluIiwibmJmIjoxNjU5MzcwMzk0LCJleHAiOjE2NTkzODQ3OTQsImlzcyI6IlNtaXJub3ZBdXRoU2VydmVyIiwiYXVkIjoiQW55Q2xpZW50In0.xhRfdclbJhbmm3gXcq-oQTXfhjZv7pm0v8RlDiXIqrg" />
         </RadzenUpload>
     </div>
 </div>
