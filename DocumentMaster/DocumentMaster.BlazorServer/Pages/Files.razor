@@ -1,8 +1,12 @@
-﻿@page "/Files/{files?}"
+﻿@page "/Files"
+
+@attribute [Authorize(Roles="admin")]
+
+@using DocumentMaster.BlazorServer.Pages
 @using DocumentMaster.BlazorServer.Services
 @using Models
 @using System.Text.Json
-@attribute [Authorize]
+
 
 @inject IConfiguration Configuration
 @inject IHttpContextAccessor HttpContextAccessor
@@ -38,53 +42,40 @@
         </div>
 
 @code {
-    IList<FileDTO> SelectedFiles { get; set; }
-    [Parameter] public List<FileDTO>? files{ get; set; }
-
-
-
-
-    protected override async void OnParametersSet()
+    IList<FileDTO> SelectedFiles { get; set; }=new List<FileDTO>
     {
-        if (files is null)
-        {
-            var req = new ApiRequestService<FileDTO>(Configuration,  HttpContextAccessor);          
-            var resp = await req.CreateAuthRequest("/File", HttpMethod.Get);
-            if ((int)resp.StatusCode == 200)
-            {
-                var responceStream = resp.Content.ReadAsStreamAsync().Result;
-                files = JsonSerializer.DeserializeAsync<IEnumerable<FileDTO>>(responceStream).Result.ToList();
-                SelectedFiles = new List<FileDTO>() { files.FirstOrDefault() };
-            }
-        }
+        new FileDTO{ Id=1,Name="план"},
+        new FileDTO{ Id=2,Name="фасад"},
+        new FileDTO{ Id=3,Name="разрез"}
+    };
+    //[Parameter] public List<FileDTO>? files{ get; set; }
+    public List<FileDTO>? files { get; set; } = new List<FileDTO>
+    {
+        new FileDTO{ Id=1,Name="план"},
+        new FileDTO{ Id=2,Name="фасад"},
+        new FileDTO{ Id=3,Name="разрез"}
+    };
 
 
-    }
+
     private ProjectDTO GetProject(int id)
     {
-        var req = new ApiRequestService<ProjectDTO>(Configuration,  HttpContextAccessor);
-        var resp=req.CreateAuthRequest($"/Project/{id}", HttpMethod.Get).Result;
 
-        if ((int)resp.StatusCode == 200)
-        {
-            var responceStream = resp.Content.ReadAsStreamAsync().Result;
-            var result = JsonSerializer.DeserializeAsync<ProjectDTO>(responceStream).Result;
-            return result;
-        }
-        return new ProjectDTO();
+        return new ProjectDTO { 
+            Id=id,
+            Client="dogsheet"
+        };
 
     }
-        private DepartmentDTO GetDepartment(int id)
+    private DepartmentDTO GetDepartment(int id)
     {
-        var req = new ApiRequestService<DepartmentDTO>(Configuration,  HttpContextAccessor);
-        var resp=req.CreateAuthRequest($"/Department/{id}", HttpMethod.Get).Result;
-        if ((int)resp.StatusCode == 200)
+
+        return new DepartmentDTO
         {
-            var responceStream = resp.Content.ReadAsStreamAsync().Result;
-            var result = JsonSerializer.DeserializeAsync<DepartmentDTO>(responceStream).Result;
-            return result;
-        }
-        return new DepartmentDTO();
+            Id=id,
+            Name="SO",
+            Description="Random"
+        };
 
     }
 
