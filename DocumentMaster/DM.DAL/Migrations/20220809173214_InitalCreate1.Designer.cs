@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DM.DAL.Migrations
 {
     [DbContext(typeof(DMContext))]
-    [Migration("20220728115250_InitalCreate2")]
-    partial class InitalCreate2
+    [Migration("20220809173214_InitalCreate1")]
+    partial class InitalCreate1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,6 +23,42 @@ namespace DM.DAL.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("DM.DAL.Models.Account", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("PersonId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PersonId")
+                        .IsUnique();
+
+                    b.HasIndex("UserName")
+                        .IsUnique();
+
+                    b.ToTable("Accounts");
+                });
 
             modelBuilder.Entity("DM.DAL.Models.Department", b =>
                 {
@@ -94,38 +130,26 @@ namespace DM.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("AccessLevel")
-                        .HasColumnType("int");
-
                     b.Property<int>("DepartmentId")
                         .HasColumnType("int");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Login")
+                    b.Property<string>("LastName")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PositionId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Role")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentId");
-
-                    b.HasIndex("Login")
-                        .IsUnique();
 
                     b.HasIndex("PositionId");
 
@@ -214,31 +238,15 @@ namespace DM.DAL.Migrations
                     b.ToTable("UserActions");
                 });
 
-            modelBuilder.Entity("DM.DAL.Models.UserProfile", b =>
+            modelBuilder.Entity("DM.DAL.Models.Account", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.HasOne("DM.DAL.Models.Person", "Person")
+                        .WithOne("Account")
+                        .HasForeignKey("DM.DAL.Models.Account", "PersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PersonId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PersonId")
-                        .IsUnique();
-
-                    b.ToTable("UserProfiles");
+                    b.Navigation("Person");
                 });
 
             modelBuilder.Entity("DM.DAL.Models.FileUnit", b =>
@@ -309,17 +317,6 @@ namespace DM.DAL.Migrations
                     b.Navigation("Person");
                 });
 
-            modelBuilder.Entity("DM.DAL.Models.UserProfile", b =>
-                {
-                    b.HasOne("DM.DAL.Models.Person", "Person")
-                        .WithOne("UserProfile")
-                        .HasForeignKey("DM.DAL.Models.UserProfile", "PersonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Person");
-                });
-
             modelBuilder.Entity("DM.DAL.Models.Department", b =>
                 {
                     b.Navigation("FileUnits");
@@ -334,10 +331,10 @@ namespace DM.DAL.Migrations
 
             modelBuilder.Entity("DM.DAL.Models.Person", b =>
                 {
-                    b.Navigation("UserActions");
-
-                    b.Navigation("UserProfile")
+                    b.Navigation("Account")
                         .IsRequired();
+
+                    b.Navigation("UserActions");
                 });
 
             modelBuilder.Entity("DM.DAL.Models.Position", b =>

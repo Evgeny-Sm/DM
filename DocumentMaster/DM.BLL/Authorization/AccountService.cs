@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DM.DAL.Models;
 using Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,9 +21,9 @@ namespace DM.BLL.Authorization
         }
         public AccountDTO? GetByUserName(string userName)
         {
-            Person? person = _db.Persons.FirstOrDefault(x => x.Login == userName);
+            Account? account = _db.Accounts.Include(p=>p.Person).FirstOrDefault(x => x.UserName == userName);
             
-            return _mapper.Map<AccountDTO>(person);
+            return _mapper.Map<AccountDTO>(account);
         }
     }
 }

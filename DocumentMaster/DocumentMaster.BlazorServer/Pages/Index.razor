@@ -1,5 +1,7 @@
 ﻿@page "/"
+@using DocumentMaster.BlazorServer.Authentication
 @using DocumentMaster.BlazorServer.Services
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using Models
 @using System.IO
 
@@ -10,6 +12,7 @@
 @inject IHttpContextAccessor HttpContextAccessor
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
+@inject ProtectedSessionStorage sessionStorage
 
 
 <RadzenDialog />
@@ -58,7 +61,10 @@ Welcome to your new app.
     private async Task DisplayGreetingAlert()
     {
         var authState = await authenticationState;
-        var message = $"Hello {authState.User.Identity.Name}";
+        var b=authState.User.IsInRole("user");
+        var userSessionStorageResult = await sessionStorage.GetAsync<UserSession>("UserSession");
+        var personId = userSessionStorageResult.Value.PersonId;
+        var message = $"Hello {authState.User.Identity.Name} {personId} {b}";
         await JS.InvokeVoidAsync("alert", message);
     }
 

@@ -16,12 +16,10 @@ namespace DM.BLL.MapServices
             //Add as many of lines as many objects you need map to
             CreateMap<Department, DepartmentDTO>();
             CreateMap<FileUnit, FileDTO>();
-            CreateMap<Person, PersonDTO>().ForMember("FirstName",p=>p.MapFrom(u=>u.UserProfile.FirstName))
-                                           .ForMember("LastName",p=>p.MapFrom(u=>u.UserProfile.LastName))
-                                           ;
+            CreateMap<Person, PersonDTO>();
             CreateMap<Project, ProjectDTO>().ForMember("MainIngId", p => p.MapFrom(u=>u.PersonId));
             CreateMap<UserAction, UserActionDTO>();
-            CreateMap<Person, AccountDTO>().ForMember("UserName", p => p.MapFrom(u => u.Login));
+            CreateMap<Account, AccountDTO>().ForMember("PersonId", p=>p.MapFrom(a=>a.Person.Id));
 
         }
     }

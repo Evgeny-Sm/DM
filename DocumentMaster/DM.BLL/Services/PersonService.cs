@@ -23,14 +23,14 @@ namespace DM.BLL.Services
 
         public async Task<IEnumerable<PersonDTO>> GetPersonsAsync()
         {
-            var persons = await _db.Persons.Include(p=>p.UserProfile).Where(p=>p.IsDeleted==false).ToListAsync();
+            var persons = await _db.Persons.Where(p=>p.IsDeleted==false).ToListAsync();
             var result = _mapper.Map<IEnumerable<PersonDTO>>(persons);
             return result;
         }
         public async Task<PersonDTO> GetPersonByIdAsync(int id)
         {
-            
-            var person =await _db.Persons.Include(p => p.UserProfile).Where(p => p.IsDeleted == false).Where(p=>p.Id==id).FirstOrDefaultAsync();
+
+            var person = await _db.Persons.FindAsync(id);
             if (person == null)
             {
                 return null;
@@ -38,31 +38,22 @@ namespace DM.BLL.Services
             var result = _mapper.Map<PersonDTO>(person);
             return result;
         }
-        public async Task<PersonDTO> AddPersonAdminAsync(string username, string password)
+        public async Task<PersonDTO> AddPersonAsync(PersonDTO personDTO)
         {
             Person person = new Person
             {
-                Login = username,
-                Password = password,
-                Role = "admin"
+                FirstName = personDTO.FirstName,
+                LastName = personDTO.LastName,
+                DepartmentId = personDTO.DepartmentId,
+                PositionId = personDTO.PositionId,
+                IsDeleted = false
+
             };
             await _db.Persons.AddAsync(person);
             await _db.SaveChangesAsync();
             return await GetPersonByIdAsync(person.Id);
         }
-        public async Task<PersonDTO> AddPersonUserAsync(string username, string password)
-        {
-            Person person = new Person
-            {
-                Login = username,
-                Password = password,
-                Role = "user"
-            };
-            await _db.Persons.AddAsync(person);
-            await _db.SaveChangesAsync();
-            return await GetPersonByIdAsync(person.Id);
-        }
-        public async Task UpdatePersonAsync(int id, Person person)
+        public async Task UpdatePersonAsync(int id, PersonDTO personDTO)
         {
             var element = _db.Persons.Find(id);
             if (element is null)
@@ -70,12 +61,16 @@ namespace DM.BLL.Services
                 element = new Person();
                 throw new ArgumentNullException($"Unknown {element.GetType().Name}");
             }
-            element.Login = person.Login;
-            element.Password = person.Password;
-            _db.Persons.Update(person);
+            element.FirstName = personDTO.FirstName;
+            element.LastName = personDTO.LastName;
+            element.DepartmentId = personDTO.DepartmentId;
+            element.PositionId = personDTO.PositionId;
+            element.IsDeleted = personDTO.IsDeleted;
+
+            _db.Persons.Update(element);
             await _db.SaveChangesAsync();
         }
-        public async Task RemoveAccount(int id)
+        public async Task RemovePerson(int id)
         {
             var element = _db.Persons.Find(id);
             if (element != null)
@@ -84,11 +79,6 @@ namespace DM.BLL.Services
                 await _db.SaveChangesAsync();
             }
 
-        }
-        public Task<string> GetRole(string name)
-        {
-            var role = _db.Persons.Where(p => p.Login == name).Single().Role;
-            return Task.FromResult(role);
         }
         public void Dispose()
         {

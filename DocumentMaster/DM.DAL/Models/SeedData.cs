@@ -37,23 +37,44 @@ namespace DM.DAL.Models
                 context.Persons.AddRange(
                     new Person
                     {
-                        Login = "user@user.com",
-                        Password = "1111",
-                        Role = "admin",
-                        DepartmentId=1,
-                        PositionId=1,
-                        AccessLevel=1
-                    }
-                    );
-                context.SaveChanges();
 
-                context.UserProfiles.AddRange(
-                    new UserProfile
-                    {
                         FirstName = "Евгений",
                         LastName = "Смирнов",
-                        PersonId = 1
+                        DepartmentId = 1,
+                        PositionId = 1,
+
                     });
+                context.SaveChanges();
+
+                context.Accounts.AddRange(
+                   new Account
+                   {
+                       UserName = "user@user.com",
+                       Password = "1111",
+                       Role = "admin",
+                       PersonId = 1
+                   });
+                context.SaveChanges();
+                context.Persons.AddRange(
+                new Person
+                {
+                    FirstName = "Раб",
+                    LastName = "Рабонский",
+                    DepartmentId = 1,
+                    PositionId = 1,
+
+                });
+                context.SaveChanges();
+
+               
+                context.Accounts.AddRange(
+                new Account
+                {
+                    UserName = "rab@user.com",
+                    Password = "11111",
+                    Role = "user",
+                    PersonId = 2
+                });
                 context.SaveChanges();
 
                 context.Projects.AddRange(
