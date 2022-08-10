@@ -105,8 +105,9 @@ app.UseAuthorization();
 
 app.UseRouting();
 
-app.MapControllers();
+
 app.MapBlazorHub();
+app.MapControllers();
 app.MapFallbackToPage("/_Host");
 
 app.Run();

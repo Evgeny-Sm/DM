@@ -38,6 +38,17 @@ namespace DM.BLL.Services
             var result = _mapper.Map<PersonDTO>(person);
             return result;
         }
+        public async Task<PersonDTO> GetPersonByNameAsync(string name)
+        {
+
+            var person = await _db.Persons.Include(a=>a.Account).Where(p=>p.Account.UserName==name).SingleAsync();
+            if (person == null)
+            {
+                return null;
+            }
+            var result = _mapper.Map<PersonDTO>(person);
+            return result;
+        }
         public async Task<PersonDTO> AddPersonAsync(PersonDTO personDTO)
         {
             Person person = new Person
