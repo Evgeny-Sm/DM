@@ -13,28 +13,28 @@ namespace DM.DAL.Models
         
         public static void Initialize(IServiceProvider serviceProvider)
         {
-            using (var context = new DMContext(serviceProvider.GetRequiredService<DbContextOptions<DMContext>>()))
+            using (var context1 = new DMContext(serviceProvider.GetRequiredService<DbContextOptions<DMContext>>()))
             {
-                if (context.Persons.Any())
+                if (context1.Persons.Any())
                 {
                     return;
                 }
-                context.Departments.AddRange(
+                context1.Departments.AddRange(
                     new Department
                     {
                         Name = "CO",
                         Description = "Строительный отдел"
                     });
-                context.SaveChanges();
+                context1.SaveChanges();
 
-                context.Positions.AddRange(
+                context1.Positions.AddRange(
                     new Position
                     {
                         Name = "Начальнике",
                         
                     });
-                context.SaveChanges();
-                context.Persons.AddRange(
+                context1.SaveChanges();
+                context1.Persons.AddRange(
                     new Person
                     {
 
@@ -44,9 +44,9 @@ namespace DM.DAL.Models
                         PositionId = 1,
 
                     });
-                context.SaveChanges();
+                context1.SaveChanges();
 
-                context.Accounts.AddRange(
+                context1.Accounts.AddRange(
                    new Account
                    {
                        UserName = "user@user.com",
@@ -54,8 +54,8 @@ namespace DM.DAL.Models
                        Role = "admin",
                        PersonId = 1
                    });
-                context.SaveChanges();
-                context.Persons.AddRange(
+                context1.SaveChanges();
+                context1.Persons.AddRange(
                 new Person
                 {
                     FirstName = "Раб",
@@ -64,10 +64,10 @@ namespace DM.DAL.Models
                     PositionId = 1,
 
                 });
-                context.SaveChanges();
+                context1.SaveChanges();
 
                
-                context.Accounts.AddRange(
+                context1.Accounts.AddRange(
                 new Account
                 {
                     UserName = "rab@user.com",
@@ -75,9 +75,9 @@ namespace DM.DAL.Models
                     Role = "user",
                     PersonId = 2
                 });
-                context.SaveChanges();
+                context1.SaveChanges();
 
-                context.Projects.AddRange(
+                context1.Projects.AddRange(
                new Project
                {
                    Name = "Волна",
@@ -85,9 +85,9 @@ namespace DM.DAL.Models
                    Client = "ЛСР",
                    PersonId=1
                });
-                context.SaveChanges();
+                context1.SaveChanges();
 
-                context.FileUnits.AddRange(
+                context1.FileUnits.AddRange(
                     new FileUnit
                     {
                         Name = "План демонтажа",
@@ -96,16 +96,16 @@ namespace DM.DAL.Models
                         DepartmentId=1,
                         ProjectId=1,
                     });
-                context.SaveChanges();
+                context1.SaveChanges();
 
-                context.UserActions.AddRange(
+                context1.UserActions.AddRange(
                     new UserAction
                     {
                         FileUnitId = 1,
                         PersonId = 1,
                         ActionNumber = 1
                     });
-                context.SaveChanges();
+                context1.SaveChanges();
             }
         }
         

@@ -3,6 +3,7 @@
 
 
 @using DM.BLL.Services
+@using DM.DAL.Models
 @using DocumentMaster.BlazorServer.Authentication
 @using DocumentMaster.BlazorServer.Pages
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
@@ -14,6 +15,7 @@
 @inject ProjectService projectService
 @inject DialogService DialogService
 @inject NavigationManager Navigation
+@inject DMContext _db
 
 
 
@@ -31,9 +33,15 @@
                     <RadzenFieldset Text="Загрузка файла на сервер">
                         <div class="row">
                             <div class="col-md-8">
-                <RadzenDropDownDataGrid @bind-Value="@n" TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
-                                        Data=@(Projects.Select(p=>p.Id).ToList())
-                                        Change=@(args => OnChange(args, "DropDownDataGrid")) Style="width: 100%"/>
+                        <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                                Data=@(Projects) Style="width:100%" AllowColumnResize="true"
+                                                TextProperty="Name" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
+                                                Change=@(args => OnChange(args, "DropDownDataGrid with filtering by all string columns"))>
+                            <Columns>
+                                <RadzenDropDownDataGridColumn Property="Id" Title="Id" Width="100px" />
+                                <RadzenDropDownDataGridColumn Property="Name" Title="Название" Width="100px" />
+                            </Columns>
+                        </RadzenDropDownDataGrid>
                             </div>                          
                         </div>
                         <br>
@@ -59,8 +67,8 @@
 
     private FileDTO _file = new FileDTO();
     private PersonDTO CurrentPerson { get; set; }
-    private IList<ProjectDTO> Projects;
-    private int n = 1;
+    private IList<Project> Projects;
+
 
 
     protected override async void OnInitialized()
@@ -68,9 +76,8 @@
         CurrentPerson = new PersonDTO();
         var authState = await authenticationState;
         CurrentPerson = await personService.GetPersonByNameAsync(authState.User.Identity.Name);
-        var p=await projectService.GetProjectsListAsync();
-        Projects = p.ToList();
-
+        //var p=await projectService.GetProjectsListAsync();
+        Projects = _db.Projects.ToList();
 
     }
 
