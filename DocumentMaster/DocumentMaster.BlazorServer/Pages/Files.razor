@@ -17,7 +17,7 @@
 <RadzenContextMenu />
 <RadzenTooltip />
 
-<h3>Files</h3>
+<h3>Files @Name</h3>
 
 <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Добавить" Click="@NavigatetoToAddFile" />
 <div class="row">
@@ -42,6 +42,7 @@
         </div>
 
 @code {
+    private string Name = "Jo";
     IList<FileDTO> SelectedFiles { get; set; }=new List<FileDTO>
     {
         new FileDTO{ Id=1,Name="план"},
