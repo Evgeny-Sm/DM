@@ -9,4 +9,5 @@
 /DocumentMaster/DM.Models/obj/*
 /DocumentMaster/DocumentMaster.BlazorServer/bin/*
 /DocumentMaster/DocumentMaster.BlazorServer/obj/*
+/DocumentMaster/DocumentMaster.BlazorServer/wwwroot/Upload/*
 
