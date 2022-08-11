@@ -17,6 +17,7 @@
 @inject NavigationManager Navigation
 @inject ProtectedSessionStorage sessionStorage
 @inject IJSRuntime JS
+@inject AuthenticationStateProvider _provider
 
 
 
@@ -24,38 +25,44 @@
 <RadzenNotification />
 <RadzenContextMenu />
 <RadzenTooltip />
-<div>
-    @Name bfvhd
-</div>
-<AuthorizeView>
-    <Authorized>
-        <br /><br />
-        <button class="btn btn-btn-outline-primary" @onclick="DisplayGreetingAlert">Display Greeting Alert</button>
-    </Authorized>
-</AuthorizeView>
 
-<AuthorizeView>
+@if (Projects == null)
+{
+    <div>Loading...</div>
+}
+else
+{
+    <AuthorizeView>
     <Authorized>
-        <h3>Добавление файла @Name</h3>
+        <h3>Добавление файла</h3>
         <RadzenTemplateForm Context="Context1" Data="@_file" Submit="@((FileDTO args) => { Submit(args);})">
             <div class="row">
                 <div class="col-md-10">
-                    <RadzenFieldset Text="Загрузка файла на сервер">
-                        <div class="row">
-                            <div class="col-md-6 col-lg-4 col-xl-3 p-3">
-                                <RadzenCard>
-                                    <h4 class="mb-4">@Name</h4>
-                                    <RadzenDropDown AllowClear="true" TValue="int" Class="w-100"
-                                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
-                                                    Data=@Projects TextProperty="Name" ValueProperty="Id" Change=@(args => OnChange(args, "DropDown with custom filter operator")) />
-                                </RadzenCard>
+                        <RadzenFieldset Text="Выберите проект">
+                            <div class="row">
+                                <div class="col-md-4 ">
+                                    <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                                        Data=@(Projects) Style="width: 100%" AllowColumnResize="true"
+                                                        TextProperty="Name" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
+                                                        Change=@(args => OnChange(args, "DropDownDataGrid with filtering by all string columns"))>
+                                        <Columns>
+                                            <RadzenDropDownDataGridColumn Property="Id" Title="ID" Width="100px" />
+                                            <RadzenDropDownDataGridColumn Property="Name" Title="Name" Width="200px" />
+                                        </Columns>
+                                    </RadzenDropDownDataGrid>
+                                </div>
                             </div>
-                        </div>
+                        </RadzenFieldset>
                         <br>
-                        <div class="col-md-4">
-                            <RadzenTextBox style="width: 100%;" @bind-Value="_file.Name" Name="Название" />
-                        </div>
-                    </RadzenFieldset>
+                        <RadzenFieldset Text="Название файла">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <RadzenTextBox style="width: 100%;" @bind-Value="_file.Name" Name="FileName" />
+                                </div>
+                            </div>
+                        </RadzenFieldset>
+
+                    
                 </div>
             </div>
             <div class="row justify-content-center">
@@ -67,10 +74,12 @@
         </RadzenTemplateForm>
         </Authorized>
 </AuthorizeView>
+}
+
 
 @code {
-    [CascadingParameter]
-    private Task<AuthenticationState> authenticationState { get; set; }
+
+    private AuthenticationState authState { get; set; }
 
     private FileDTO _file = new FileDTO();
     private PersonDTO CurrentPerson { get; set; }
@@ -81,17 +90,17 @@
     protected override async void OnInitialized()
     {
         CurrentPerson = new PersonDTO();
-        var authState =  authenticationState.Result;
+        authState = await _provider.GetAuthenticationStateAsync();
         CurrentPerson = await personService.GetPersonByNameAsync(authState.User.Identity.Name);
-        var p=await projectService.GetProjectsListAsync();
+        var p= await projectService.GetProjectsListAsync();
         Projects = p.ToList();
         Name = Projects.First().Name;
+        StateHasChanged();
 
     }
 
     async void Submit(FileDTO arg)
     {
-        var authState = await authenticationState;
         CurrentPerson = await personService.GetPersonByNameAsync(authState.User.Identity.Name);
         arg.DepartmentId = CurrentPerson.DepartmentId;
         var result= await fileService.AddFileAsync(arg,CurrentPerson.Id);
@@ -102,25 +111,17 @@
         }
 
     }
-  
+
 
     void OnChange(object value, string s)
     {
         _file.ProjectId = (int)value;
+        Name = value.ToString();
     }
 
         void Cancel()
     {
         //
-    }
-        private async Task DisplayGreetingAlert()
-    {
-        var authState = await authenticationState;
-        var b=authState.User.IsInRole("user");
-        var userSessionStorageResult = await sessionStorage.GetAsync<UserSession>("UserSession");
-        var personId = userSessionStorageResult.Value.PersonId;
-        var message = $"Hello {authState.User.Identity.Name} {personId} {b} {Name}";
-        await JS.InvokeVoidAsync("alert", message);
     }
 
 
