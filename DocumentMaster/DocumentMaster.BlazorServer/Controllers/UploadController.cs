@@ -2,9 +2,7 @@
 
 namespace DocumentMaster.BlazorServer.Controllers
 {
-
-    [DisableRequestSizeLimit]
-    public class UploadController:Controller
+    public partial class UploadController:Controller
     {
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IConfiguration _configuration;
@@ -14,12 +12,12 @@ namespace DocumentMaster.BlazorServer.Controllers
 
             _configuration = configuration;
         }
-        [HttpPost("upload/single")]
-        public IActionResult Single(IFormFile file,[FromQuery] int projectId,[FromQuery] string fileName)
+        [HttpPost("upload")]
+        public IActionResult Single(IFormFile file,[FromQuery]int id,[FromQuery] string fileName)
         {
             try
             {
-                UploadFile(file,projectId,fileName);
+                UploadFile(file, id, fileName);
                 return StatusCode(200);
             }
             catch (Exception ex)
@@ -32,13 +30,13 @@ namespace DocumentMaster.BlazorServer.Controllers
 
             if (file != null && file.Length > 0)
             {
-                string path = _configuration.GetConnectionString("ProjectRootDir");
+                string path = _configuration.GetConnectionString("ProjectRootDir")+$"\\{projectId}\\";
                 var uploadPath=_webHostEnvironment.WebRootPath + path;
                 if (!Directory.Exists(uploadPath))
                 { 
                     Directory.CreateDirectory(uploadPath);
                 }
-                var fullPath=Path.Combine(uploadPath, file.FileName);
+                var fullPath=Path.Combine(uploadPath, fileName);
                 using (var fileStream = new FileStream(fullPath, FileMode.Create,FileAccess.Write))
                 {
                     await file.CopyToAsync(fileStream);

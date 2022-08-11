@@ -1,63 +1,81 @@
 ﻿@page "/Files"
 
-@attribute [Authorize(Roles="admin")]
+@attribute [Authorize]
 
+@using DM.BLL.Services
+@using DM.DAL.Models
 @using DocumentMaster.BlazorServer.Pages
 @using DocumentMaster.BlazorServer.Services
+@using Microsoft.EntityFrameworkCore
 @using Models
 @using System.Text.Json
 
 
 @inject IConfiguration Configuration
-@inject IHttpContextAccessor HttpContextAccessor
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
+@inject FileService fileService
+@inject PersonService personService
+@inject DMContext db
+
+
 
 <RadzenDialog />
 <RadzenNotification />
 <RadzenContextMenu />
 <RadzenTooltip />
 
-<h3>Files @Name</h3>
+<h3>Files </h3>
+<AuthorizeView>
+    <Authorized>
 
-<RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Добавить" Click="@NavigatetoToAddFile" />
-<div class="row">
-        <div class="col-md-6">
-        <RadzenDataGrid ColumnWidth="200px" AllowFiltering="true" AllowPaging="true" PageSize="15" AllowSorting="true" Data="@files" TItem="FileDTO" @bind-Value="@SelectedFiles">
-            <Columns>
-                <RadzenDataGridColumn TItem="FileDTO" Property="Id" Title="Id" Width="120px" />
-                <RadzenDataGridColumn TItem="FileDTO" Property="Name" Title="Название" Width="120px" />
-                <RadzenDataGridColumn TItem="FileDTO" Property="ProjectName" Title="Название" Width="200px">
-                    <Template Context="file">
-                        @GetProject(file.Id).Name
-                    </Template>
-                </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="FileDTO" Property="DepartmentName" Title="Required Date" FormatString="{0:d}" Width="140px">
-                    <Template Context="file">
-                        @GetDepartment(file.Id).Name
-                    </Template>
-                </RadzenDataGridColumn>
-            </Columns>
-        </RadzenDataGrid>
+        <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Добавить" Click="@NavigatetoToAddFile" />
+        <div class="row">
+            <div class="col-md-6">
+                <RadzenDataGrid Data="@files" TItem="FileUnit" @bind-Value="@SelectedFiles" AllowVirtualization="true" Style="height:400px"
+                                AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.Or"
+                                AllowSorting="true">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="FileUnit" Property="Id" Title="Id" Width="50px" />
+                        <RadzenDataGridColumn TItem="FileUnit" Property="Name" Title="Название" Width="250px" />
+                        <RadzenDataGridColumn TItem="FileUnit" Property="ProjectId" Title="Номер проекта" Width="50px" />
+                    </Columns>
+                </RadzenDataGrid>
+            </div>
+            <div class="col-md-6">
+                <button @onclick="DownloadFileFromURL">
+                    Download File
+                </button>
+                <RadzenCard Style="margin-bottom:20px">
+                    <b>Разработал: @GetDeveloper()   </b>
+                </RadzenCard>
+            </div>
         </div>
-        </div>
+    </Authorized>
+</AuthorizeView>
 
 @code {
-    private string Name = "Jo";
-    IList<FileDTO> SelectedFiles { get; set; }=new List<FileDTO>
-    {
-        new FileDTO{ Id=1,Name="план"},
-        new FileDTO{ Id=2,Name="фасад"},
-        new FileDTO{ Id=3,Name="разрез"}
-    };
-    //[Parameter] public List<FileDTO>? files{ get; set; }
-    public List<FileDTO>? files { get; set; } = new List<FileDTO>
-    {
-        new FileDTO{ Id=1,Name="план"},
-        new FileDTO{ Id=2,Name="фасад"},
-        new FileDTO{ Id=3,Name="разрез"}
-    };
+    private IConfiguration _Configuration { get; set; }
+
+    IList<FileUnit> SelectedFiles { get; set; }
+
+    [Parameter] public IEnumerable<FileUnit>? files{ get; set; }
+
+    private PersonDTO Developer { get; set; }
+    private IEnumerable<PersonDTO> Persons { get; set; }
 
 
+    protected override async  void OnInitialized()
+    {
+        _Configuration = Configuration;
+        if (files == null)
+        {
+            files = db.FileUnits.Include(f=>f.UserActions).ToArray();
+            SelectedFiles = new List<FileUnit>() ;
+        }
+        Persons =await personService.GetPersonsAsync();
+
+    }
 
     private ProjectDTO GetProject(int id)
     {
@@ -78,6 +96,31 @@
             Description="Random"
         };
 
+    }
+    private string GetDeveloper()
+    {
+        if (SelectedFiles.Count == 0)
+        {
+            return null;
+        }
+        var perId = SelectedFiles.FirstOrDefault().UserActions.Where(u => u.ActionNumber == 1).Single().PersonId;
+
+        PersonDTO p =Persons.Where(p=>p.Id==perId).Single();
+        if (p != null)
+        {
+            return $"{p.FirstName} {p.LastName}";
+        }
+        return null;
+    }
+    private void OnClickDownload()
+    {
+        
+    }
+        private async Task DownloadFileFromURL()
+    {
+        var fileName = "quote.txt";
+        var fileURL = "https://localhost:5001/files/quote.txt";
+        await JS.InvokeVoidAsync("triggerFileDownload", fileName, fileURL);
     }
 
 

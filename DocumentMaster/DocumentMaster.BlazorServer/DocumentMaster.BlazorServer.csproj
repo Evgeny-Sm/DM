@@ -24,7 +24,7 @@
 
   <ItemGroup>
     <Folder Include="Data\" />
-    <Folder Include="wwwroot\Upload\" />
+    <Folder Include="wwwroot\Upload\1\" />
   </ItemGroup>
 
 </Project>
