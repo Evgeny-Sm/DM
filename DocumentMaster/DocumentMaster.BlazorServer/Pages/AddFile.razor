@@ -17,7 +17,7 @@
 @inject NavigationManager Navigation
 @inject ProtectedSessionStorage sessionStorage
 @inject IJSRuntime JS
-@inject AuthenticationStateProvider _provider
+
 
 
 
@@ -59,6 +59,12 @@ else
                                 <div class="col-md-4">
                                     <RadzenTextBox style="width: 100%;" @bind-Value="_file.Name" Name="FileName" />
                                 </div>
+                                <div class="col-md-4">
+                                    <RadzenUpload @ref="upload" Auto="false" Multiple="false" Url=@($"upload/single?projectId={ProjectId}&fileName={_file.Name}")
+                                    
+                                    Change=@(args => OnChangeUpload(args, "Manual Upload"))/>
+                                </div>
+
                             </div>
                         </RadzenFieldset>
 
@@ -78,19 +84,20 @@ else
 
 
 @code {
-
-    private AuthenticationState authState { get; set; }
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
 
     private FileDTO _file = new FileDTO();
     private PersonDTO CurrentPerson { get; set; }
     private IList<ProjectDTO> Projects { get; set; }
     private string Name { get; set; }
-
+    private RadzenUpload upload;
+    private int ProjectId { get; set; }
 
     protected override async void OnInitialized()
     {
         CurrentPerson = new PersonDTO();
-        authState = await _provider.GetAuthenticationStateAsync();
+        var authState = await authenticationState;
         CurrentPerson = await personService.GetPersonByNameAsync(authState.User.Identity.Name);
         var p= await projectService.GetProjectsListAsync();
         Projects = p.ToList();
@@ -101,10 +108,13 @@ else
 
     async void Submit(FileDTO arg)
     {
+        var authState = await authenticationState;
         CurrentPerson = await personService.GetPersonByNameAsync(authState.User.Identity.Name);
         arg.DepartmentId = CurrentPerson.DepartmentId;
         var result= await fileService.AddFileAsync(arg,CurrentPerson.Id);
+        ProjectId = arg.ProjectId;
 
+        await upload.Upload();
         if (result != null)
         {
             Navigation.NavigateTo("/Files");
@@ -117,6 +127,11 @@ else
     {
         _file.ProjectId = (int)value;
         Name = value.ToString();
+    }
+
+    void OnChangeUpload(UploadChangeEventArgs args, string name)
+    {
+        _file.Name = args.Files.First().Name;
     }
 
         void Cancel()

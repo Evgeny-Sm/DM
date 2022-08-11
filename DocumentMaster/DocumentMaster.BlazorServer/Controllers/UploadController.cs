@@ -7,16 +7,19 @@ namespace DocumentMaster.BlazorServer.Controllers
     public class UploadController:Controller
     {
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public UploadController(IWebHostEnvironment webHostEnvironment)
+        private readonly IConfiguration _configuration;
+        public UploadController(IWebHostEnvironment webHostEnvironment, IConfiguration configuration)
         {
            _webHostEnvironment = webHostEnvironment;
+
+            _configuration = configuration;
         }
         [HttpPost("upload/single")]
-        public IActionResult Single(IFormFile file)
+        public IActionResult Single(IFormFile file,[FromQuery] int projectId,[FromQuery] string fileName)
         {
             try
             {
-                UploadFile(file);
+                UploadFile(file,projectId,fileName);
                 return StatusCode(200);
             }
             catch (Exception ex)
@@ -24,12 +27,12 @@ namespace DocumentMaster.BlazorServer.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-        public async void UploadFile(IFormFile file)
+        public async Task UploadFile(IFormFile file, int projectId, string fileName)
         {
 
             if (file != null && file.Length > 0)
             {
-                string path = "\\Upload";
+                string path = _configuration.GetConnectionString("ProjectRootDir");
                 var uploadPath=_webHostEnvironment.WebRootPath + path;
                 if (!Directory.Exists(uploadPath))
                 { 
