@@ -1,7 +1,7 @@
 ﻿@page "/Projects"
 
 
-@attribute [Authorize]
+
 
 @using DM.BLL.Services
 @using Models
@@ -19,13 +19,18 @@
 
 <h3>Projects</h3>
 
-<AuthorizeView>
+<AuthorizeView Roles="admin,head">
     <Authorized>
         <RadzenButton Icon="add_circle_outline" ButtonStyle="ButtonStyle.Secondary"
                       Text="Добавить" Click="@NavigatetoToAddProject" />
+    </Authorized>
+</AuthorizeView>
+
+<AuthorizeView>
+    <Authorized>
         <div class="row">
             <div class="col-md-6">
-                <RadzenDataGrid Data="@_projects" TItem="ProjectDTO" @bind-Value="@SelectedProjects" Style="height:800px"
+                <RadzenDataGrid Data="@_projects" TItem="ProjectDTO" @bind-Value="@SelectedProjects" AllowVirtualization="true" Style="height:800px"
                                 AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.Or"
                                 AllowSorting="true">
                     <Columns>
@@ -39,7 +44,6 @@
                 @if (SelectedProjects.Count != 0)
                 {
                     <RadzenCard Style="margin-bottom:20px">
-                        <br>
                         <b>Разработал: @GetDeveloper()   </b>
                     </RadzenCard>
                 }
@@ -57,9 +61,13 @@
 
     protected override async void OnInitialized()
     {
+        SelectedProjects = new List<ProjectDTO>();
+
         Persons =await personService.GetPersonsAsync();
+
         _projects = await projectService.GetProjectsListAsync();
 
+        StateHasChanged();
     }
 
 
