@@ -73,6 +73,37 @@ namespace DM.BLL.Services
             return await GetItemByIdAsync(element.Id);
         }
 
+        public async Task<int> UpdateFileAsync(FileDTO fileDTO)
+        {
+            var element = _db.FileUnits.Find(fileDTO.Id);
+            if (element is null)
+            {
+                element = new FileUnit();
+                throw new ArgumentNullException($"Unknown {element.GetType().Name}");
+            }
+            element.Name = fileDTO.Name;
+            element.Description = fileDTO.Description;
+            element.PathFile = $"{fileDTO.ProjectId}/{fileDTO.Name}";
+            element.DepartmentId = fileDTO.DepartmentId;
+            element.ProjectId = fileDTO.ProjectId;
+            element.IsDeleted = fileDTO.IsDeleted;
+
+            _db.FileUnits.Update(element);
+            return await _db.SaveChangesAsync();
+            
+        }
+
+        public async Task RemoveFile(int id)
+        {
+            var element = _db.FileUnits.Find(id);
+            if (element != null)
+            {
+                _db.FileUnits.Remove(element);
+                await _db.SaveChangesAsync();
+            }
+
+        }
+
         public async Task<string> GetFullFilePathAsync(int id)
         {
             var element = await _db.FileUnits.FindAsync(id);

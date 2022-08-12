@@ -60,7 +60,7 @@ else
                                     <RadzenTextBox style="width: 100%;" @bind-Value="_file.Name" Name="FileName" />
                                 </div>
                                 <div class="col-md-4">
-                                    <RadzenUpload @ref="upload" Auto="false" Multiple="false" Url=@($"upload?id={ProjectId}&fileName={Name}")
+                                    <RadzenUpload @ref="upload" Auto="false" Multiple="false" Url=@($"upload?id={ProjectId}&fileName={_file.Name}")
                                     
                                     Change=@(args => OnChangeUpload(args, "Manual Upload"))/>
                                 </div>
@@ -92,13 +92,16 @@ else
     private IList<ProjectDTO> Projects { get; set; }
     private RadzenUpload upload;
     private int ProjectId { get; set; }
-    private string Name { get; set; }
 
     protected override async void OnInitialized()
     {
+
         CurrentPerson = new PersonDTO();
         var authState = await authenticationState;
         CurrentPerson = await personService.GetPersonByNameAsync(authState.User.Identity.Name);
+
+        _file = await fileService.AddFileAsync(new FileDTO { Name = "new_file",DepartmentId=CurrentPerson.DepartmentId,ProjectId=1 },CurrentPerson.Id);
+
         var p= await projectService.GetProjectsListAsync();
         Projects = p.ToList();
         StateHasChanged();
@@ -110,14 +113,16 @@ else
         var authState = await authenticationState;
         CurrentPerson = await personService.GetPersonByNameAsync(authState.User.Identity.Name);
         arg.DepartmentId = CurrentPerson.DepartmentId;
-        var result= await fileService.AddFileAsync(arg,CurrentPerson.Id);
+        arg.Name = GetPrefix(arg.Id) + "_" + arg.Name;
+
+        var result= await fileService.UpdateFileAsync(arg);
+
         ProjectId = arg.ProjectId;
-        Name = _file.Name;
 
         StateHasChanged();
 
         await upload.Upload();
-        if (result != null)
+        if (result != 0)
         {
             Navigation.NavigateTo("/Files");
         }
@@ -134,10 +139,17 @@ else
     {
         _file.Name = args.Files.First().Name;
     }
-
-        void Cancel()
+    private string GetPrefix(int id)
     {
-        //
+        var s = "000000" + id;
+        s = s.Substring(id.ToString().Length);
+        return s;
+    }
+
+    async void Cancel()
+    {
+        await fileService.RemoveFile(_file.Id);
+        Navigation.NavigateTo("/Files");
     }
 
 
