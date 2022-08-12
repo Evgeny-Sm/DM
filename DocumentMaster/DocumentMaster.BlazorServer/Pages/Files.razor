@@ -17,6 +17,7 @@
 @inject FileService fileService
 @inject PersonService personService
 @inject DMContext db
+@inject IWebHostEnvironment WebHostInvironment
 
 
 
@@ -43,12 +44,14 @@
                 </RadzenDataGrid>
             </div>
             <div class="col-md-6">
-                <button @onclick="DownloadFileFromURL">
-                    Download File
-                </button>
-                <RadzenCard Style="margin-bottom:20px">
-                    <b>Разработал: @GetDeveloper()   </b>
-                </RadzenCard>
+                @if (SelectedFiles.Count != 0)
+                {
+                    <RadzenButton Click=@(args => DownloadFileFromStream()) Text="Скачать" ButtonStyle="ButtonStyle.Success" />
+
+                    <RadzenCard Style="margin-bottom:20px">
+                        <b>Разработал: @GetDeveloper()   </b>
+                    </RadzenCard>
+                }
             </div>
         </div>
     </Authorized>
@@ -64,9 +67,12 @@
     private PersonDTO Developer { get; set; }
     private IEnumerable<PersonDTO> Persons { get; set; }
 
+    private IWebHostEnvironment _WebHost { get; set; }
+
 
     protected override async  void OnInitialized()
     {
+        _WebHost = WebHostInvironment;
         _Configuration = Configuration;
         if (files == null)
         {
@@ -114,13 +120,17 @@
     }
     private void OnClickDownload()
     {
-        
+
     }
-        private async Task DownloadFileFromURL()
+    private async Task DownloadFileFromStream()
     {
-        var fileName = "quote.txt";
-        var fileURL = "https://localhost:5001/files/quote.txt";
-        await JS.InvokeVoidAsync("triggerFileDownload", fileName, fileURL);
+        var name = SelectedFiles.FirstOrDefault().Name;
+        var downloadPath = _WebHost.WebRootPath + Configuration.GetConnectionString("ProjectRootDir") 
+                            + $"\\{SelectedFiles.FirstOrDefault().ProjectId}" + $"\\{name}";
+        var fileStream = File.OpenRead(@$"{downloadPath}");
+
+        using var streamRef = new DotNetStreamReference(stream: fileStream);
+        await JS.InvokeVoidAsync("downloadFileFromStream", name, streamRef);
     }
 
 
