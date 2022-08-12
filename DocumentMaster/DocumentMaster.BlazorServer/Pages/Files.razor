@@ -30,10 +30,10 @@
 <AuthorizeView>
     <Authorized>
 
-        <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Добавить" Click="@NavigatetoToAddFile" />
-        <div class="row">
+        <RadzenButton Icon="add_circle_outline" ButtonStyle="ButtonStyle.Secondary" Text="Добавить" Click="@NavigatetoToAddFile" />
+        <div class="row" >
             <div class="col-md-6">
-                <RadzenDataGrid Data="@files" TItem="FileUnit" @bind-Value="@SelectedFiles" AllowVirtualization="true" Style="height:400px"
+                <RadzenDataGrid Data="@files" TItem="FileUnit" @bind-Value="@SelectedFiles" AllowVirtualization="true" Style="height:800px"
                                 AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.Or"
                                 AllowSorting="true">
                     <Columns>
@@ -46,7 +46,7 @@
             <div class="col-md-6">
                 @if (SelectedFiles.Count != 0)
                 {
-                    <RadzenButton Click=@(args => DownloadFileFromStream()) Text="Скачать" ButtonStyle="ButtonStyle.Success" />
+                    <RadzenButton Click=@(args => DownloadFileFromStream())  ButtonStyle="ButtonStyle.Secondary" Text="Скачать"  />
 
                     <RadzenCard Style="margin-bottom:20px">
                         <b>Разработал: @GetDeveloper()   </b>
