@@ -4,7 +4,6 @@ using DM.BLL.MapServices;
 using DM.BLL.Services;
 using DM.DAL.Models;
 using DocumentMaster.BlazorServer.Authentication;
-using DocumentMaster.BlazorServer.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -30,7 +29,7 @@ builder.Services.AddScoped<DialogService>();
 builder.Services.AddScoped<NotificationService>();
 builder.Services.AddScoped<TooltipService>();
 builder.Services.AddScoped<ContextMenuService>();
-builder.Services.AddScoped<InvalidUserService>();
+
 
 builder.Services.AddDbContext<DMContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DMContext")
     ?? throw new InvalidOperationException("Connection string 'DMContext' not found.")));

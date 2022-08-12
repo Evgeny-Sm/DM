@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <Folder Include="Data\" />
+    <Folder Include="Services\" />
     <Folder Include="wwwroot\Upload\1\" />
   </ItemGroup>
 

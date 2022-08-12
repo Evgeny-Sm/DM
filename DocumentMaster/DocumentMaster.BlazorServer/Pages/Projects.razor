@@ -1,0 +1,86 @@
+﻿@page "/Projects"
+
+
+@attribute [Authorize]
+
+@using DM.BLL.Services
+@using Models
+@using DocumentMaster.BlazorServer.Pages
+
+
+@inject NavigationManager Navigation
+@inject PersonService personService
+@inject ProjectService projectService
+
+<RadzenDialog />
+<RadzenNotification />
+<RadzenContextMenu />
+<RadzenTooltip />
+
+<h3>Projects</h3>
+
+<AuthorizeView>
+    <Authorized>
+        <RadzenButton Icon="add_circle_outline" ButtonStyle="ButtonStyle.Secondary"
+                      Text="Добавить" Click="@NavigatetoToAddProject" />
+        <div class="row">
+            <div class="col-md-6">
+                <RadzenDataGrid Data="@_projects" TItem="ProjectDTO" @bind-Value="@SelectedProjects" Style="height:800px"
+                                AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.Or"
+                                AllowSorting="true">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="ProjectDTO" Property="Id" Title="Id" Width="30px" />
+                        <RadzenDataGridColumn TItem="ProjectDTO" Property="Name" Title="Название" Width="250px" />
+                        <RadzenDataGridColumn TItem="ProjectDTO" Property="Client" Title="Заказчик" Width="50px" />
+                    </Columns>
+                </RadzenDataGrid>
+            </div>
+            <div class="col-md-6">
+                @if (SelectedProjects.Count != 0)
+                {
+                    <RadzenCard Style="margin-bottom:20px">
+                        <br>
+                        <b>Разработал: @GetDeveloper()   </b>
+                    </RadzenCard>
+                }
+            </div>
+        </div>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    private IList<ProjectDTO> SelectedProjects { get; set; }
+
+    private IEnumerable<ProjectDTO> _projects { get; set; }
+
+    private IEnumerable<PersonDTO> Persons { get; set; }
+
+    protected override async void OnInitialized()
+    {
+        Persons =await personService.GetPersonsAsync();
+        _projects = await projectService.GetProjectsListAsync();
+
+    }
+
+
+        private string GetDeveloper()
+    {
+        if (SelectedProjects.Count == 0)
+        {
+            return null;
+        }
+        var perId = SelectedProjects.FirstOrDefault().MainIngId;
+
+        PersonDTO p =Persons.Where(p=>p.Id==perId).Single();
+        if (p != null)
+        {
+            return $"{p.FirstName} {p.LastName}";
+        }
+        return null;
+    }
+
+    private void NavigatetoToAddProject()
+    {
+        Navigation.NavigateTo("/AddProject");
+    }
+}

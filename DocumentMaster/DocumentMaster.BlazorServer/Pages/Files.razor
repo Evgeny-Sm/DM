@@ -5,7 +5,6 @@
 @using DM.BLL.Services
 @using DM.DAL.Models
 @using DocumentMaster.BlazorServer.Pages
-@using DocumentMaster.BlazorServer.Services
 @using Microsoft.EntityFrameworkCore
 @using Models
 @using System.Text.Json
@@ -49,6 +48,7 @@
                     <RadzenButton Click=@(args => DownloadFileFromStream())  ButtonStyle="ButtonStyle.Secondary" Text="Скачать"  />
 
                     <RadzenCard Style="margin-bottom:20px">
+                        <br>
                         <b>Разработал: @GetDeveloper()   </b>
                     </RadzenCard>
                 }
@@ -65,6 +65,7 @@
     [Parameter] public IEnumerable<FileUnit>? files{ get; set; }
 
     private PersonDTO Developer { get; set; }
+
     private IEnumerable<PersonDTO> Persons { get; set; }
 
     private IWebHostEnvironment _WebHost { get; set; }
@@ -83,26 +84,6 @@
 
     }
 
-    private ProjectDTO GetProject(int id)
-    {
-
-        return new ProjectDTO { 
-            Id=id,
-            Client="dogsheet"
-        };
-
-    }
-    private DepartmentDTO GetDepartment(int id)
-    {
-
-        return new DepartmentDTO
-        {
-            Id=id,
-            Name="SO",
-            Description="Random"
-        };
-
-    }
     private string GetDeveloper()
     {
         if (SelectedFiles.Count == 0)
@@ -118,10 +99,7 @@
         }
         return null;
     }
-    private void OnClickDownload()
-    {
 
-    }
     private async Task DownloadFileFromStream()
     {
         var name = SelectedFiles.FirstOrDefault().Name;
