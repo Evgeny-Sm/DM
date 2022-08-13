@@ -57,7 +57,6 @@
 </AuthorizeView>
 
 @code {
-    private IConfiguration _Configuration { get; set; }
 
     IList<FileUnit> SelectedFiles { get; set; }
 
@@ -67,20 +66,23 @@
 
     private IEnumerable<PersonDTO> Persons { get; set; }
 
-    private IWebHostEnvironment _WebHost { get; set; }
 
 
     protected override async  void OnInitialized()
     {
-        _WebHost = WebHostInvironment;
-        _Configuration = Configuration;
+
         if (files == null)
         {
             files = db.FileUnits.Include(f=>f.UserActions).ToArray();
             SelectedFiles = new List<FileUnit>() ;
         }
-        Persons =await personService.GetPersonsAsync();
 
+
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        SelectedFiles = new List<FileUnit>() ;
+        Persons =await personService.GetPersonsAsync();
     }
 
     private string GetDeveloper()
@@ -102,7 +104,7 @@
     private async Task DownloadFileFromStream()
     {
         var name = SelectedFiles.FirstOrDefault().Name;
-        var downloadPath = _WebHost.WebRootPath + Configuration.GetConnectionString("ProjectRootDir") 
+        var downloadPath = WebHostInvironment.WebRootPath + Configuration.GetConnectionString("ProjectRootDir") 
                             + $"\\{SelectedFiles.FirstOrDefault().ProjectId}" + $"\\{name}";
         var fileStream = File.OpenRead(@$"{downloadPath}");
 

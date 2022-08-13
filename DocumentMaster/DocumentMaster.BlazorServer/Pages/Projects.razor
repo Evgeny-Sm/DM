@@ -4,13 +4,16 @@
 
 
 @using DM.BLL.Services
+@using DM.DAL.Models
 @using Models
 @using DocumentMaster.BlazorServer.Pages
+@using Microsoft.EntityFrameworkCore
 
 
 @inject NavigationManager Navigation
 @inject PersonService personService
 @inject ProjectService projectService
+@inject DMContext db
 
 <RadzenDialog />
 <RadzenNotification />
@@ -44,8 +47,10 @@
                 @if (SelectedProjects.Count != 0)
                 {
                     <RadzenCard Style="margin-bottom:20px">
-                        <b>Разработал: @GetDeveloper()   </b>
+                        <b>ГИП: @GetDeveloper()   </b>                       
+                        <div >Файлов в проекте: @CountFiles  </div>
                     </RadzenCard>
+                    <Files files="@GetFilesInProject(SelectedProjects.FirstOrDefault().Id)" > </Files>
                 }
             </div>
         </div>
@@ -53,11 +58,14 @@
 </AuthorizeView>
 
 @code {
+
     private IList<ProjectDTO> SelectedProjects { get; set; }
 
     private IEnumerable<ProjectDTO> _projects { get; set; }
 
     private IEnumerable<PersonDTO> Persons { get; set; }
+
+    private int CountFiles => Task.Run(() => projectService.GetProjectByIdAsync(SelectedProjects.FirstOrDefault().Id)).GetAwaiter().GetResult().FilesCount;
 
     protected override async void OnInitialized()
     {
@@ -70,8 +78,7 @@
         StateHasChanged();
     }
 
-
-        private string GetDeveloper()
+    private string GetDeveloper()
     {
         if (SelectedProjects.Count == 0)
         {
@@ -85,6 +92,13 @@
             return $"{p.FirstName} {p.LastName}";
         }
         return null;
+    }
+
+    private IEnumerable<FileUnit> GetFilesInProject(int id)
+    {
+        
+        return db.FileUnits.Where(f => f.ProjectId == id).Include(a => a.UserActions).ToArray();
+
     }
 
     private void NavigatetoToAddProject()

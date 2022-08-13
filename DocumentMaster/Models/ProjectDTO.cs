@@ -21,6 +21,7 @@ namespace Models
         public string Client { get; set; } = String.Empty;
         [JsonPropertyName("MainIngId")]
         public int MainIngId { get; set; }
+        public int FilesCount { get; set; }
 
     }
 }

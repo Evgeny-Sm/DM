@@ -29,7 +29,7 @@ namespace DM.BLL.Services
 
         public async Task<ProjectDTO> GetProjectByIdAsync(int id)
         {
-            Project element = await _db.Projects.FindAsync(id);
+            Project element = await _db.Projects.Where(p=>p.Id==id).Include(f=>f.FileUnits).SingleAsync();
             if (element == null || element.IsDeleted == true)
             {
                 return null;
