@@ -31,11 +31,10 @@
             <div class="col-md-6">
                 @if (SelectedFiles.Count != 0)
                 {
-                    <RadzenButton Click=@(args => DownloadFileFromStream())  ButtonStyle="ButtonStyle.Secondary" Text="Скачать"  />
+                    <DownloadFile SelectedFiles="@SelectedFiles"/>
 
-                    <RadzenCard Style="margin-bottom:20px">
-                        <InfoFile SelectedFiles="@SelectedFiles"/>
-                    </RadzenCard>
+                    <InfoFile SelectedFiles="@SelectedFiles"/>
+                    
                 }
             </div>
         </div>
@@ -44,7 +43,7 @@
 
 @code {
 
-    IList<FileUnit> SelectedFiles { get; set; }
+    private IList<FileUnit> SelectedFiles { get; set; }
 
     public IEnumerable<FileUnit>? files{ get; set; }
 
@@ -64,18 +63,6 @@
             SelectedFiles = fileUnit;
         }
     }
-
-    private async Task DownloadFileFromStream()
-    {
-        var name = SelectedFiles.FirstOrDefault().Name;
-        var downloadPath = WebHostInvironment.WebRootPath + Configuration.GetConnectionString("ProjectRootDir") 
-                            + $"\\{SelectedFiles.FirstOrDefault().ProjectId}" + $"\\{name}";
-        var fileStream = File.OpenRead(@$"{downloadPath}");
-
-        using var streamRef = new DotNetStreamReference(stream: fileStream);
-        await JS.InvokeVoidAsync("downloadFileFromStream", name, streamRef);
-    }
-
 
         private void NavigatetoToAddFile()
     {

@@ -15,42 +15,39 @@
 @inject ProjectService projectService
 @inject DMContext db
 
-<RadzenDialog />
-<RadzenNotification />
-<RadzenContextMenu />
-<RadzenTooltip />
+
 
 <h3>Projects</h3>
 
-<AuthorizeView Roles="admin,head">
-    <Authorized>
-        <RadzenButton Icon="add_circle_outline" ButtonStyle="ButtonStyle.Secondary"
-                      Text="Добавить" Click="@NavigatetoToAddProject" />
-    </Authorized>
-</AuthorizeView>
+<div class="row">
+    <div class="col-md-6">
+        <AuthorizeView Roles="admin,head">
+            <Authorized>
+                <RadzenButton Icon="add_circle_outline" ButtonStyle="ButtonStyle.Secondary"
+                              Text="Добавить" Click="@NavigatetoToAddProject" />
+            </Authorized>
+        </AuthorizeView>
+    </div>
+    <div class="col-md-6">
+        @if (SelectedFiles.Count != 0)
+        {
+            <DownloadFile SelectedFiles="@SelectedFiles" />
+        }
+    </div>
+
+</div>
 
 <AuthorizeView>
     <Authorized>
         <div class="row">
             <div class="col-md-6">
-                <RadzenDataGrid Data="@_projects" TItem="ProjectDTO" @bind-Value="@SelectedProjects" AllowVirtualization="true" Style="height:800px"
-                                AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.Or"
-                                AllowSorting="true">
-                    <Columns>
-                        <RadzenDataGridColumn TItem="ProjectDTO" Property="Id" Title="Id" Width="30px" />
-                        <RadzenDataGridColumn TItem="ProjectDTO" Property="Name" Title="Название" Width="250px" />
-                        <RadzenDataGridColumn TItem="ProjectDTO" Property="Client" Title="Заказчик" Width="50px" />
-                    </Columns>
-                </RadzenDataGrid>
+                <ProjectList ProjectsGetCallBack="@SetSelectedProjects" />
             </div>
             <div class="col-md-6">
                 @if (SelectedProjects.Count != 0)
                 {
-                    <RadzenCard Style="margin-bottom:20px">
-                        <b>ГИП: @GetDeveloper()   </b>                       
-                        <div >Файлов в проекте: @CountFiles  </div>
-                    </RadzenCard>
-                    <Files files="@GetFilesInProject(SelectedProjects.FirstOrDefault().Id)" > </Files>
+                    <InfoProject SelectedProjects="@SelectedProjects"/>
+                    <FileList FilesGetCallBack="@SetSelectedFiles" files="@GetFilesInProject(SelectedProjects.FirstOrDefault().Id)" > </FileList>
                 }
             </div>
         </div>
@@ -61,38 +58,37 @@
 
     private IList<ProjectDTO> SelectedProjects { get; set; }
 
+    private IList<FileUnit> SelectedFiles { get; set; }
+
     private IEnumerable<ProjectDTO> _projects { get; set; }
 
-    private IEnumerable<PersonDTO> Persons { get; set; }
-
-    private int CountFiles => Task.Run(() => projectService.GetProjectByIdAsync(SelectedProjects.FirstOrDefault().Id)).GetAwaiter().GetResult().FilesCount;
 
     protected override async void OnInitialized()
     {
         SelectedProjects = new List<ProjectDTO>();
+        SelectedFiles = new List<FileUnit>();
 
-        Persons =await personService.GetPersonsAsync();
-
-        _projects = await projectService.GetProjectsListAsync();
-
-        StateHasChanged();
     }
+    
+    
 
-    private string GetDeveloper()
+    private void SetSelectedProjects(IList<ProjectDTO> projects)
     {
-        if (SelectedProjects.Count == 0)
+        if (projects != null)
         {
-            return null;
+            SelectedProjects = projects;
         }
-        var perId = SelectedProjects.FirstOrDefault().MainIngId;
 
-        PersonDTO p =Persons.Where(p=>p.Id==perId).Single();
-        if (p != null)
-        {
-            return $"{p.FirstName} {p.LastName}";
-        }
-        return null;
     }
+
+        private void SetSelectedFiles(IList<FileUnit> fileUnit)
+    {
+        if (fileUnit != null)
+        {
+            SelectedFiles = fileUnit;
+        }
+    }
+
 
     private IEnumerable<FileUnit> GetFilesInProject(int id)
     {

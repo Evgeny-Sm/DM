@@ -1,0 +1,45 @@
+﻿@using Models
+@using DM.BLL.Services
+@using DM.DAL.Models
+@using DocumentMaster.BlazorServer.Pages
+@using Microsoft.EntityFrameworkCore
+
+
+@inject ProjectService projectService
+
+
+
+<AuthorizeView>
+    <Authorized>
+        <RadzenDataGrid Data="@_projects" TItem="ProjectDTO" ValueChanged="@(args=>ValueChanged(args))" AllowVirtualization="true" Style="height:800px"
+                        AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.Or"
+                        AllowSorting="true">
+            <Columns>
+                <RadzenDataGridColumn TItem="ProjectDTO" Property="Id" Title="Id" Width="30px" />
+                <RadzenDataGridColumn TItem="ProjectDTO" Property="Name" Title="Название" Width="250px" />
+                <RadzenDataGridColumn TItem="ProjectDTO" Property="Client" Title="Заказчик" Width="50px" />
+            </Columns>
+        </RadzenDataGrid>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public IEnumerable<ProjectDTO> _projects { get; set; }
+
+    [Parameter]
+    public EventCallback<IList<ProjectDTO>> ProjectsGetCallBack { get; set; }
+
+        protected override async Task OnParametersSetAsync()
+    {
+        if (_projects == null)
+        {
+            _projects = await projectService.GetProjectsListAsync();
+        }
+    }
+
+    private async void ValueChanged(IList<ProjectDTO> args)
+    {
+        await ProjectsGetCallBack.InvokeAsync(args);
+    }
+}
