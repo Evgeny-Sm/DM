@@ -1,0 +1,55 @@
+﻿@using DM.BLL.Services
+@using DM.DAL.Models
+@using DocumentMaster.BlazorServer.Pages
+@using Microsoft.EntityFrameworkCore
+@using Models
+@using System.Text.Json
+
+
+
+@inject PersonService personService
+
+
+<AuthorizeView>
+    <Authorized>
+        <RadzenCard Style="margin-bottom:20px">
+            <b>Разработал: @Developer   </b>
+        </RadzenCard>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public IList<FileUnit>? SelectedFiles { get; set; }
+
+    private string Developer { get; set; } = string.Empty;
+
+
+    protected override async void OnInitialized()
+    {
+
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Developer =await GetDeveloper();
+    }
+
+    private async Task<string> GetDeveloper()
+    {
+        if (SelectedFiles.Count == 0)
+        {
+            return null;
+        }
+        var perId = SelectedFiles.FirstOrDefault().UserActions.Where(u => u.ActionNumber == 1).Single().PersonId;
+
+        PersonDTO p = await personService.GetPersonByIdAsync(perId);
+
+        if (p != null)
+        {
+            return $"{p.FirstName} {p.LastName}";
+        }
+        return string.Empty;
+    }
+
+}

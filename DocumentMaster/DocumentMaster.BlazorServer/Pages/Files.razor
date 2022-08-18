@@ -20,15 +20,9 @@
 
 
 
-<RadzenDialog />
-<RadzenNotification />
-<RadzenContextMenu />
-<RadzenTooltip />
-
 <h3>Files </h3>
 <AuthorizeView>
     <Authorized>
-
         <RadzenButton Icon="add_circle_outline" ButtonStyle="ButtonStyle.Secondary" Text="Добавить" Click="@NavigatetoToAddFile" />
         <div class="row" >
             <div class="col-md-6">
@@ -40,7 +34,7 @@
                     <RadzenButton Click=@(args => DownloadFileFromStream())  ButtonStyle="ButtonStyle.Secondary" Text="Скачать"  />
 
                     <RadzenCard Style="margin-bottom:20px">
-                        <b>Разработал: @GetDeveloper()   </b>
+                        <InfoFile SelectedFiles="@SelectedFiles"/>
                     </RadzenCard>
                 }
             </div>
@@ -56,29 +50,11 @@
 
     private PersonDTO Developer { get; set; }
 
-    private IEnumerable<PersonDTO> Persons { get; set; }
 
 
     protected override async  void OnInitialized()
     {
         SelectedFiles = new List<FileUnit>();
-        Persons = await personService.GetPersonsAsync();
-    }
-
-    private string GetDeveloper()
-    {
-        if (SelectedFiles.Count == 0)
-        {
-            return null;
-        }
-        var perId = SelectedFiles.FirstOrDefault().UserActions.Where(u => u.ActionNumber == 1).Single().PersonId;
-
-        PersonDTO p =Persons.Where(p=>p.Id==perId).Single();
-        if (p != null)
-        {
-            return $"{p.FirstName} {p.LastName}";
-        }
-        return null;
     }
 
     private void SetSelectedFiles(IList<FileUnit> fileUnit)

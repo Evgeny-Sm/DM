@@ -27,8 +27,6 @@
 
 @code {
 
-    IList<FileUnit> SelectedFiles { get; set; }
-
     [Parameter] 
     public IEnumerable<FileUnit>? files { get; set; }
 
@@ -40,19 +38,17 @@
     {
 
     }
+
     protected override async Task OnParametersSetAsync()
     {
         if (files == null)
         {
             files = db.FileUnits.Include(f => f.UserActions).ToArray();
         }
-
-
     }
+
     private async void ValueChanged(IList<FileUnit> args)
     {
         await FilesGetCallBack.InvokeAsync(args);
     }
-
-
 }
