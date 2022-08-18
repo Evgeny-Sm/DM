@@ -32,15 +32,7 @@
         <RadzenButton Icon="add_circle_outline" ButtonStyle="ButtonStyle.Secondary" Text="Добавить" Click="@NavigatetoToAddFile" />
         <div class="row" >
             <div class="col-md-6">
-                <RadzenDataGrid Data="@files" TItem="FileUnit" @bind-Value="@SelectedFiles" AllowVirtualization="true" Style="height:800px"
-                                AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.Or"
-                                AllowSorting="true">
-                    <Columns>
-                        <RadzenDataGridColumn TItem="FileUnit" Property="Id" Title="Id" Width="50px" />
-                        <RadzenDataGridColumn TItem="FileUnit" Property="Name" Title="Название" Width="250px" />
-                        <RadzenDataGridColumn TItem="FileUnit" Property="ProjectId" Title="Номер проекта" Width="50px" />
-                    </Columns>
-                </RadzenDataGrid>
+                <FileList FilesGetCallBack="@SetSelectedFiles"/>
             </div>
             <div class="col-md-6">
                 @if (SelectedFiles.Count != 0)
@@ -60,29 +52,17 @@
 
     IList<FileUnit> SelectedFiles { get; set; }
 
-    [Parameter] public IEnumerable<FileUnit>? files{ get; set; }
+    public IEnumerable<FileUnit>? files{ get; set; }
 
     private PersonDTO Developer { get; set; }
 
     private IEnumerable<PersonDTO> Persons { get; set; }
 
 
-
     protected override async  void OnInitialized()
     {
-
-        if (files == null)
-        {
-            files = db.FileUnits.Include(f=>f.UserActions).ToArray();
-            SelectedFiles = new List<FileUnit>() ;
-        }
-
-
-    }
-    protected override async Task OnParametersSetAsync()
-    {
-        SelectedFiles = new List<FileUnit>() ;
-        Persons =await personService.GetPersonsAsync();
+        SelectedFiles = new List<FileUnit>();
+        Persons = await personService.GetPersonsAsync();
     }
 
     private string GetDeveloper()
@@ -99,6 +79,14 @@
             return $"{p.FirstName} {p.LastName}";
         }
         return null;
+    }
+
+    private void SetSelectedFiles(IList<FileUnit> fileUnit)
+    {
+        if (fileUnit != null)
+        {
+            SelectedFiles = fileUnit;
+        }
     }
 
     private async Task DownloadFileFromStream()
