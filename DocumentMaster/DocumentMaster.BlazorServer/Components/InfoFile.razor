@@ -14,6 +14,7 @@
     <Authorized>
         <RadzenCard Style="margin-bottom:20px">
             <b>Разработал: @Developer   </b>
+            <div>Отдел: </div>
         </RadzenCard>
     </Authorized>
 </AuthorizeView>
@@ -23,6 +24,12 @@
     public IList<FileUnit>? SelectedFiles { get; set; }
 
     private string Developer { get; set; } = string.Empty;
+    private string Department { get; set; } = string.Empty;
+    private string ProjectName { get; set; } = string.Empty;
+    private string SectionProject { get; set; } = string.Empty;
+    private string NumbersDrawing { get; set; } = string.Empty;
+    private string TimeToDev { get; set } = string.Empty;
+
 
 
     protected override async void OnInitialized()
