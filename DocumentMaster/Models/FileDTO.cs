@@ -23,6 +23,8 @@ namespace Models
         public int DepartmentId { get; set; }
         [JsonPropertyName("ProjectId")]
         public int ProjectId { get; set; }
+        public int SectionId { get; set; }
+        public double TimeToDev { get; set; }
         public string ProjectName { get; set; } = string.Empty;
         public string DepartmentName { get; set; } = string.Empty;
       

@@ -41,6 +41,7 @@ builder.Services.AddScoped<ActionService>();
 builder.Services.AddScoped<FileService>();
 builder.Services.AddScoped<PositionService>();
 builder.Services.AddScoped<AccountService>();
+builder.Services.AddScoped<SectionService>();
 
 
 //Auto Mapper Config
