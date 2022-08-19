@@ -18,29 +18,29 @@
 
 <AuthorizeView Roles="admin">
     <Authorized>
-        <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="Добавить" 
-        Click="@InsertRow" Disabled=@(sectionToInsert != null) />
+        <RadzenButton Icon="add_circle_outline" ButtonStyle="ButtonStyle.Secondary" Text="Добавить"
+                      Click="@InsertRow" Disabled=@(sectionToInsert != null) />
 
-        <RadzenDataGrid @ref="SectionGrid" Data="@SectionsList" TItem="Section" AllowFiltering="false" AllowColumnResize="true"
+        <RadzenDataGrid @ref="SectionGrid" Data="@SectionsList" TItem="SectionDTO" AllowFiltering="false" AllowColumnResize="true"
                         PageSize="10" AllowPaging="true" AllowSorting="true" ColumnWidth="100px"
                         EditMode="DataGridEditMode.Single"
                         RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow">
             <Columns>
-                <RadzenDataGridColumn TItem="Section" Property="Name" Title="Шифр">
+                <RadzenDataGridColumn TItem="SectionDTO" Property="Name" Title="Шифр" Width="10%">
                     <EditTemplate Context="section">
                         <RadzenTextBox @bind-Value="section.Name" Style="width:100%; display: block" Name="Name" />
                         <RadzenRequiredValidator Text="Name is required" Component="Name" Popup="true" />
                     </EditTemplate>
                 </RadzenDataGridColumn>
 
-                <RadzenDataGridColumn TItem="Section" Property="Description" Title="Название">
+                <RadzenDataGridColumn TItem="SectionDTO" Property="Description" Title="Название" Width="50%">
                     <EditTemplate Context="section">
-                        <RadzenTextBox @bind-Value="section.Description" Style="width:100%; display: block" Name="NameDiscr" />
+                        <RadzenTextBox @bind-Value="section.Description" Style="width:100%; display: block"  Name="NameDiscr" />
                         <RadzenRequiredValidator Text="Description is required" Component="NameDiscr" Popup="true" />
                     </EditTemplate>
                 </RadzenDataGridColumn>
 
-                <RadzenDataGridColumn TItem="Section" Context="sampleBlazorModelsSampleOrder" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="120px">
+                <RadzenDataGridColumn TItem="SectionDTO" Context="sampleBlazorModelsSampleOrder" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="120px">
                     <Template Context="sect">
                         <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@(args => EditRow(sect))" @onclick:stopPropagation="true">
                         </RadzenButton>
@@ -53,7 +53,7 @@
                     </EditTemplate>
                 </RadzenDataGridColumn>
 
-                <RadzenDataGridColumn TItem="Section" Context="sect" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="60px">
+                <RadzenDataGridColumn TItem="SectionDTO" Context="sect" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="60px">
                     <Template Context="sect">
                         <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(sect))" @onclick:stopPropagation="true">
                         </RadzenButton>
@@ -75,38 +75,42 @@
 
     private SectionDTO sectionToInsert { get; set; }
 
-    RadzenDataGrid<Section> SectionGrid;
+    RadzenDataGrid<SectionDTO> SectionGrid;
 
-    protected override  void OnInitialized()
+    protected override async void OnInitialized()
     {
-        SectionsList = db.Sections.ToList();
+        var sec = await SectionService.GetAllAsync();
+        SectionsList =sec.ToList();
+        StateHasChanged();
+
     }
 
     async Task InsertRow()
     {
-        sectionToInsert = new Section { Name="name"};
+        sectionToInsert = new SectionDTO ();
 
         await SectionGrid.InsertRow(sectionToInsert);
     }
 
-    async void OnUpdateRow(Section section)
+    async void OnUpdateRow(SectionDTO section)
     {
-        var r=db.Sections.Update(section);
+        await SectionService.UpdateItemAsync(section);
         await SectionGrid.Reload();
     }
 
-    async Task OnCreateRow(Section section)
+    async void OnCreateRow(SectionDTO section)
     {
-        await db.Sections.AddAsync(section);
-        await SectionGrid.InsertRow(sectionToInsert);
+        var s =await SectionService.AddItemAsync(section);
+        SectionsList.Add(s);
+        await SectionGrid.Reload();
     }
 
-    async Task EditRow(Section section)
+    async Task EditRow(SectionDTO section)
     {
         await SectionGrid.EditRow(section);
     }
 
-    async Task SaveRow(Section section)
+    async Task SaveRow(SectionDTO section)
     {
         if (section == sectionToInsert)
         {
@@ -116,7 +120,7 @@
         await SectionGrid.UpdateRow(section);
     }
 
-    void CancelEdit(Section section)
+    void CancelEdit(SectionDTO section)
     {
         if (section == sectionToInsert)
         {
@@ -125,14 +129,15 @@
         SectionGrid.CancelEditRow(section);
     }
 
-    async Task DeleteRow(Section section)
+    async Task DeleteRow(SectionDTO section)
     {
         if (section == sectionToInsert)
         {
             sectionToInsert = null;
         }
 
-        db.Sections.Remove(section);
+        await SectionService.RemoveItem(section.Id);
+        SectionsList.Remove(section);
 
         await SectionGrid.Reload();
 
