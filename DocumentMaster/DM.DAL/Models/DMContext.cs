@@ -19,6 +19,7 @@ namespace DM.DAL.Models
         public DbSet<Account>? Accounts { get; set; }
         public DbSet<UserAction>? UserActions { get; set; }
         public DbSet<Position>? Positions { get; set; }
+        public DbSet<Section>? Sections { get; set; }
 
     }
 }

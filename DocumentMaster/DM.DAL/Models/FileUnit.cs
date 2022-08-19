@@ -22,6 +22,11 @@ namespace DM.DAL.Models
         public ICollection<UserAction>? UserActions { get; set; }
         public Project? Project { get; set; }
         public int ProjectId { get; set; }
+        public double TimeToDev { get; set; }
+        public Section? Section { get; set; }
+        public int SectionId { get; set; }
+        public int NumbersDrawings { get; set; }
+
         public FileUnit()
         { 
             UserActions = new List<UserAction>();
