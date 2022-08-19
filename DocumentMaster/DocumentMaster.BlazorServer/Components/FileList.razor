@@ -43,7 +43,7 @@
     {
         if (files == null)
         {
-            files = db.FileUnits.Include(f => f.UserActions).ToArray();
+            files = db.FileUnits.Include(f => f.UserActions).Include(d=>d.Department).Include(p=>p.Project).Include(s=>s.Section).ToArray();
         }
     }
 

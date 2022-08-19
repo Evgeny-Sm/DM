@@ -14,7 +14,17 @@
     <Authorized>
         <RadzenCard Style="margin-bottom:20px">
             <b>Разработал: @Developer   </b>
-            <div>Отдел: </div>
+            <div>Отдел: @Department </div>
+            <div>Проект: @ProjectName </div>
+            <div>Раздел проекта: @SectionProject </div>
+            <div>Количество листов в файле: @NumbersDrawing </div>
+        </RadzenCard>
+    </Authorized>
+</AuthorizeView>
+<AuthorizeView Roles="admin,head">
+    <Authorized>
+        <RadzenCard Style="margin-bottom:20px">
+            <div>Затраты на разработку: @TimeToDev </div>
         </RadzenCard>
     </Authorized>
 </AuthorizeView>
@@ -28,7 +38,7 @@
     private string ProjectName { get; set; } = string.Empty;
     private string SectionProject { get; set; } = string.Empty;
     private string NumbersDrawing { get; set; } = string.Empty;
-    private string TimeToDev { get; set } = string.Empty;
+    private string TimeToDev { get; set; } = string.Empty;
 
 
 
@@ -39,24 +49,30 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        Developer =await GetDeveloper();
+        await GetData();
     }
 
-    private async Task<string> GetDeveloper()
+    private async Task GetData()
     {
         if (SelectedFiles.Count == 0)
         {
-            return null;
+            return ;
         }
+
         var perId = SelectedFiles.FirstOrDefault().UserActions.Where(u => u.ActionNumber == 1).Single().PersonId;
 
         PersonDTO p = await personService.GetPersonByIdAsync(perId);
 
         if (p != null)
         {
-            return $"{p.FirstName} {p.LastName}";
+            Developer= $"{p.FirstName} {p.LastName}";
         }
-        return string.Empty;
+        Department = SelectedFiles.FirstOrDefault().Department.Name;
+        ProjectName = SelectedFiles.FirstOrDefault().Project.Name;
+        SectionProject = SelectedFiles.FirstOrDefault().Section.Name;
+        NumbersDrawing = SelectedFiles.FirstOrDefault().NumbersDrawings.ToString();
+        TimeToDev = SelectedFiles.FirstOrDefault().TimeToDev.ToString();
+
     }
 
 }

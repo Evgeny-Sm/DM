@@ -43,14 +43,30 @@
             <div class="col-md-6">
                 <ProjectList ProjectsGetCallBack="@SetSelectedProjects" />
             </div>
+
+
             <div class="col-md-6">
                 @if (SelectedProjects.Count != 0)
                 {
-                    <InfoProject SelectedProjects="@SelectedProjects"/>
-                    <FileList FilesGetCallBack="@SetSelectedFiles" files="@GetFilesInProject(SelectedProjects.FirstOrDefault().Id)" > </FileList>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <InfoProject SelectedProjects="@SelectedProjects" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <InfoFile SelectedFiles="SelectedFiles" />
+                        </div>
+                    </div>
+
+                    <FileList FilesGetCallBack="@SetSelectedFiles"
+                          files="@GetFilesInProject(SelectedProjects.FirstOrDefault().Id)"> </FileList>
+
+
                 }
             </div>
         </div>
+
+
     </Authorized>
 </AuthorizeView>
 
@@ -93,7 +109,7 @@
     private IEnumerable<FileUnit> GetFilesInProject(int id)
     {
         
-        return db.FileUnits.Where(f => f.ProjectId == id).Include(a => a.UserActions).ToArray();
+        return db.FileUnits.Include(f => f.UserActions).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray(); ;
 
     }
 
