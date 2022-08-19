@@ -27,7 +27,8 @@ namespace Models
         public double TimeToDev { get; set; }
         public string ProjectName { get; set; } = string.Empty;
         public string DepartmentName { get; set; } = string.Empty;
-      
+        public int NumbersDrawings { get; set; }
+
 
     }
 }

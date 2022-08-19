@@ -122,7 +122,7 @@ namespace DM.DAL.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PathFile = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DepartmentId = table.Column<int>(type: "int", nullable: false),
-                    ProjectId = table.Column<int>(type: "int", nullable: false)
+                    ProjectId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {

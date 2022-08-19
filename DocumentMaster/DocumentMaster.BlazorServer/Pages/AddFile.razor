@@ -13,6 +13,7 @@
 @inject DepartmentService departmentService
 @inject PersonService personService
 @inject ProjectService projectService
+@inject SectionService sectionService
 @inject DialogService DialogService
 @inject NavigationManager Navigation
 @inject ProtectedSessionStorage sessionStorage
@@ -53,6 +54,22 @@ else
                                 </div>
                             </div>
                         </RadzenFieldset>
+
+                        <RadzenFieldset Text="Выберите раздел проекта">
+                            <div class="row">
+                                <div class="col-md-4 ">
+                                    <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                                        Data=@(SectionsList) Style="width: 100%" AllowColumnResize="true"
+                                                        TextProperty="Name" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
+                                                        Change=@(args => OnChangeSection(args, "DropDownDataGrid with filtering by all string columns"))>
+                                        <Columns>
+                                            <RadzenDropDownDataGridColumn Property="Name" Title="Name" Width="50px" />
+                                            <RadzenDropDownDataGridColumn Property="Description" Title="FullName" Width="200px" />
+                                        </Columns>
+                                    </RadzenDropDownDataGrid>
+                                </div>
+                            </div>
+                        </RadzenFieldset>
                         <br>
                         <RadzenFieldset Text="Название файла">
                             <div class="row">
@@ -60,15 +77,29 @@ else
                                     <RadzenTextBox style="width: 100%;" @bind-Value="_file.Name" Name="FileName" />
                                 </div>
                                 <div class="col-md-4">
-                                    <RadzenUpload @ref="upload" Auto="false" Multiple="false" Url=@($"upload?id={ProjectId}&fileName={_file.Name}")
-                                    
+                                    <RadzenUpload @ref="upload" Auto="false" Multiple="false" Url=@($"upload?id={ProjectId}&fileName={_file.Name}")                                  
                                     Change=@(args => OnChangeUpload(args, "Manual Upload"))/>
                                 </div>
 
                             </div>
                         </RadzenFieldset>
 
-                    
+                        <RadzenFieldset Text="Количество листов в файле">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <RadzenTextBox style="width: 100%;" @bind-Value="NumbersDrawings" Name="TimeToDev" />
+                                </div>
+                            </div>
+                        </RadzenFieldset>
+
+                        <RadzenFieldset Text="Время на разработку(часов)">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <RadzenTextBox style="width: 100%;" @bind-Value="TimeToDevelop" Name="TimeToDev" />
+                                </div>
+                            </div>
+                        </RadzenFieldset>
+
                 </div>
             </div>
             <div class="row justify-content-center">
@@ -90,7 +121,10 @@ else
     private FileDTO _file = new FileDTO();
     private PersonDTO CurrentPerson { get; set; }
     private IList<ProjectDTO> Projects { get; set; }
+    private IList<SectionDTO> SectionsList { get; set; }
     private RadzenUpload upload;
+    private string TimeToDevelop { get; set; } = string.Empty;
+    private string NumbersDrawings { get; set; } = string.Empty;
     private int ProjectId { get; set; }
 
     protected override async void OnInitialized()
@@ -100,10 +134,14 @@ else
         var authState = await authenticationState;
         CurrentPerson = await personService.GetPersonByNameAsync(authState.User.Identity.Name);
 
-        _file = await fileService.AddFileAsync(new FileDTO { Name = "new_file",DepartmentId=CurrentPerson.DepartmentId,ProjectId=1 },CurrentPerson.Id);
+        _file = await fileService.AddFileAsync(new FileDTO { Name = "new_file",DepartmentId=CurrentPerson.DepartmentId,ProjectId=1,SectionId=3 },CurrentPerson.Id);
 
         var p= await projectService.GetProjectsListAsync();
         Projects = p.ToList();
+
+        var s = await sectionService.GetAllAsync();
+        SectionsList = s.ToList();
+
         StateHasChanged();
 
     }
@@ -114,6 +152,19 @@ else
         CurrentPerson = await personService.GetPersonByNameAsync(authState.User.Identity.Name);
         arg.DepartmentId = CurrentPerson.DepartmentId;
         arg.Name = GetPrefix(arg.Id) + "_" + arg.Name;
+        if (int.TryParse(NumbersDrawings, out int num))
+        {
+            arg.NumbersDrawings = num;
+        }
+        else
+        { 
+            arg.NumbersDrawings = 1;
+        }
+        if (double.TryParse(TimeToDevelop, out double t))
+        {
+            arg.TimeToDev = t;
+        }
+
 
         var result= await fileService.UpdateFileAsync(arg);
 
@@ -133,6 +184,11 @@ else
     void OnChange(object value, string s)
     {
         _file.ProjectId = (int)value;
+    }
+
+    void OnChangeSection(object value, string s)
+    {
+        _file.SectionId = (int)value;
     }
 
     void OnChangeUpload(UploadChangeEventArgs args, string name)

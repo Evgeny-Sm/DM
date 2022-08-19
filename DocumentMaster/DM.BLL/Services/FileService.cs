@@ -54,7 +54,10 @@ namespace DM.BLL.Services
                 Description = fileDTO.Description,
                 ProjectId = fileDTO.ProjectId,
                 DepartmentId = fileDTO.DepartmentId,
-                PathFile = $"{fileDTO.ProjectId}/{fileDTO.Name}"
+                PathFile = $"{fileDTO.ProjectId}/{fileDTO.Name}",
+                SectionId = fileDTO.SectionId,
+                NumbersDrawings=fileDTO.NumbersDrawings,
+                TimeToDev=fileDTO.TimeToDev
             };
 
             await _db.FileUnits.AddAsync(element);
@@ -87,6 +90,9 @@ namespace DM.BLL.Services
             element.DepartmentId = fileDTO.DepartmentId;
             element.ProjectId = fileDTO.ProjectId;
             element.IsDeleted = fileDTO.IsDeleted;
+            element.NumbersDrawings=fileDTO.NumbersDrawings;
+            element.SectionId=fileDTO.SectionId;
+            element.TimeToDev=fileDTO.TimeToDev;
 
             _db.FileUnits.Update(element);
             return await _db.SaveChangesAsync();

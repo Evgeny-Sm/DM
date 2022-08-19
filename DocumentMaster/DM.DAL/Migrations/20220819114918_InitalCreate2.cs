@@ -19,7 +19,7 @@ namespace DM.DAL.Migrations
                 name: "SectionId",
                 table: "FileUnits",
                 type: "int",
-                nullable: true,
+                nullable: false,
                 defaultValue: 0);
 
             migrationBuilder.AddColumn<double>(
