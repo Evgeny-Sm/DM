@@ -1,9 +1,41 @@
-﻿@using DM.BLL.Services
+﻿
+@using DM.BLL.Services
+@using DocumentMaster.BlazorServer.Authentication
+@using DocumentMaster.BlazorServer.Pages
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using Models
 
 @inject PersonService PersonService
+@inject NavigationManager Navigation
 
-<h3>Учетная запись</h3>
+<RadzenDialog />
+<RadzenNotification />
+<RadzenContextMenu />
+<RadzenTooltip />
+
+<AuthorizeView>
+    <Authorized>
+        <RadzenTemplateForm Context="Cont" Data="@Person" Submit="@((PersonDTO args) => { Submit(args);})">
+            <div class="row">
+                <div class="col-md-10">
+                    <RadzenFieldset Text="@Person.FirstName">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <RadzenTextBox style="width: 100%;" @bind-Value="Person.FirstName" Name="FileName" />
+                            </div>
+                        </div>
+                    </RadzenFieldset>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-12 d-flex align-items-end justify-content-center" style="margin-top: 16px;">
+                    <RadzenButton ButtonType="ButtonType.Submit" Icon="save" style="display: inline-block; margin-left: 10px;" Text="Save" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="cancel" style="display: inline-block; margin-left: 10px;" Text="Cancel" Click="@Cancel" />
+                </div>
+            </div>
+        </RadzenTemplateForm>
+    </Authorized>
+</AuthorizeView>
 
 
 
@@ -12,18 +44,13 @@
     [CascadingParameter]
     private Task<AuthenticationState> authenticationState { get; set; }
 
-    private PersonDTO CurrentPerson { get; set; }
 
     [Parameter]
-    public PersonDTO? Person { get; set; }
+    public PersonDTO Person { get; set; } = new PersonDTO();
 
-        protected override async void OnInitialized()
+
+    protected override async void OnInitialized()
     {
-
-        CurrentPerson = new PersonDTO();
-        var authState = await authenticationState;
-        CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
- 
 
     }
 
@@ -31,7 +58,17 @@
     {
         if (Person == null)
         {
-            Person = CurrentPerson;
+
         }
+
     }
-}
+     void Submit(PersonDTO arg)
+    {
+        
+    }
+
+        async void Cancel()
+    {
+        Navigation.NavigateTo("/");
+    }
+ }

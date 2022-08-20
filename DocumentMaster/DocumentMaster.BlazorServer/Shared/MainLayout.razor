@@ -22,6 +22,7 @@
             <AuthorizeView>
                 <Authorized>
                     <a @onclick="Logout" href="javascript:void(0)">Logout</a>
+                    <a @onclick="RedirectToUserInfo" href="javascript:void(0)">Settings</a>
                 </Authorized>
                 <NotAuthorized>
                     <a href="/Login">Login</a>
@@ -40,6 +41,11 @@
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
         await customAuthStateProvider.UpdateAuthenticationState(null);
         navManager.NavigateTo("/", true);
+    }
+    private void RedirectToUserInfo()
+    {
+
+        navManager.NavigateTo("/UserInfo");
     }
 
 }

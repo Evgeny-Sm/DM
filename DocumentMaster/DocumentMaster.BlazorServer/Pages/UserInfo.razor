@@ -1,0 +1,33 @@
+﻿@page "/UserInfo"
+
+@attribute [Authorize]
+
+@using DM.BLL.Services
+@using Models
+
+@inject PersonService PersonService
+
+
+<h3>Info</h3>
+<AuthorizeView>
+    <Authorized>
+        <PersonData Person="@CurrentPerson" />
+    </Authorized>
+</AuthorizeView>
+
+@code {
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+    private PersonDTO CurrentPerson { get; set; } = new PersonDTO();
+
+    protected override async void OnInitialized()
+    {
+
+        CurrentPerson = new PersonDTO();
+        var authState = await authenticationState;
+        CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+        StateHasChanged();
+    }
+}
