@@ -70,7 +70,6 @@ else
                                 </div>
                             </div>
                         </RadzenFieldset>
-                        <br>
                         <RadzenFieldset Text="Название файла">
                             <div class="row">
                                 <div class="col-md-4">
@@ -80,7 +79,6 @@ else
                                     <RadzenUpload @ref="upload" Auto="false" Multiple="false" Url=@($"upload?id={ProjectId}&fileName={_file.Name}")                                  
                                     Change=@(args => OnChangeUpload(args, "Manual Upload"))/>
                                 </div>
-
                             </div>
                         </RadzenFieldset>
 
@@ -134,7 +132,7 @@ else
         var authState = await authenticationState;
         CurrentPerson = await personService.GetPersonByNameAsync(authState.User.Identity.Name);
 
-        _file = await fileService.AddFileAsync(new FileDTO { Name = "new_file",DepartmentId=CurrentPerson.DepartmentId,ProjectId=1,SectionId=3 },CurrentPerson.Id);
+        _file = await fileService.AddFileAsync(new FileDTO { Name = "new_file",DepartmentId=CurrentPerson.DepartmentId,ProjectId=1,SectionId=1 },CurrentPerson.Id);
 
         var p= await projectService.GetProjectsListAsync();
         Projects = p.ToList();

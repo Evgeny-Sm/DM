@@ -1,0 +1,37 @@
+﻿@using DM.BLL.Services
+@using Models
+
+@inject PersonService PersonService
+
+<h3>Учетная запись</h3>
+
+
+
+@code {
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+    private PersonDTO CurrentPerson { get; set; }
+
+    [Parameter]
+    public PersonDTO? Person { get; set; }
+
+        protected override async void OnInitialized()
+    {
+
+        CurrentPerson = new PersonDTO();
+        var authState = await authenticationState;
+        CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+ 
+
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (Person == null)
+        {
+            Person = CurrentPerson;
+        }
+    }
+}

@@ -1,42 +1,40 @@
-﻿
-@using DM.BLL.Services
+﻿@using DM.BLL.Services
 @using DM.DAL.Models
 @using Microsoft.EntityFrameworkCore
 @using Models
 
 
-@inject DMContext db
-@inject SectionService SectionService
+
+@inject DepartmentService DepartmentService
 
 
+<h3>Отделы</h3>
 
-<h3>Разделы проекта</h3>
-
-<AuthorizeView Roles="admin,head">
+<AuthorizeView Roles="admin">
     <Authorized>
         <RadzenButton Icon="add_circle_outline" ButtonStyle="ButtonStyle.Secondary" Text="Добавить"
-                      Click="@InsertRow" Disabled=@(sectionToInsert != null) />
+                      Click="@InsertRow" Disabled=@(departmentToInsert != null) />
 
-        <RadzenDataGrid @ref="SectionGrid" Data="@SectionsList" TItem="SectionDTO" AllowFiltering="false" AllowColumnResize="true"
+        <RadzenDataGrid @ref="DepartmentGrid" Data="@DepartmentsList" TItem="DepartmentDTO" AllowFiltering="false" AllowColumnResize="true"
                         PageSize="10" AllowPaging="true" AllowSorting="true" ColumnWidth="100px"
                         EditMode="DataGridEditMode.Single"
                         RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow">
             <Columns>
-                <RadzenDataGridColumn TItem="SectionDTO" Property="Name" Title="Шифр" Width="10%">
+                <RadzenDataGridColumn TItem="DepartmentDTO" Property="Name" Title="Шифр" Width="10%">
                     <EditTemplate Context="section">
                         <RadzenTextBox @bind-Value="section.Name" Style="width:100%; display: block" Name="Name" />
                         <RadzenRequiredValidator Text="Name is required" Component="Name" Popup="true" />
                     </EditTemplate>
                 </RadzenDataGridColumn>
 
-                <RadzenDataGridColumn TItem="SectionDTO" Property="Description" Title="Название" Width="50%">
+                <RadzenDataGridColumn TItem="DepartmentDTO" Property="Description" Title="Название" Width="50%">
                     <EditTemplate Context="section">
                         <RadzenTextBox @bind-Value="section.Description" Style="width:100%; display: block"  Name="NameDiscr" />
                         <RadzenRequiredValidator Text="Description is required" Component="NameDiscr" Popup="true" />
                     </EditTemplate>
                 </RadzenDataGridColumn>
 
-                <RadzenDataGridColumn TItem="SectionDTO" Context="sampleBlazorModelsSampleOrder" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="120px">
+                <RadzenDataGridColumn TItem="DepartmentDTO" Context="sampleBlazorModelsSampleOrder" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="120px">
                     <Template Context="sect">
                         <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@(args => EditRow(sect))" @onclick:stopPropagation="true">
                         </RadzenButton>
@@ -49,7 +47,7 @@
                     </EditTemplate>
                 </RadzenDataGridColumn>
 
-                <RadzenDataGridColumn TItem="SectionDTO" Context="sect" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="60px">
+                <RadzenDataGridColumn TItem="DepartmentDTO" Context="sect" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="60px">
                     <Template Context="sect">
                         <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(sect))" @onclick:stopPropagation="true">
                         </RadzenButton>
@@ -67,76 +65,74 @@
 
 @code {
     [Parameter]
-    public IList<SectionDTO> SectionsList { get; set; }
+    public IList<DepartmentDTO> DepartmentsList { get; set; }
 
-    private SectionDTO sectionToInsert { get; set; }
+    private DepartmentDTO departmentToInsert { get; set; }
 
-    RadzenDataGrid<SectionDTO> SectionGrid;
+    RadzenDataGrid<DepartmentDTO> DepartmentGrid;
 
     protected override async void OnInitialized()
     {
+
 
     }
 
     async Task InsertRow()
     {
-        sectionToInsert = new SectionDTO ();
+        departmentToInsert = new DepartmentDTO ();
 
-        await SectionGrid.InsertRow(sectionToInsert);
+        await DepartmentGrid.InsertRow(departmentToInsert);
     }
 
-    async void OnUpdateRow(SectionDTO section)
+    async void OnUpdateRow(DepartmentDTO dep)
     {
-        await SectionService.UpdateItemAsync(section);
-        await SectionGrid.Reload();
+        await DepartmentService.UpdateDepartmentAsync(dep);
+        await DepartmentGrid.Reload();
     }
 
-    async void OnCreateRow(SectionDTO section)
+    async void OnCreateRow(DepartmentDTO dep)
     {
-        var s =await SectionService.AddItemAsync(section);
-        SectionsList.Add(s);
-        await SectionGrid.Reload();
+        var s =await DepartmentService.AddDepartmentAsync(dep);
+        DepartmentsList.Add(s);
+        await DepartmentGrid.Reload();
     }
 
-    async Task EditRow(SectionDTO section)
+    async Task EditRow(DepartmentDTO dep)
     {
-        await SectionGrid.EditRow(section);
+        await DepartmentGrid.EditRow(dep);
     }
 
-    async Task SaveRow(SectionDTO section)
+    async Task SaveRow(DepartmentDTO dep)
     {
-        if (section == sectionToInsert)
+        if (dep == departmentToInsert)
         {
-            sectionToInsert = null;
+            departmentToInsert = null;
         }
 
-        await SectionGrid.UpdateRow(section);
+        await DepartmentGrid.UpdateRow(dep);
     }
 
-    void CancelEdit(SectionDTO section)
+    void CancelEdit(DepartmentDTO dep)
     {
-        if (section == sectionToInsert)
+        if (dep == departmentToInsert)
         {
-            sectionToInsert = null;
+            departmentToInsert = null;
         }
-        SectionGrid.CancelEditRow(section);
+        DepartmentGrid.CancelEditRow(dep);
     }
 
-    async Task DeleteRow(SectionDTO section)
+    async Task DeleteRow(DepartmentDTO dep)
     {
-        if (section == sectionToInsert)
+        if (dep == departmentToInsert)
         {
-            sectionToInsert = null;
+            departmentToInsert = null;
         }
 
-        await SectionService.RemoveItem(section.Id);
-        SectionsList.Remove(section);
+        await DepartmentService.DeleteDepartment(dep.Id);
+        DepartmentsList.Remove(dep);
 
-        await SectionGrid.Reload();
+        await DepartmentGrid.Reload();
 
     }
-
-
-
 
 }

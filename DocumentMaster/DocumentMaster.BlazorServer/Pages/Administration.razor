@@ -1,15 +1,24 @@
 ﻿@page "/Admin"
 
-@attribute [Authorize(Roles = "admin")]
+@using DM.BLL.Services
+@using Models
+
+@attribute [Authorize(Roles = "admin,head")]
+
+@inject DepartmentService DepartmentsService
+@inject SectionService SectionsService
 
 
-<AuthorizeView Roles="admin">
+<h1>Администрирование</h1>
+
+<AuthorizeView>
     <Authorized>
-
-        <h3>Administration</h3>
         <div class="row">
             <div class="col-md-6">
-                <Sections />
+                <Sections SectionsList="@SectionsList" />
+            </div>
+            <div class="col-md-6">
+                <Departments DepartmentsList="@DepartmentsList" />
             </div>
         </div>
     </Authorized>
@@ -17,5 +26,21 @@
 
 
 @code {
+    private IList<DepartmentDTO> DepartmentsList { get; set; }
+    private IList<SectionDTO> SectionsList { get; set; }
+
+        protected override async void OnInitialized()
+    {
+        var dep = await DepartmentsService.GetDepartmentsListAsync();
+
+        DepartmentsList = dep.ToList();
+
+        var sec = await SectionsService.GetAllAsync();
+
+        SectionsList = sec.ToList();
+
+        StateHasChanged();
+
+    }
 
 }

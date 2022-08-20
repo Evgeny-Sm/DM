@@ -59,7 +59,7 @@
                     </div>
 
                     <FileList FilesGetCallBack="@SetSelectedFiles"
-                          files="@GetFilesInProject(SelectedProjects.FirstOrDefault().Id)"> </FileList>
+                          files="@_Files"> </FileList>
 
 
                 }
@@ -76,6 +76,8 @@
 
     private IList<FileUnit> SelectedFiles { get; set; }
 
+    private IList<FileUnit> _Files { get; set; }
+
     private IEnumerable<ProjectDTO> _projects { get; set; }
 
 
@@ -83,17 +85,19 @@
     {
         SelectedProjects = new List<ProjectDTO>();
         SelectedFiles = new List<FileUnit>();
-
+        _Files = new List<FileUnit>();
     }
-    
-    
+
+
 
     private void SetSelectedProjects(IList<ProjectDTO> projects)
     {
         if (projects != null)
         {
             SelectedProjects = projects;
+            _Files = GetFilesInProject(projects.FirstOrDefault().Id).ToList();
         }
+        
 
     }
 
@@ -109,7 +113,7 @@
     private IEnumerable<FileUnit> GetFilesInProject(int id)
     {
         
-        return db.FileUnits.Include(f => f.UserActions).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray(); ;
+        return db.FileUnits.Where(f=>f.ProjectId==id).Include(f => f.UserActions).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
 
     }
 
