@@ -12,23 +12,25 @@ namespace DM.BLL.Services
 {
     public class PositionService
     {
-        private readonly DMContext? _db;
+        private readonly IDbContextFactory<DMContext>? _contextFactory;
         private readonly IMapper? _mapper;
-        public PositionService(DMContext context, IMapper mapper)
+        public PositionService(IDbContextFactory<DMContext>? contextFactory, IMapper mapper)
         { 
-            _db = context;
             _mapper = mapper;
+            _contextFactory = contextFactory;
         }
         public async Task<IEnumerable<PositionDTO>> GetAllAsync()
         {
-            var elements = await _db.Positions.ToListAsync();
+            using var context = _contextFactory.CreateDbContext();
+            var elements = await context.Positions.ToListAsync();
             var result = _mapper.Map<IEnumerable<PositionDTO>>(elements);
             return result;
         }
 
         public async Task<PositionDTO> GetPositiontByIdAsync(int id)
         {
-            var element = await _db.Positions.FindAsync(id);
+            using var context = _contextFactory.CreateDbContext();
+            var element = await context.Positions.FindAsync(id);
             if (element == null)
             {
                 return null;
@@ -39,18 +41,20 @@ namespace DM.BLL.Services
 
         public async Task<PositionDTO> AddPositionAsync(PositionDTO positionDTO)
         {
+            using var context = _contextFactory.CreateDbContext();
             Position position = new Position
             {
                 Name = positionDTO.Name
             };
-            await _db.Positions.AddAsync(position);
-            await _db.SaveChangesAsync();
+            await context.Positions.AddAsync(position);
+            await context.SaveChangesAsync();
             return await GetPositiontByIdAsync(position.Id);
         }
 
         public async Task UpdateAsync(int id, PositionDTO positionDTO)
         {
-            var element = _db.Positions.FirstOrDefault(c => c.Id == id);
+            using var context = _contextFactory.CreateDbContext();
+            var element = context.Positions.FirstOrDefault(c => c.Id == id);
             if (element is null)
             {
                 element = new Position();
@@ -58,17 +62,18 @@ namespace DM.BLL.Services
             }
             element.Id = id;
             element.Name = positionDTO.Name;
-            _db.Positions.Update(element);
-            await _db.SaveChangesAsync();
+            context.Positions.Update(element);
+            await context.SaveChangesAsync();
 
         }
         public async Task<bool> Delete(int id)
         {
-            var element = await _db.Positions.FindAsync(id);
+            using var context = _contextFactory.CreateDbContext();
+            var element = await context.Positions.FindAsync(id);
             if (element != null)
             {
-                _db.Positions.Remove(element);
-                await _db.SaveChangesAsync();
+                context.Positions.Remove(element);
+                await context.SaveChangesAsync();
                 return true;
             }
             return false;
@@ -77,7 +82,7 @@ namespace DM.BLL.Services
 
         public void Dispose()
         {
-            _db.Dispose();
+
         }
     }
 }

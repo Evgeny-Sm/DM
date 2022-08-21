@@ -159,6 +159,7 @@
             var d = await DepartmentServices.GetDepartmentsListAsync();
             Departments = d.ToList();
         }
+        StateHasChanged();
     }
 
     protected override void OnParametersSet()

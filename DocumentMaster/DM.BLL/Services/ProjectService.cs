@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DM.DAL.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Models;
 using System;
 using System.Collections.Generic;
@@ -12,24 +13,26 @@ namespace DM.BLL.Services
 {
     public class ProjectService
     {
-        private readonly DMContext? _db;
+        private readonly IDbContextFactory<DMContext>? _contextFactory;
         private readonly IMapper? _mapper;
-        public ProjectService(DMContext context, IMapper mapper)
+        public ProjectService( IMapper mapper, DbContextFactory<DMContext>? contextFactory)
         {
-            _db = context;
             _mapper = mapper;
+            _contextFactory = contextFactory;
         }
 
         public async Task<IEnumerable<ProjectDTO>> GetProjectsListAsync()
         {
-            var element = await _db.Projects.Where(d => d.IsDeleted == false).ToListAsync();
+            using var context = _contextFactory.CreateDbContext();
+            var element = await context.Projects.Where(d => d.IsDeleted == false).ToListAsync();
             var result = _mapper.Map<IEnumerable<ProjectDTO>>(element);
             return result;
         }
 
         public async Task<ProjectDTO> GetProjectByIdAsync(int id)
         {
-            Project element = await _db.Projects.Where(p=>p.Id==id).Include(f=>f.FileUnits).SingleAsync();
+            using var context = _contextFactory.CreateDbContext();
+            Project element = await context.Projects.Where(p=>p.Id==id).Include(f=>f.FileUnits).SingleAsync();
             if (element == null || element.IsDeleted == true)
             {
                 return null;
@@ -40,6 +43,7 @@ namespace DM.BLL.Services
 
         public async Task<ProjectDTO> AddProjectAsync(ProjectDTO unit)
         {
+            using var context = _contextFactory.CreateDbContext();
             Project element = new Project
             {
                 Name = unit.Name,
@@ -47,8 +51,8 @@ namespace DM.BLL.Services
                 Client=unit.Client,
                 PersonId=unit.MainIngId
             };
-            await _db.Projects.AddAsync(element);
-            await _db.SaveChangesAsync();
+            await context.Projects.AddAsync(element);
+            await context.SaveChangesAsync();
 
             string path = "wwwroot";
             if (!Directory.Exists(path))
@@ -66,7 +70,8 @@ namespace DM.BLL.Services
 
         public async Task UpdateProjectAsync(int id, ProjectDTO unit)
         {
-            var element = _db.Projects.FirstOrDefault(c => c.Id == id);
+            using var context = _contextFactory.CreateDbContext();
+            var element = context.Projects.FirstOrDefault(c => c.Id == id);
             if (element is null)
             {
                 element = new Project();
@@ -78,17 +83,18 @@ namespace DM.BLL.Services
             element.IsDeleted = unit.IsDeleted;
             element.Client = unit.Client;
             element.PersonId = unit.MainIngId;
-            _db.Projects.Update(element);
-            await _db.SaveChangesAsync();
+            context.Projects.Update(element);
+            await context.SaveChangesAsync();
 
         }
         public async Task<bool> DeleteDevice(int id)
         {
-            Project element = await _db.Projects.FindAsync(id);
+            using var context = _contextFactory.CreateDbContext();
+            Project element = await context.Projects.FindAsync(id);
             if (element != null)
             {
-                _db.Projects.Remove(element);
-                await _db.SaveChangesAsync();
+                context.Projects.Remove(element);
+                await context.SaveChangesAsync();
                 return true;
             }
             return false;
@@ -98,7 +104,7 @@ namespace DM.BLL.Services
 
         public void Dispose()
         {
-            _db.Dispose();
+
         }
     }
 }

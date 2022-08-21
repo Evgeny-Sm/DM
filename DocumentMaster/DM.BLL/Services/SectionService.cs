@@ -13,23 +13,25 @@ namespace DM.BLL.Services
 {
     public class SectionService
     {
-        private readonly DMContext? _db;
+        private readonly IDbContextFactory<DMContext>? _contextFactory;
         private readonly IMapper? _mapper;
-        public SectionService(DMContext? db, IMapper? mapper)
+        public SectionService(IDbContextFactory<DMContext>? contextFactory, IMapper? mapper)
         {
-            _db = db;
+            _contextFactory = contextFactory;
             _mapper = mapper;
         }
         public async Task<IEnumerable<SectionDTO>> GetAllAsync()
         {
-            var element = await _db.Sections.ToListAsync();
+            using var context = _contextFactory.CreateDbContext();
+            var element = await context.Sections.ToListAsync();
             var result = _mapper.Map<IEnumerable<SectionDTO>>(element);
             return result;
         }
 
         public async Task<SectionDTO> GetItemByIdAsync(int id)
         {
-            var element = await _db.Sections.FindAsync(id);
+            using var context = _contextFactory.CreateDbContext();
+            var element = await context.Sections.FindAsync(id);
             if (element == null)
             {
                 return null;
@@ -40,19 +42,21 @@ namespace DM.BLL.Services
 
         public async Task<SectionDTO> AddItemAsync(SectionDTO sectionDTO)
         {
+            using var context = _contextFactory.CreateDbContext();
             Section section = new Section
             {
                 Name = sectionDTO.Name,
                 Description = sectionDTO.Description
             };
-            await _db.Sections.AddAsync(section);
-            await _db.SaveChangesAsync();
+            await context.Sections.AddAsync(section);
+            await context.SaveChangesAsync();
             return await GetItemByIdAsync(section.Id);
         }
 
         public async Task UpdateItemAsync(SectionDTO sectionDTO)
         {
-            var s = _db.Sections.Find(sectionDTO.Id);
+            using var context = _contextFactory.CreateDbContext();
+            var s = context.Sections.Find(sectionDTO.Id);
             if (s is null)
             {
                 s = new Section();
@@ -60,17 +64,18 @@ namespace DM.BLL.Services
             }
             s.Name = sectionDTO.Name;
             s.Description = sectionDTO.Description;
-            _db.Sections.Update(s);
-            await _db.SaveChangesAsync();
+            context.Sections.Update(s);
+            await context.SaveChangesAsync();
                 
         }
         public async Task RemoveItem(int id)
         {
-            var element = _db.Sections.Find(id);
+            using var context = _contextFactory.CreateDbContext();
+            var element = context.Sections.Find(id);
             if (element != null)
             {
-                _db.Sections.Remove(element);
-                await _db.SaveChangesAsync();
+                context.Sections.Remove(element);
+                await context.SaveChangesAsync();
             }
 
         }

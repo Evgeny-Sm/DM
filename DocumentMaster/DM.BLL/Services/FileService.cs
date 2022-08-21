@@ -13,72 +13,66 @@ namespace DM.BLL.Services
 {
     public class FileService
     {
-        private readonly DMContext? _db;
-        private readonly IMapper? _mapper;
 
-        public FileService(DMContext context, IMapper mapper)
+        private readonly IMapper? _mapper;
+        private readonly IDbContextFactory<DMContext>? _contextFactory;
+
+        public FileService(IDbContextFactory<DMContext> contextFactory, IMapper mapper)
         {
-            _db = context;
+
             _mapper = mapper;
+            _contextFactory = contextFactory;
 
         }
         public async Task<IEnumerable<FileDTO>> GetAllAsync()
         {
-            var elements = await _db.FileUnits.ToListAsync();
+            using var context = _contextFactory.CreateDbContext();
+
+            var elements = await context.FileUnits.ToListAsync();
             var result = _mapper.Map<IEnumerable<FileDTO>>(elements);
             return result;
+
         }
         public async Task<IEnumerable<FileDTO>> GetAllNotDeletedAsync()
         {
-            var elements = await _db.FileUnits.Where(d => d.IsDeleted == false).ToListAsync();
+            using var context = _contextFactory.CreateDbContext();
+
+            var elements = await context.FileUnits.Where(d => d.IsDeleted == false).ToListAsync();
             var result = _mapper.Map<IEnumerable<FileDTO>>(elements);
             return result;
+
         }
 
         public async Task<FileDTO> GetItemByIdAsync(int id)
         {
-            var element = await _db.FileUnits.FindAsync(id);
+            using var context = _contextFactory.CreateDbContext();
+
+            var element = await context.FileUnits.FindAsync(id);
             if (element == null)
             {
                 return null;
             }
             var result = _mapper.Map<FileDTO>(element);
             return result;
+
         }
 
         public async Task<FileDTO> AddFileAsync(FileDTO fileDTO, int personId)
         {
-            FileUnit element = new FileUnit
-            {
-                Name = fileDTO.Name,
-                Description = fileDTO.Description,
-                ProjectId = fileDTO.ProjectId,
-                DepartmentId = fileDTO.DepartmentId,
-                PathFile = $"{fileDTO.ProjectId}/{fileDTO.Name}",
-                SectionId = fileDTO.SectionId,
-                NumbersDrawings=fileDTO.NumbersDrawings,
-                TimeToDev=fileDTO.TimeToDev
-            };
-
-            await _db.FileUnits.AddAsync(element);
-            await _db.SaveChangesAsync();
-
-            var action = new UserAction
-            {
-                FileUnitId = element.Id,
-                PersonId = personId,
-                ActionNumber = 1,
-                IsConfirmed = true
-            };
-            await _db.UserActions.AddAsync(action);          
-            await _db.SaveChangesAsync();
-
+            using var context = _contextFactory.CreateDbContext();
+            FileUnit element = new FileUnit { Name = fileDTO.Name, Description = fileDTO.Description, ProjectId = fileDTO.ProjectId, DepartmentId = fileDTO.DepartmentId, PathFile = $"{fileDTO.ProjectId}/{fileDTO.Name}", SectionId = fileDTO.SectionId, NumbersDrawings = fileDTO.NumbersDrawings, TimeToDev = fileDTO.TimeToDev };
+            await context.FileUnits.AddAsync(element);
+            await context.SaveChangesAsync();
+            var action = new UserAction { FileUnitId = element.Id, PersonId = personId, ActionNumber = 1, IsConfirmed = true };
+            await context.UserActions.AddAsync(action);
+            await context.SaveChangesAsync();
             return await GetItemByIdAsync(element.Id);
         }
 
         public async Task<int> UpdateFileAsync(FileDTO fileDTO)
         {
-            var element = _db.FileUnits.Find(fileDTO.Id);
+            using var context = _contextFactory.CreateDbContext();
+            var element = context.FileUnits.Find(fileDTO.Id);
             if (element is null)
             {
                 element = new FileUnit();
@@ -90,30 +84,32 @@ namespace DM.BLL.Services
             element.DepartmentId = fileDTO.DepartmentId;
             element.ProjectId = fileDTO.ProjectId;
             element.IsDeleted = fileDTO.IsDeleted;
-            element.NumbersDrawings=fileDTO.NumbersDrawings;
-            element.SectionId=fileDTO.SectionId;
-            element.TimeToDev=fileDTO.TimeToDev;
+            element.NumbersDrawings = fileDTO.NumbersDrawings;
+            element.SectionId = fileDTO.SectionId;
+            element.TimeToDev = fileDTO.TimeToDev;
+            context.FileUnits.Update(element);
+            return await context.SaveChangesAsync();
 
-            _db.FileUnits.Update(element);
-            return await _db.SaveChangesAsync();
-            
         }
 
         public async Task RemoveFile(int id)
         {
-            var element = _db.FileUnits.Find(id);
-            if (element != null)
+            using var context = _contextFactory.CreateDbContext();
             {
-                _db.FileUnits.Remove(element);
-                await _db.SaveChangesAsync();
+                var element = context.FileUnits.Find(id);
+                if (element != null)
+                {
+                    context.FileUnits.Remove(element);
+                    await context.SaveChangesAsync();
+                }
             }
 
         }
 
         public async Task<string> GetFullFilePathAsync(int id)
         {
-            var element = await _db.FileUnits.FindAsync(id);
-            
+            using var context = _contextFactory.CreateDbContext();
+            var element = await context.FileUnits.FindAsync(id);
             if (element == null)
             {
                 return null;

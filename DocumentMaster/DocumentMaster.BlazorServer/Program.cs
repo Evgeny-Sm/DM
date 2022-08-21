@@ -31,8 +31,7 @@ builder.Services.AddScoped<TooltipService>();
 builder.Services.AddScoped<ContextMenuService>();
 
 
-builder.Services.AddDbContext<DMContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DMContext")
-    ?? throw new InvalidOperationException("Connection string 'DMContext' not found.")));
+
 builder.Services.AddDbContextFactory<DMContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DMContext")));
 
 builder.Services.AddScoped<PersonService>();

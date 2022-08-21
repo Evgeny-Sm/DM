@@ -12,23 +12,26 @@ namespace DM.BLL.Authorization
 {
     public class AccountService
     {
-        private readonly DMContext? _db;
+        private readonly IDbContextFactory<DMContext>? _contextFactory;
         private readonly IMapper? _mapper;
-        public AccountService(DMContext context, IMapper mapper)
+        public AccountService(IDbContextFactory<DMContext>? contextFactory, IMapper mapper)
         {
-            _db = context;
+            _contextFactory = contextFactory;
             _mapper = mapper;
         }
         public AccountDTO? GetByUserName(string userName)
         {
-            Account? account = _db.Accounts.Include(p=>p.Person).FirstOrDefault(x => x.UserName == userName);
-            
-            return _mapper.Map<AccountDTO>(account);
+            using var context = _contextFactory.CreateDbContext();
+            {
+                Account? account = context.Accounts.Include(p => p.Person).FirstOrDefault(x => x.UserName == userName);
+
+                return _mapper.Map<AccountDTO>(account);
+            }
         }
 
         public void Dispose()
         {
-            _db.Dispose();
+            
         }
     }
 }

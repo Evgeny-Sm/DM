@@ -6,7 +6,7 @@
 @using System.Text.Json
 
 @inject FileService fileService
-@inject DMContext db
+@inject IDbContextFactory<DMContext> _contextFactory
 
 <AuthorizeView>
     <Authorized>
@@ -41,9 +41,10 @@
 
     protected override async Task OnParametersSetAsync()
     {
+        using var context = _contextFactory.CreateDbContext();
         if (files == null)
         {
-            files = db.FileUnits.Include(f => f.UserActions).Include(d=>d.Department).Include(p=>p.Project).Include(s=>s.Section).ToArray();
+            files = context.FileUnits.Include(f => f.UserActions).Include(d=>d.Department).Include(p=>p.Project).Include(s=>s.Section).ToArray();
         }
     }
 

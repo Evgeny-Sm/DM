@@ -12,77 +12,91 @@ namespace DM.BLL.Services
 {
     public class DepartmentService
     {
-        private readonly DMContext? _db;
-        private readonly IDbContextFactory<DMContext>? contextFactory;
+        private readonly IDbContextFactory<DMContext>? _contextFactory;
         private readonly IMapper? _mapper;
-        public DepartmentService(DMContext context, IMapper mapper)
+        public DepartmentService(IDbContextFactory<DMContext>? contextFactory, IMapper mapper)
         {
-            _db = context;
+            _contextFactory = contextFactory;
             _mapper = mapper;
         }
 
         public async Task<IEnumerable<DepartmentDTO>> GetDepartmentsListAsync()
         {
-            var devices = await _db.Departments.ToListAsync();
-            var result = _mapper.Map<IEnumerable<DepartmentDTO>>(devices);
-            return result;
+            using var context = _contextFactory.CreateDbContext();
+            {
+                var devices = await context.Departments.ToListAsync();
+                var result = _mapper.Map<IEnumerable<DepartmentDTO>>(devices);
+                return result;
+            }
         }
 
         public async Task<DepartmentDTO> GetDepartmentByIdAsync(int id)
         {
-            Department department = await _db.Departments.FindAsync(id);
-            if (department == null||department.IsDeleted==true)
+            using var context = _contextFactory.CreateDbContext();
             {
-                return null;
+                Department department = await context.Departments.FindAsync(id);
+                if (department == null || department.IsDeleted == true)
+                {
+                    return null;
+                }
+                var result = _mapper.Map<DepartmentDTO>(department);
+                return result;
             }
-            var result = _mapper.Map<DepartmentDTO>(department);
-            return result;
         }
 
         public async Task<DepartmentDTO> AddDepartmentAsync(DepartmentDTO departmentDTO)
         {
+            using var context = _contextFactory.CreateDbContext();
+
             Department department = new Department
             {
                 Name = departmentDTO.Name,
                 Description = departmentDTO.Description
             };
-            await _db.Departments.AddAsync(department);
-            await _db.SaveChangesAsync();
+            await context.Departments.AddAsync(department);
+            await context.SaveChangesAsync();
             return await GetDepartmentByIdAsync(department.Id);
+
         }
 
         public async Task UpdateDepartmentAsync(DepartmentDTO departmentDTO)
         {
-            var element =_db.Departments.Find(departmentDTO.Id);
+            using var context = _contextFactory.CreateDbContext();
+
+            var element = context.Departments.Find(departmentDTO.Id);
             if (element is null)
             {
                 element = new Department();
                 throw new ArgumentNullException($"Unknown {element.GetType().Name}");
             }
-            
+
             element.Name = departmentDTO.Name;
-            element.Description = departmentDTO.Description;     
+            element.Description = departmentDTO.Description;
             element.IsDeleted = departmentDTO.IsDeleted;
-            _db.Departments.Update(element);
-            await _db.SaveChangesAsync();
+            context.Departments.Update(element);
+            await context.SaveChangesAsync();
+
 
         }
         public async Task<bool> DeleteDepartment(int id)
         {
-            Department department = await _db.Departments.FindAsync(id);
+            using var context = _contextFactory.CreateDbContext();
+
+            Department department = await context.Departments.FindAsync(id);
             if (department != null)
             {
-                _db.Departments.Remove(department);
-                await _db.SaveChangesAsync();
+                context.Departments.Remove(department);
+                await context.SaveChangesAsync();
                 return true;
             }
             return false;
+
         }
 
 
         public void Dispose()
         {
-            _db.Dispose();
+
         }
     }
 }

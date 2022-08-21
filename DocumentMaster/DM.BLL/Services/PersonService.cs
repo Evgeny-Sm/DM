@@ -13,26 +13,25 @@ namespace DM.BLL.Services
 {
     public class PersonService
     {
-        private readonly DMContext? _db;
         private readonly IMapper? _mapper;
         private readonly IDbContextFactory<DMContext>? _contextFactory;
-        public PersonService(DMContext context, IMapper mapper, IDbContextFactory<DMContext>? contextFactory)
+        public PersonService(IMapper mapper, IDbContextFactory<DMContext>? contextFactory)
         {
-            _db = context;
             _mapper = mapper;
             _contextFactory = contextFactory;
         }
 
         public async Task<IEnumerable<PersonDTO>> GetPersonsAsync()
         {
-            var persons = await _db.Persons.Where(p=>p.IsDeleted==false).ToListAsync();
+            using var context = _contextFactory.CreateDbContext();
+            var persons = await context.Persons.Where(p => p.IsDeleted == false).ToListAsync();
             var result = _mapper.Map<IEnumerable<PersonDTO>>(persons);
             return result;
         }
         public async Task<PersonDTO> GetPersonByIdAsync(int id)
         {
-
-            var person = await _db.Persons.FindAsync(id);
+            using var context = _contextFactory.CreateDbContext();
+            var person = await context.Persons.FindAsync(id);
             if (person == null)
             {
                 return null;
@@ -42,35 +41,28 @@ namespace DM.BLL.Services
         }
         public async Task<PersonDTO> GetPersonByNameAsync(string name)
         {
-            using (var context = _contextFactory.CreateDbContext())
+            using var context = _contextFactory.CreateDbContext();
+            var person = await context.Persons.Include(a => a.Account).Where(p => p.Account.UserName == name).SingleAsync();
+            if (person == null)
             {
-                var person = await context.Persons.Include(a => a.Account).Where(p => p.Account.UserName == name).SingleAsync();
-                if (person == null)
-                {
-                    return null;
-                }
-                var result = _mapper.Map<PersonDTO>(person);
-                return result;
+                return null;
             }
+            var result = _mapper.Map<PersonDTO>(person);
+            return result;
         }
         public async Task<PersonDTO> AddPersonAsync(PersonDTO personDTO)
         {
-            Person person = new Person
-            {
-                FirstName = personDTO.FirstName,
-                LastName = personDTO.LastName,
-                DepartmentId = personDTO.DepartmentId,
-                PositionId = personDTO.PositionId,
-                IsDeleted = false
-
-            };
-            await _db.Persons.AddAsync(person);
-            await _db.SaveChangesAsync();
+            using var context = _contextFactory.CreateDbContext();
+            Person person = new Person { FirstName = personDTO.FirstName, LastName = personDTO.LastName, DepartmentId = personDTO.DepartmentId, PositionId = personDTO.PositionId, IsDeleted = false };
+            await context.Persons.AddAsync(person);
+            await context.SaveChangesAsync();
             return await GetPersonByIdAsync(person.Id);
         }
         public async Task UpdatePersonAsync(PersonDTO personDTO)
         {
-            var element = _db.Persons.Find(personDTO.Id);
+            using var context = _contextFactory.CreateDbContext();
+
+            var element = context.Persons.Find(personDTO.Id);
             if (element is null)
             {
                 element = new Person();
@@ -81,25 +73,29 @@ namespace DM.BLL.Services
             element.DepartmentId = personDTO.DepartmentId;
             element.PositionId = personDTO.PositionId;
             element.IsDeleted = personDTO.IsDeleted;
-            element.TelegramContact=personDTO.TelegramContact;
-            element.SalaryPerH=personDTO.SalaryPerH;
+            element.TelegramContact = personDTO.TelegramContact;
+            element.SalaryPerH = personDTO.SalaryPerH;
 
-            _db.Persons.Update(element);
-            await _db.SaveChangesAsync();
+            context.Persons.Update(element);
+            await context.SaveChangesAsync();
+
         }
         public async Task RemovePerson(int id)
         {
-            var element = _db.Persons.Find(id);
+            using var context = _contextFactory.CreateDbContext();
+
+            var element = context.Persons.Find(id);
             if (element != null)
             {
-                _db.Persons.Remove(element);
-                await _db.SaveChangesAsync();
+                context.Persons.Remove(element);
+                await context.SaveChangesAsync();
             }
+
 
         }
         public void Dispose()
         {
-            _db.Dispose();
+
         }
     }
 }
