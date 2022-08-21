@@ -51,16 +51,15 @@ namespace DM.BLL.Services
             return await GetPositiontByIdAsync(position.Id);
         }
 
-        public async Task UpdateAsync(int id, PositionDTO positionDTO)
+        public async Task UpdateAsync(PositionDTO positionDTO)
         {
             using var context = _contextFactory.CreateDbContext();
-            var element = context.Positions.FirstOrDefault(c => c.Id == id);
+            var element = context.Positions.Find(positionDTO.Id);
             if (element is null)
             {
                 element = new Position();
                 throw new ArgumentNullException($"Unknown {element.GetType().Name}");
             }
-            element.Id = id;
             element.Name = positionDTO.Name;
             context.Positions.Update(element);
             await context.SaveChangesAsync();

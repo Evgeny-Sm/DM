@@ -21,6 +21,7 @@ namespace DM.BLL.MapServices
             CreateMap<UserAction, UserActionDTO>();
             CreateMap<Account, AccountDTO>().ForMember("PersonId", p=>p.MapFrom(a=>a.Person.Id));
             CreateMap<Section, SectionDTO>();
+            CreateMap<Position, PositionDTO>();
         }
     }
 }

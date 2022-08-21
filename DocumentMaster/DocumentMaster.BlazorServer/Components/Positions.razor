@@ -1,0 +1,131 @@
+﻿@using DM.BLL.Services
+@using DM.DAL.Models
+@using Microsoft.EntityFrameworkCore
+@using Models
+
+
+
+@inject PositionService PositionService
+
+
+<h3>Должности</h3>
+
+<AuthorizeView Roles="admin">
+    <Authorized>
+        <RadzenButton Icon="add_circle_outline" ButtonStyle="ButtonStyle.Secondary" Text="Добавить"
+                      Click="@InsertRow" Disabled=@(positionToInsert != null) />
+
+        <RadzenDataGrid @ref="PositionGrid" Data="@PositionsList" TItem="PositionDTO" AllowFiltering="false" AllowColumnResize="true"
+                        PageSize="10" AllowPaging="true" AllowSorting="true" ColumnWidth="100px"
+                        EditMode="DataGridEditMode.Single"
+                        RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow">
+            <Columns>
+                <RadzenDataGridColumn TItem="PositionDTO" Property="Name" Title="Название" Width="100%">
+                    <EditTemplate Context="section">
+                        <RadzenTextBox @bind-Value="section.Name" Style="width:100%; display: block" Name="Name" />
+                        <RadzenRequiredValidator Text="Name is required" Component="Name" Popup="true" />
+                    </EditTemplate>
+                </RadzenDataGridColumn>
+
+                <RadzenDataGridColumn TItem="PositionDTO" Context="sampleBlazorModelsSampleOrder" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="120px">
+                    <Template Context="sect">
+                        <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@(args => EditRow(sect))" @onclick:stopPropagation="true">
+                        </RadzenButton>
+                    </Template>
+                    <EditTemplate Context="sect">
+                        <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Primary" Class="m-1" Click="@((args) => SaveRow(sect))">
+                        </RadzenButton>
+                        <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@((args) => CancelEdit(sect))">
+                        </RadzenButton>
+                    </EditTemplate>
+                </RadzenDataGridColumn>
+
+                <RadzenDataGridColumn TItem="PositionDTO" Context="sect" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="60px">
+                    <Template Context="sect">
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(sect))" @onclick:stopPropagation="true">
+                        </RadzenButton>
+                    </Template>
+                    <EditTemplate Context="sect">
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(sect))">
+                        </RadzenButton>
+                    </EditTemplate>
+                </RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
+
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public IList<PositionDTO> PositionsList { get; set; }
+
+    private PositionDTO positionToInsert { get; set; }
+
+    RadzenDataGrid<PositionDTO> PositionGrid;
+
+    protected override async void OnInitialized()
+    {
+
+
+    }
+
+    async Task InsertRow()
+    {
+        positionToInsert = new PositionDTO();
+
+        await PositionGrid.InsertRow(positionToInsert);
+    }
+
+    async void OnUpdateRow(PositionDTO pos)
+    {
+        await PositionService.UpdateAsync(pos);
+        await PositionGrid.Reload();
+    }
+
+    async void OnCreateRow(PositionDTO pos)
+    {
+        var s = await PositionService.AddPositionAsync(pos);
+        PositionsList.Add(s);
+        await PositionGrid.Reload();
+    }
+
+    async Task EditRow(PositionDTO pos)
+    {
+        await PositionGrid.EditRow(pos);
+    }
+
+    async Task SaveRow(PositionDTO dep)
+    {
+        if (dep == positionToInsert)
+        {
+            positionToInsert = null;
+        }
+
+        await PositionGrid.UpdateRow(dep);
+    }
+
+    void CancelEdit(PositionDTO dep)
+    {
+        if (dep == positionToInsert)
+        {
+            positionToInsert = null;
+        }
+        PositionGrid.CancelEditRow(dep);
+    }
+
+    async Task DeleteRow(PositionDTO dep)
+    {
+        if (dep == positionToInsert)
+        {
+            positionToInsert = null;
+        }
+
+        await PositionService.Delete(dep.Id);
+        PositionsList.Remove(dep);
+
+        await PositionGrid.Reload();
+
+    }
+
+}

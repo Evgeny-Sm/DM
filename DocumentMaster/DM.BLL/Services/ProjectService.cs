@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using DM.DAL.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,9 +13,9 @@ namespace DM.BLL.Services
 {
     public class ProjectService
     {
-        private readonly IDbContextFactory<DMContext>? _contextFactory;
         private readonly IMapper? _mapper;
-        public ProjectService( IMapper mapper, DbContextFactory<DMContext>? contextFactory)
+        private readonly IDbContextFactory<DMContext> _contextFactory;
+        public ProjectService(IMapper mapper, IDbContextFactory<DMContext> contextFactory)
         {
             _mapper = mapper;
             _contextFactory = contextFactory;

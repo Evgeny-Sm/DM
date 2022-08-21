@@ -67,7 +67,7 @@
         <RadzenTemplateForm Context="Cont" Data="@Person" Submit="@((PersonDTO args) => { Submit(args);})">
             <div class="row">
                 <div class="col-md-10">
-                    <RadzenFieldset Text="Личные данные">
+                    <RadzenFieldset  Text="Личные данные">
                         <div class="row">
                             <div class="col-md-4 align-items-center d-flex">
                                 <RadzenLabel Text="Имя" />
@@ -101,17 +101,18 @@
                                 <RadzenLabel Text="Отдел" />
                             </div>
                             <div class="col-md-8">
-                                <RadzenDropDown @bind-Value="Person.DepartmentId" Data="@Departments" style="width: 80%;" 
+                                <RadzenDropDown @bind-Value="Person.DepartmentId" Data="@Departments" style="width: 50%;" 
                                 TextProperty="Name" ValueProperty="Id" Name="Department"/>
                             </div>
                         </div>
                         <br />
                         <div class="row">
                             <div class="col-md-4 align-items-center d-flex">
-                                <RadzenLabel Text="Средняя оплата в час" />
+                                <RadzenLabel Text="Должность" />
                             </div>
                             <div class="col-md-8">
-                                <RadzenTextBox style="width: 50%;" @bind-Value="Salary" Name="TG" />
+                                <RadzenDropDown @bind-Value="Person.PositionId" Data="@Positions" style="width: 50%;" 
+                                TextProperty="Name" ValueProperty="Id" Name="Pos"/>
                             </div>
                         </div>
                         <br />
@@ -120,7 +121,8 @@
                                 <RadzenLabel Text="Средняя оплата в час" />
                             </div>
                             <div class="col-md-8">
-                                <RadzenTextBox style="width: 50%;" @bind-Value="Salary" Name="TG" />
+                                <RadzenTextBox style="width: 50%;" @bind-Value="Salary" Name="Salary" />
+                                <RadzenRegexValidator Text="Salary not corrected" Component="Salary" Pattern="[0-9]{0,8}"  Popup="true" />
                             </div>
                         </div>
 
@@ -150,6 +152,8 @@
 
     private IList<DepartmentDTO> Departments { get; set; }
 
+    private IList<PositionDTO> Positions { get; set; }
+
     private string Salary { get; set; }
 
     protected override async void OnInitialized()
@@ -159,6 +163,13 @@
             var d = await DepartmentServices.GetDepartmentsListAsync();
             Departments = d.ToList();
         }
+        if (Positions is null)
+        {
+            var p = await PositionService.GetAllAsync();
+            Positions = p.ToList();
+        }
+        Salary = Person.SalaryPerH.ToString();
+
         StateHasChanged();
     }
 
@@ -169,17 +180,21 @@
 
         }
 
-
-
     }
 
     async void Submit(PersonDTO arg)
     {
+        if (double.TryParse(Salary, out double s))
+        {
+            arg.SalaryPerH = s;
+        }
         await PersonService.UpdatePersonAsync(arg);
+
+        Navigation.NavigateTo("/");
     }
 
-        async void Cancel()
+    async void Cancel()
     {
         Navigation.NavigateTo("/");
     }
- }
+}

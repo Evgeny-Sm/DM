@@ -36,12 +36,13 @@ builder.Services.AddDbContextFactory<DMContext>(opt => opt.UseSqlServer(builder.
 
 builder.Services.AddScoped<PersonService>();
 builder.Services.AddScoped<DepartmentService>();
-builder.Services.AddScoped<ProjectService>();
+
 builder.Services.AddScoped<ActionService>();
 builder.Services.AddScoped<FileService>();
 builder.Services.AddScoped<PositionService>();
 builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<SectionService>();
+builder.Services.AddScoped<ProjectService>();
 
 
 
