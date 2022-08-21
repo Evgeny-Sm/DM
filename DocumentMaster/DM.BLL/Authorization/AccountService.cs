@@ -19,7 +19,7 @@ namespace DM.BLL.Authorization
             _contextFactory = contextFactory;
             _mapper = mapper;
         }
-        public AccountDTO? GetByUserName(string userName)
+        public async Task<AccountDTO>? GetByUserName(string userName)
         {
             using var context = _contextFactory.CreateDbContext();
             {
@@ -28,6 +28,33 @@ namespace DM.BLL.Authorization
                 return _mapper.Map<AccountDTO>(account);
             }
         }
+        public async Task<AccountDTO>? GetByPersonId(int personId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            {
+                Account? account = context.Accounts.Include(p => p.Person).Single(x => x.PersonId == personId);
+
+                return _mapper.Map<AccountDTO>(account);
+            }
+        }
+
+        public async Task UpdatePassword(AccountDTO accountDTO)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var element = context.Accounts.Find(accountDTO.Id);
+            if (element is null)
+            {
+                element = new Account();
+                throw new ArgumentNullException($"Unknown {element.GetType().Name}");
+            }
+            element.Password = accountDTO.Password;
+            context.Accounts.Update(element);
+            await context.SaveChangesAsync();
+
+        }
+
+
+
 
         public void Dispose()
         {

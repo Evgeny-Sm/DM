@@ -67,74 +67,76 @@
         <RadzenTemplateForm Context="Cont" Data="@Person" Submit="@((PersonDTO args) => { Submit(args);})">
             <div class="row">
                 <div class="col-md-10">
-                    <RadzenFieldset  Text="Личные данные">
+                    <RadzenFieldset style="width:100%" Text="Личные данные">
                         <div class="row">
-                            <div class="col-md-4 align-items-center d-flex">
+                            <div class="col-md-4 align-items-lg-stretch d-flex">
                                 <RadzenLabel Text="Имя" />
                             </div>
 
                             <div class="col-md-8">
-                                <RadzenTextBox style="width: 50%;" @bind-Value="Person.FirstName" Name="FileName" />
+                                <RadzenTextBox style="width: 70%;" @bind-Value="Person.FirstName" Name="FileName" />
                             </div>
                         </div>
                         <br />
                         <div class="row">
-                            <div class="col-md-4 align-items-center d-flex">
+                            <div class="col-md-4 align-items-lg-stretch d-flex">
                                 <RadzenLabel Text="Фамилия" />
                             </div>
                             <div class="col-md-8">
-                                <RadzenTextBox style="width: 50%;" @bind-Value="Person.LastName" Name="LastName" />
+                                <RadzenTextBox style="width: 70%;" @bind-Value="Person.LastName" Name="LastName" />
                             </div>
                         </div>
                         <br />
                         <div class="row">
-                            <div class="col-md-4 align-items-center d-flex">
+                            <div class="col-md-4 align-items-lg-stretch d-flex">
                                 <RadzenLabel Text="Телеграм" />
                             </div>
                             <div class="col-md-8">
-                                <RadzenTextBox style="width: 50%;" @bind-Value="Person.TelegramContact" Name="TG" />
+                                <RadzenTextBox style="width: 70%;" @bind-Value="Person.TelegramContact" Name="TG" />
                             </div>
                         </div>
                         <br />
                         <div class="row">
-                            <div class="col-md-4 align-items-center d-flex">
+                            <div class="col-md-4 align-items-lg-stretch d-flex">
                                 <RadzenLabel Text="Отдел" />
                             </div>
                             <div class="col-md-8">
-                                <RadzenDropDown @bind-Value="Person.DepartmentId" Data="@Departments" style="width: 50%;" 
-                                TextProperty="Name" ValueProperty="Id" Name="Department"/>
+                                <RadzenDropDown @bind-Value="Person.DepartmentId" Data="@Departments" style="width: 70%;"
+                                                TextProperty="Name" ValueProperty="Id" Name="Department" />
                             </div>
                         </div>
                         <br />
                         <div class="row">
-                            <div class="col-md-4 align-items-center d-flex">
+                            <div class="col-md-4 align-items-lg-stretch d-flex">
                                 <RadzenLabel Text="Должность" />
                             </div>
                             <div class="col-md-8">
-                                <RadzenDropDown @bind-Value="Person.PositionId" Data="@Positions" style="width: 50%;" 
-                                TextProperty="Name" ValueProperty="Id" Name="Pos"/>
+                                <RadzenDropDown @bind-Value="Person.PositionId" Data="@Positions" style="width: 70%;"
+                                                TextProperty="Name" ValueProperty="Id" Name="Pos" />
                             </div>
                         </div>
                         <br />
                         <div class="row">
-                            <div class="col-md-4 align-items-center d-flex">
+                            <div class="col-md-4 align-items-lg-stretch d-flex">
                                 <RadzenLabel Text="Средняя оплата в час" />
                             </div>
                             <div class="col-md-8">
-                                <RadzenTextBox style="width: 50%;" @bind-Value="Salary" Name="Salary" />
-                                <RadzenRegexValidator Text="Salary not corrected" Component="Salary" Pattern="[0-9]{0,8}"  Popup="true" />
+                                <RadzenTextBox style="width: 70%;" @bind-Value="Salary" Name="Salary" />
+                                <RadzenRegexValidator Text="Salary not corrected" Component="Salary" Pattern="[0-9]{0,8}" Popup="true" />
                             </div>
                         </div>
-
+                        <div class="row">
+                            <br />
+                            <div class="col-md-12 d-flex align-items-start justify-content-center" style="margin-top: 16px;">
+                                <RadzenButton ButtonType="ButtonType.Submit" Icon="save" style="display: inline-block; margin-left: 10px;" Text="Save" />
+                                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="cancel" style="display: inline-block; margin-left: 10px;" Text="Cancel" Click="@Cancel" />
+                            </div>
+                        </div>
                     </RadzenFieldset>
+
                 </div>
             </div>
-            <div class="row justify-content-center">
-                <div class="col-md-12 d-flex align-items-end justify-content-center" style="margin-top: 16px;">
-                    <RadzenButton ButtonType="ButtonType.Submit" Icon="save" style="display: inline-block; margin-left: 10px;" Text="Save" />
-                    <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="cancel" style="display: inline-block; margin-left: 10px;" Text="Cancel" Click="@Cancel" />
-                </div>
-            </div>
+
         </RadzenTemplateForm>
     </Authorized>
 </AuthorizeView>

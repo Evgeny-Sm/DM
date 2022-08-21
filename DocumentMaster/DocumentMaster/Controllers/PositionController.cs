@@ -45,7 +45,7 @@ namespace DocumentMaster.API.Controllers
         {
             try
             {
-                await _positionService.UpdateAsync(id, unit);
+                await _positionService.UpdateAsync(unit);
             }
             catch (Exception ex)
             {

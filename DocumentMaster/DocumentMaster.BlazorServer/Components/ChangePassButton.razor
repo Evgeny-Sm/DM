@@ -1,0 +1,45 @@
+﻿@using Models
+
+@inject DialogService DialogService
+
+
+<RadzenButton Text="Сменить пароль" ButtonStyle="ButtonStyle.Secondary" Click=@OpenPassDialog />
+
+@code {
+    [Parameter]
+    public PersonDTO Person { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        DialogService.OnOpen += Open;
+        DialogService.OnClose += Close;
+    }
+
+    private async Task OpenPassDialog()
+    {
+            
+     await DialogService.OpenAsync<DialogPassReset>($"Смена пароля",
+           new Dictionary<string, object>() { { "Person", Person } },
+           new DialogOptions() { Width = "700px", Height = "470px", Resizable = true, Draggable = false, CloseDialogOnOverlayClick = true });
+    }
+
+    void Open(string title, Type type, Dictionary<string, object> parameters, DialogOptions options)
+    {
+
+    }
+
+    void Close(dynamic result)
+    {
+        Dispose();
+    }
+
+        public void Dispose()
+    {
+        // The DialogService is a singleton so it is advisable to unsubscribe.
+        DialogService.OnOpen -= Open;
+        DialogService.OnClose -= Close;
+    }
+
+
+}

@@ -1,0 +1,87 @@
+﻿@using DM.BLL.Authorization
+@using Models
+
+@inject DialogService DialogService
+@inject AccountService AccountService
+@inject IJSRuntime js
+@inject NavigationManager navManager
+
+
+
+
+<RadzenCard Style="width: 100%; overflow: hidden;">
+    <RadzenTemplateForm TItem="Model" Data=@model Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
+        <div class="row mb-5">
+            <div class="col-md-4" style="align-self: center;">
+                <RadzenLabel Text="Текущий пароль" />
+            </div>
+            <div class="col">
+                <RadzenPassword style="display: block" Name="OldPassword" @bind-Value=@model.OldPassword Class="w-100" />
+                <RadzenRequiredValidator Component="OldPassword" Text="Enter password" Popup="@popup" Style="position: absolute" />
+            </div>
+        </div>
+        <div class="row mb-5">
+            <div class="col-md-4" style="align-self: center;">
+                <RadzenLabel Text="Новый пароль" />
+            </div>
+            <div class="col">
+                <RadzenPassword style="display: block" Name="Password" @bind-Value=@model.Password Class="w-100" />
+                <RadzenRequiredValidator Component="Password" Text="Enter password" Popup="@popup" Style="position: absolute" />
+            </div>
+        </div>
+        <div class="row mb-4">
+            <div class="col-md-4" style="align-self: center;">
+                <RadzenLabel Text="Повторите новый пароль" />
+            </div>
+            <div class="col">
+                <RadzenPassword style="display: block" Name="RepeatPassword" @bind-Value=@model.RepeatPassword Class="w-100" />
+                <RadzenRequiredValidator Component="RepeatPassword" Text="Repeat your password" Popup=@popup Style="position: absolute" />
+                <RadzenCompareValidator Visible=@(!string.IsNullOrEmpty(model.RepeatPassword)) Value=@model.Password Component="RepeatPassword" Text="Passwords should be the same" Popup=@popup Style="position: absolute" />
+            </div>
+        </div>
+        <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Submit"></RadzenButton>
+        <RadzenButton Click="@((args) => DialogService.Close())" ButtonStyle="ButtonStyle.Danger" Text="Cancel" Style="width: 120px" />
+    </RadzenTemplateForm>
+</RadzenCard>
+
+
+
+@code {
+    [Parameter]
+    public PersonDTO Person { get; set; }
+
+    private class Model
+    {
+        public string OldPassword { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public string RepeatPassword { get; set; } = string.Empty;
+
+    }
+    private Model model = new Model();
+    bool popup;
+
+
+    CompareOperator compareOperator = CompareOperator.Equal;
+
+    private async void OnSubmit(Model model)
+    {
+        var userAccount =await AccountService.GetByPersonId(Person.Id);
+
+        if (userAccount == null || userAccount.Password != model.OldPassword)
+        {
+            await js.InvokeVoidAsync("alert", "Invalid Password");
+            return;
+        }
+        userAccount.Password = model.Password;
+        await AccountService.UpdatePassword(userAccount);
+        DialogService.Close();
+
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        
+    }
+
+
+}
