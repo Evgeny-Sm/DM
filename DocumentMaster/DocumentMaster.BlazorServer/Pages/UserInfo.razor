@@ -28,8 +28,7 @@
         {
             CurrentPerson = new PersonDTO();
             var authState = await authenticationState;
-            CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
-            PersonService.Dispose();
+            CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);        
             StateHasChanged();
         }
 

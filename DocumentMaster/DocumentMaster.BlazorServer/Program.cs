@@ -33,6 +33,7 @@ builder.Services.AddScoped<ContextMenuService>();
 
 builder.Services.AddDbContext<DMContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DMContext")
     ?? throw new InvalidOperationException("Connection string 'DMContext' not found.")));
+builder.Services.AddDbContextFactory<DMContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DMContext")));
 
 builder.Services.AddScoped<PersonService>();
 builder.Services.AddScoped<DepartmentService>();
@@ -42,6 +43,7 @@ builder.Services.AddScoped<FileService>();
 builder.Services.AddScoped<PositionService>();
 builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<SectionService>();
+
 
 
 //Auto Mapper Config

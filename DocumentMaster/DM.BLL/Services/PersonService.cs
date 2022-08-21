@@ -15,10 +15,12 @@ namespace DM.BLL.Services
     {
         private readonly DMContext? _db;
         private readonly IMapper? _mapper;
-        public PersonService(DMContext context, IMapper mapper)
+        private readonly IDbContextFactory<DMContext>? _contextFactory;
+        public PersonService(DMContext context, IMapper mapper, IDbContextFactory<DMContext>? contextFactory)
         {
             _db = context;
             _mapper = mapper;
+            _contextFactory = contextFactory;
         }
 
         public async Task<IEnumerable<PersonDTO>> GetPersonsAsync()
@@ -40,14 +42,16 @@ namespace DM.BLL.Services
         }
         public async Task<PersonDTO> GetPersonByNameAsync(string name)
         {
-
-            var person = await _db.Persons.Include(a=>a.Account).Where(p=>p.Account.UserName==name).SingleAsync();
-            if (person == null)
+            using (var context = _contextFactory.CreateDbContext())
             {
-                return null;
+                var person = await context.Persons.Include(a => a.Account).Where(p => p.Account.UserName == name).SingleAsync();
+                if (person == null)
+                {
+                    return null;
+                }
+                var result = _mapper.Map<PersonDTO>(person);
+                return result;
             }
-            var result = _mapper.Map<PersonDTO>(person);
-            return result;
         }
         public async Task<PersonDTO> AddPersonAsync(PersonDTO personDTO)
         {
