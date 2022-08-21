@@ -20,14 +20,18 @@
     [CascadingParameter]
     private Task<AuthenticationState> authenticationState { get; set; }
 
-    private PersonDTO CurrentPerson { get; set; } = new PersonDTO();
+    private PersonDTO CurrentPerson { get; set; } 
 
     protected override async void OnInitialized()
     {
+        if (CurrentPerson is null)
+        {
+            CurrentPerson = new PersonDTO();
+            var authState = await authenticationState;
+            CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+            PersonService.Dispose();
+            StateHasChanged();
+        }
 
-        CurrentPerson = new PersonDTO();
-        var authState = await authenticationState;
-        CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
-        StateHasChanged();
     }
 }

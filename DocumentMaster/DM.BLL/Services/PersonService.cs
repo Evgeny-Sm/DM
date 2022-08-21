@@ -64,9 +64,9 @@ namespace DM.BLL.Services
             await _db.SaveChangesAsync();
             return await GetPersonByIdAsync(person.Id);
         }
-        public async Task UpdatePersonAsync(int id, PersonDTO personDTO)
+        public async Task UpdatePersonAsync(PersonDTO personDTO)
         {
-            var element = _db.Persons.Find(id);
+            var element = _db.Persons.Find(personDTO.Id);
             if (element is null)
             {
                 element = new Person();
@@ -77,6 +77,8 @@ namespace DM.BLL.Services
             element.DepartmentId = personDTO.DepartmentId;
             element.PositionId = personDTO.PositionId;
             element.IsDeleted = personDTO.IsDeleted;
+            element.TelegramContact=personDTO.TelegramContact;
+            element.SalaryPerH=personDTO.SalaryPerH;
 
             _db.Persons.Update(element);
             await _db.SaveChangesAsync();

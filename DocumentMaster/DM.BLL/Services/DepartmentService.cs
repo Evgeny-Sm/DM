@@ -13,6 +13,7 @@ namespace DM.BLL.Services
     public class DepartmentService
     {
         private readonly DMContext? _db;
+        private readonly IDbContextFactory<DMContext>? contextFactory;
         private readonly IMapper? _mapper;
         public DepartmentService(DMContext context, IMapper mapper)
         {

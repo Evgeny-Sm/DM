@@ -23,6 +23,11 @@ namespace Models
 
         [JsonPropertyName("IsDeleted")]
         public bool IsDeleted { get; set; } = false;
+        [JsonPropertyName("TelegramContact")]
+        public string TelegramContact { get; set; }
+        [JsonPropertyName("SalaryPerH")]
+        public double SalaryPerH { get; set; }
+
 
 
     }

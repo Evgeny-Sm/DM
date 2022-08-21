@@ -25,5 +25,10 @@ namespace DM.BLL.Authorization
             
             return _mapper.Map<AccountDTO>(account);
         }
+
+        public void Dispose()
+        {
+            _db.Dispose();
+        }
     }
 }

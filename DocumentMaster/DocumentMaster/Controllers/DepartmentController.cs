@@ -41,11 +41,11 @@ namespace DocumentMaster.API.Controllers
         // PUT: api/Department/5
         [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
-        public async Task<ActionResult> PutDepartment([FromRoute] int id, [FromBody] DepartmentDTO unit)
+        public async Task<ActionResult> PutDepartment( [FromBody] DepartmentDTO unit)
         {
             try
             {
-                await _departmentService.UpdateDepartmentAsync(id, unit);
+                await _departmentService.UpdateDepartmentAsync( unit);
             }
             catch (Exception ex)
             {

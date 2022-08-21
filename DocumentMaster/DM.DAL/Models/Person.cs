@@ -19,6 +19,8 @@ namespace DM.DAL.Models
         public int DepartmentId { get; set; }
         public Position? Position { get; set; }
         public int PositionId { get; set; }
+        public string TelegramContact { get; set; }
+        public double SalaryPerH { get; set; }
         public ICollection<UserAction> UserActions { get; set; }
         public bool IsDeleted { get; set; } = false;
         public Person()

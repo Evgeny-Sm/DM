@@ -61,6 +61,7 @@
                 Role = userAccount.Role,
                 PersonId=userAccount.PersonId
             });
+            accountService.Dispose();
         navManager.NavigateTo("/", true);
 
     }
