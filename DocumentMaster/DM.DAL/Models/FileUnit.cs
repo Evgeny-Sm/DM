@@ -26,6 +26,7 @@ namespace DM.DAL.Models
         public Section? Section { get; set; }
         public int SectionId { get; set; }
         public int NumbersDrawings { get; set; }
+        public string Status { get; set; }
 
         public FileUnit()
         { 

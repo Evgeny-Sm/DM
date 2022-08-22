@@ -1,12 +1,14 @@
 ﻿@page "/login"
 
 @using DM.BLL.Authorization
+@using DM.BLL.Services
 @using DocumentMaster.BlazorServer.Authentication
 @using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.JSInterop
 
 @inject AccountService accountService
+@inject PersonService PersonService
 @inject IJSRuntime js
 @inject AuthenticationStateProvider authStateProvider
 @inject NavigationManager navManager
@@ -49,12 +51,20 @@
     private async Task Authenticate()
     {
         var userAccount =await accountService.GetByUserName(model.UserName);
-        
+
         if (userAccount == null || userAccount.Password != model.Password)
         {
             await js.InvokeVoidAsync("alert", "Invalid User Name or Password");
             return;
         }
+        var person = await PersonService.GetPersonByIdAsync(userAccount.PersonId);
+
+        if (person == null || person.IsConfirmed==false || person.IsDeleted==true)
+        {
+            await js.InvokeVoidAsync("alert", "Invalid User Name or Password");
+            return;
+        }
+
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
         await customAuthStateProvider.UpdateAuthenticationState(new UserSession
             {

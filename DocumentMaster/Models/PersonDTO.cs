@@ -27,6 +27,8 @@ namespace Models
         public string TelegramContact { get; set; }
         [JsonPropertyName("SalaryPerH")]
         public double SalaryPerH { get; set; }
+        public bool IsConfirmed { get; set; } = false;
+        public string Role { get; set; }=String.Empty;
 
 
 

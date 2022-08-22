@@ -142,14 +142,15 @@ else
 
         Projects = p.ToList();
 
-        _file = await fileService.AddFileAsync(new FileDTO 
+        _file = await fileService.AddFileAsync(new FileDTO
             { Name = "new_file",
-            DepartmentId=CurrentPerson.DepartmentId,
-            ProjectId=Projects.First().Id,
-            SectionId=SectionsList.First().Id,
-            IsDeleted=true
-            },
-            CurrentPerson.Id);
+                DepartmentId = CurrentPerson.DepartmentId,
+                ProjectId = Projects.First().Id,
+                SectionId = SectionsList.First().Id,
+                IsDeleted = true,
+                PersonId = CurrentPerson.Id,
+                Status = StatusFile.Work
+    });
 
         StateHasChanged();
 

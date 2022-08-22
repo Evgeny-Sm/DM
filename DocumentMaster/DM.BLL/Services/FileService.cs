@@ -57,13 +57,22 @@ namespace DM.BLL.Services
 
         }
 
-        public async Task<FileDTO> AddFileAsync(FileDTO fileDTO, int personId)
+        public async Task<FileDTO> AddFileAsync(FileDTO fileDTO)
         {
             using var context = _contextFactory.CreateDbContext();
-            FileUnit element = new FileUnit { Name = fileDTO.Name, Description = fileDTO.Description, ProjectId = fileDTO.ProjectId, DepartmentId = fileDTO.DepartmentId, PathFile = $"{fileDTO.ProjectId}/{fileDTO.Name}", SectionId = fileDTO.SectionId, NumbersDrawings = fileDTO.NumbersDrawings, TimeToDev = fileDTO.TimeToDev };
+            FileUnit element = new FileUnit { Name = fileDTO.Name, 
+                Description = fileDTO.Description, 
+                ProjectId = fileDTO.ProjectId, 
+                DepartmentId = fileDTO.DepartmentId,
+                PathFile = $"{fileDTO.ProjectId}/{fileDTO.Name}", 
+                SectionId = fileDTO.SectionId, 
+                NumbersDrawings = fileDTO.NumbersDrawings, 
+                TimeToDev = fileDTO.TimeToDev,
+                Status=fileDTO.Status
+            };
             await context.FileUnits.AddAsync(element);
             await context.SaveChangesAsync();
-            var action = new UserAction { FileUnitId = element.Id, PersonId = personId, ActionNumber = 1, IsConfirmed = true };
+            var action = new UserAction { FileUnitId = element.Id, PersonId = fileDTO.PersonId, ActionNumber = 1, IsConfirmed = true };
             await context.UserActions.AddAsync(action);
             await context.SaveChangesAsync();
             return await GetItemByIdAsync(element.Id);
@@ -87,7 +96,9 @@ namespace DM.BLL.Services
             element.NumbersDrawings = fileDTO.NumbersDrawings;
             element.SectionId = fileDTO.SectionId;
             element.TimeToDev = fileDTO.TimeToDev;
+            element.Status= fileDTO.Status;
             context.FileUnits.Update(element);
+
             return await context.SaveChangesAsync();
 
         }

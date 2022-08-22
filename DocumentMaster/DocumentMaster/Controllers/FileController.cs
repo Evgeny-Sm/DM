@@ -56,7 +56,7 @@ namespace DocumentMaster.API.Controllers
         {
             try
             {
-                var result = await _fileService.AddFileAsync(fileDTO, personId);
+                var result = await _fileService.AddFileAsync(fileDTO);
                 return Ok(result);
             }
             catch (Exception ex)

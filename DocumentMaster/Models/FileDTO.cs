@@ -28,6 +28,9 @@ namespace Models
         public string ProjectName { get; set; } = string.Empty;
         public string DepartmentName { get; set; } = string.Empty;
         public int NumbersDrawings { get; set; }
+        public string Status { get; set; } = string.Empty;
+        [JsonPropertyName("PersonId")]
+        public int PersonId { get; set; }
 
 
     }

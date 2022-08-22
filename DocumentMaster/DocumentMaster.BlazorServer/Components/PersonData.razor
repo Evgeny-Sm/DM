@@ -1,4 +1,5 @@
 ﻿
+@using DM.BLL.Authorization
 @using DM.BLL.Services
 @using DocumentMaster.BlazorServer.Authentication
 @using DocumentMaster.BlazorServer.Pages
@@ -6,14 +7,12 @@
 @using Models
 
 @inject PersonService PersonService
+@inject AccountService AccountService
 @inject DepartmentService DepartmentServices
 @inject PositionService PositionService
 @inject NavigationManager Navigation
 
-<RadzenDialog />
-<RadzenNotification />
-<RadzenContextMenu />
-<RadzenTooltip />
+
 
 <AuthorizeView Roles="user,head">
     <Authorized>
@@ -125,6 +124,36 @@
                                 <RadzenRegexValidator Text="Salary not corrected" Component="Salary" Pattern="[0-9]{0,8}" Popup="true" />
                             </div>
                         </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-4 align-items-lg-stretch d-flex">
+                                <RadzenLabel Text="Role" />
+                            </div>
+                            <div class="col-md-8">
+                                <RadzenDropDown @bind-Value="Person.Role" Data="@Roles" style="width: 70%;"
+                                                Name="Role" />
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-4 align-items-lg-stretch d-flex">
+                                <RadzenLabel Text="Подтверждён" />
+                            </div>
+                            <div class="col-md-8">
+                                <RadzenDropDown @bind-Value="Person.IsConfirmed" Data="@Bools" style="width: 70%;"
+                                                 Name="IsConfirmed" />
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-4 align-items-lg-stretch d-flex">
+                                <RadzenLabel Text="Удалён" />
+                            </div>
+                            <div class="col-md-8">
+                                <RadzenDropDown @bind-Value="Person.IsDeleted" Data="@Bools" style="width: 70%;"
+                                                Name="IsDeleted" />
+                            </div>
+                        </div>
                         <div class="row">
                             <br />
                             <div class="col-md-12 d-flex align-items-start justify-content-center" style="margin-top: 16px;">
@@ -144,13 +173,12 @@
 
 
 @code {
-
     [CascadingParameter]
     private Task<AuthenticationState> authenticationState { get; set; }
 
 
     [Parameter]
-    public PersonDTO Person { get; set; } = new PersonDTO();
+    public PersonDTO Person { get; set; }  
 
     private IList<DepartmentDTO> Departments { get; set; }
 
@@ -158,8 +186,14 @@
 
     private string Salary { get; set; }
 
+    private List<bool> Bools = new List<bool> { true, false };
+
+    private List<string> Roles = new List<string> { "admin", "head", "user" };
+
     protected override async void OnInitialized()
     {
+
+
         if (Departments is null)
         {          
             var d = await DepartmentServices.GetDepartmentsListAsync();
@@ -172,14 +206,18 @@
         }
         Salary = Person.SalaryPerH.ToString();
 
+
+
         StateHasChanged();
     }
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
-        if (Person == null)
+        if (Person is null)
         {
+            var authState = await authenticationState;
 
+            Person = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
         }
 
     }

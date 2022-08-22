@@ -8,6 +8,7 @@
 @inject DepartmentService DepartmentsService
 @inject SectionService SectionsService
 @inject PositionService PositionService
+@inject PersonService PersonService
 
 
 <h1>Администрирование</h1>
@@ -16,26 +17,55 @@
     <Authorized>
         <div class="row">
             <div class="col-md-6">
-                <Sections SectionsList="@SectionsList" />
+                <RadzenFieldset style="width:100%" Text="Разделы">
+                    <Sections SectionsList="@SectionsList" />
+                </RadzenFieldset>
             </div>
             <div class="col-md-6">
-                <Departments DepartmentsList="@DepartmentsList" />
-                <Positions PositionsList="@PositionsList"/>
+                <RadzenFieldset style="width:100%" Text="Отделы">
+                    <Departments DepartmentsList="@DepartmentsList" />
+                </RadzenFieldset>
+                <br />
+                <RadzenFieldset style="width:100%" Text="Должности">
+                    <Positions PositionsList="@PositionsList" />
+                </RadzenFieldset>
             </div>
         </div>
+        <br/>
+        <RadzenFieldset style="width:100%" Text="Сотрудники">
+            <div class="row">
+                <div class="col-md-6">
+                    <Employees PersonsGetCallBack="@SetSelectedPersons" />
+                </div>
+                <div class="col-md-5">
+                    @if (SelectedPerson != null)
+                    {
+                        <PersonData Person="@SelectedPerson" />
+                    }
+                </div>
+            </div>
+        </RadzenFieldset>
     </Authorized>
 </AuthorizeView>
 
 
 @code {
+    
+    private PersonDTO SelectedPerson { get; set; }
+
     private IList<DepartmentDTO> DepartmentsList { get; set; }
 
     private IList<SectionDTO> SectionsList { get; set; }
 
     private IList<PositionDTO> PositionsList { get; set; }
 
+    private IList<PersonDTO> Persons { get; set; }
+
+
+
     protected override async void OnInitialized()
     {
+
         var dep = await DepartmentsService.GetDepartmentsListAsync();
 
         DepartmentsList = dep.ToList();
@@ -48,9 +78,23 @@
 
         PositionsList = pos.ToList();
 
+        var pers = await PersonService.GetPersonsAsync();
+
+        Persons = pers.ToList();
+
+        SelectedPerson = Persons.First();
 
         StateHasChanged();
 
+    }
+    private void SetSelectedPersons(IList<PersonDTO> persons)
+    {
+        if (persons != null)
+        {
+            SelectedPerson = persons.First();
+            
+        }
+        
     }
 
 }

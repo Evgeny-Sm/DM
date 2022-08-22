@@ -23,6 +23,7 @@ namespace DM.DAL.Models
         public double SalaryPerH { get; set; }
         public ICollection<UserAction> UserActions { get; set; }
         public bool IsDeleted { get; set; } = false;
+        public bool IsConfirmed { get; set; }=false;
         public Person()
         { 
             UserActions= new List<UserAction>();

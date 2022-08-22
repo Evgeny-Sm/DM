@@ -23,7 +23,7 @@ namespace DM.BLL.Authorization
         {
             using var context = _contextFactory.CreateDbContext();
             {
-                Account? account = context.Accounts.Include(p => p.Person).FirstOrDefault(x => x.UserName == userName);
+                Account? account = context.Accounts.Where(x => x.UserName == userName).Include(p => p.Person).Single();
 
                 return _mapper.Map<AccountDTO>(account);
             }
@@ -32,7 +32,7 @@ namespace DM.BLL.Authorization
         {
             using var context = _contextFactory.CreateDbContext();
             {
-                Account? account = context.Accounts.Include(p => p.Person).Single(x => x.PersonId == personId);
+                Account? account = context.Accounts.Where(x => x.PersonId == personId).Include(p => p.Person).Single();
 
                 return _mapper.Map<AccountDTO>(account);
             }
@@ -48,6 +48,21 @@ namespace DM.BLL.Authorization
                 throw new ArgumentNullException($"Unknown {element.GetType().Name}");
             }
             element.Password = accountDTO.Password;
+            context.Accounts.Update(element);
+            await context.SaveChangesAsync();
+
+        }
+
+        public async Task UpdateRole(AccountDTO accountDTO)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var element = context.Accounts.Find(accountDTO.Id);
+            if (element is null)
+            {
+                element = new Account();
+                throw new ArgumentNullException($"Unknown {element.GetType().Name}");
+            }
+            element.Role = accountDTO.Role;
             context.Accounts.Update(element);
             await context.SaveChangesAsync();
 

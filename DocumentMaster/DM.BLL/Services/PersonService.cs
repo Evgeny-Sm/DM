@@ -24,7 +24,7 @@ namespace DM.BLL.Services
         public async Task<IEnumerable<PersonDTO>> GetPersonsAsync()
         {
             using var context = _contextFactory.CreateDbContext();
-            var persons = await context.Persons.Where(p => p.IsDeleted == false).ToListAsync();
+            var persons = await context.Persons.Include(p=>p.Account).ToListAsync();
             var result = _mapper.Map<IEnumerable<PersonDTO>>(persons);
             return result;
         }
@@ -53,7 +53,15 @@ namespace DM.BLL.Services
         public async Task<PersonDTO> AddPersonAsync(PersonDTO personDTO)
         {
             using var context = _contextFactory.CreateDbContext();
-            Person person = new Person { FirstName = personDTO.FirstName, LastName = personDTO.LastName, DepartmentId = personDTO.DepartmentId, PositionId = personDTO.PositionId, IsDeleted = false };
+            Person person = new Person { FirstName = personDTO.FirstName, 
+                LastName = personDTO.LastName, 
+                DepartmentId = personDTO.DepartmentId, 
+                PositionId = personDTO.PositionId, 
+                IsDeleted = false,
+                TelegramContact=personDTO.TelegramContact,
+                SalaryPerH=personDTO.SalaryPerH,
+                IsConfirmed=personDTO.IsConfirmed,
+            };
             await context.Persons.AddAsync(person);
             await context.SaveChangesAsync();
             return await GetPersonByIdAsync(person.Id);
@@ -62,7 +70,7 @@ namespace DM.BLL.Services
         {
             using var context = _contextFactory.CreateDbContext();
 
-            var element = context.Persons.Find(personDTO.Id);
+            var element = context.Persons.Where(p=>p.Id==personDTO.Id).Include(a=>a.Account).Single();
             if (element is null)
             {
                 element = new Person();
@@ -75,8 +83,14 @@ namespace DM.BLL.Services
             element.IsDeleted = personDTO.IsDeleted;
             element.TelegramContact = personDTO.TelegramContact;
             element.SalaryPerH = personDTO.SalaryPerH;
+            element.IsConfirmed = personDTO.IsConfirmed;
+            element.Account.Role = personDTO.Role;
+
 
             context.Persons.Update(element);
+            context.Accounts.Update(element.Account);
+
+
             await context.SaveChangesAsync();
 
         }
