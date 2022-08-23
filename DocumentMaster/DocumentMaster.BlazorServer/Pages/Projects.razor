@@ -113,7 +113,7 @@
     private IEnumerable<FileUnit> GetFilesInProject(int id)
     {
         
-        return db.FileUnits.Where(f=>f.ProjectId==id).Include(f => f.UserActions).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
+        return db.FileUnits.Where(f=>f.ProjectId==id).Include(f => f.UserActions).ThenInclude(u=>u.Person).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
 
     }
 

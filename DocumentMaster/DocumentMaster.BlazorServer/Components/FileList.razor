@@ -6,7 +6,7 @@
 @using System.Text.Json
 
 @inject FileService fileService
-@inject IDbContextFactory<DMContext> _contextFactory
+@inject DMContext db
 
 <AuthorizeView>
     <Authorized>
@@ -15,8 +15,18 @@
                         AllowSorting="true">
             <Columns>
                 <RadzenDataGridColumn TItem="FileUnit" Property="Id" Title="Id" Width="50px" />
-                <RadzenDataGridColumn TItem="FileUnit" Property="Name" Title="Название" Width="250px" />
-                <RadzenDataGridColumn TItem="FileUnit" Property="ProjectId" Title="Номер проекта" Width="50px" />
+                <RadzenDataGridColumn TItem="FileUnit" Property="Name" Title="Название" Width="200px" />
+                <RadzenDataGridColumn TItem="FileUnit"  Title="Разработчик" Width="80px">
+                    <Template Context="file">
+                        <RadzenLabel Text="@GetDeveloper(file)"/>
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="FileUnit" Title="Статус" Width="60px">
+                    <Template Context="file">
+                        <RadzenLabel Text="@file.Status" />
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="FileUnit" Property="ProjectId" Title="Проект" Width="60px" />
             </Columns>
         </RadzenDataGrid>
     </Authorized>
@@ -36,20 +46,24 @@
 
     protected override async void OnInitialized()
     {
-
+        if (files == null)
+        {
+            files = db.FileUnits.Include(f => f.UserActions).ThenInclude(u => u.Person).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
+        }
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        using var context = _contextFactory.CreateDbContext();
-        if (files == null)
-        {
-            files = context.FileUnits.Include(f => f.UserActions).Include(d=>d.Department).Include(p=>p.Project).Include(s=>s.Section).ToArray();
-        }
+
     }
 
     private async void ValueChanged(IList<FileUnit> args)
     {
         await FilesGetCallBack.InvokeAsync(args);
+    }
+
+    private string GetDeveloper(FileUnit file)
+    {
+        return file.UserActions.Where(u => u.ActionNumber == 1).Single().Person.LastName;
     }
 }
