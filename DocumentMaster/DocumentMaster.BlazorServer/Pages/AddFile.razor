@@ -76,7 +76,7 @@ else
                                     <RadzenTextBox style="width: 100%;" @bind-Value="_file.Name" Name="FileName" />
                                 </div>
                                 <div class="col-md-4">
-                                    <RadzenUpload @ref="upload" Auto="false" Multiple="false" Url=@($"upload?id={ProjectId}&fileName={_file.Name}")                                  
+                                    <RadzenUpload @ref="upload"  Auto="false"  Multiple="false" Url=@($"upload?id={ProjectId}&fileName={_file.Name}")                                  
                                     Change=@(args => OnChangeUpload(args, "Manual Upload"))/>
                                 </div>
                             </div>
@@ -117,6 +117,7 @@ else
     private Task<AuthenticationState> authenticationState { get; set; }
 
     private FileDTO _file = new FileDTO();
+    private bool FileReadyToUpload { get; set; }
     private PersonDTO CurrentPerson { get; set; }
     private IList<ProjectDTO> Projects { get; set; }
     private IList<SectionDTO> SectionsList { get; set; }
@@ -127,11 +128,7 @@ else
 
     protected override async void OnInitialized()
     {
-
-        CurrentPerson = new PersonDTO();
-
         var authState = await authenticationState;
-
         CurrentPerson = await personService.GetPersonByNameAsync(authState.User.Identity.Name);
 
         var s = await sectionService.GetAllAsync();
@@ -152,14 +149,18 @@ else
                 Status = StatusFile.Work
     });
 
+
         StateHasChanged();
 
     }
 
     async void Submit(FileDTO arg)
     {
-        var authState = await authenticationState;
-        CurrentPerson = await personService.GetPersonByNameAsync(authState.User.Identity.Name);
+        if (!FileReadyToUpload)
+        {
+            await JS.InvokeVoidAsync("alert", "Выберите файл");
+            return;
+        } 
         arg.DepartmentId = CurrentPerson.DepartmentId;
         arg.Name = GetPrefix(arg.Id) + "_" + arg.Name;
         if (int.TryParse(NumbersDrawings, out int num))
@@ -204,7 +205,16 @@ else
 
     void OnChangeUpload(UploadChangeEventArgs args, string name)
     {
+        if (args.Files.Count() == 0)
+        {
+            FileReadyToUpload = false;
+            return;
+        }
+
+        FileReadyToUpload = true;
         _file.Name = args.Files.First().Name;
+
+        
     }
     private string GetPrefix(int id)
     {

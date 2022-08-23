@@ -1,0 +1,12 @@
+C:\Tasks\work\DM\DocumentMaster\Models\bin\Release\net6.0\Models.deps.json
+C:\Tasks\work\DM\DocumentMaster\Models\bin\Release\net6.0\Models.dll
+C:\Tasks\work\DM\DocumentMaster\Models\bin\Release\net6.0\Models.pdb
+C:\Tasks\work\DM\DocumentMaster\Models\obj\Release\net6.0\Models.csproj.AssemblyReference.cache
+C:\Tasks\work\DM\DocumentMaster\Models\obj\Release\net6.0\Models.GeneratedMSBuildEditorConfig.editorconfig
+C:\Tasks\work\DM\DocumentMaster\Models\obj\Release\net6.0\Models.AssemblyInfoInputs.cache
+C:\Tasks\work\DM\DocumentMaster\Models\obj\Release\net6.0\Models.AssemblyInfo.cs
+C:\Tasks\work\DM\DocumentMaster\Models\obj\Release\net6.0\Models.csproj.CoreCompileInputs.cache
+C:\Tasks\work\DM\DocumentMaster\Models\obj\Release\net6.0\Models.dll
+C:\Tasks\work\DM\DocumentMaster\Models\obj\Release\net6.0\refint\Models.dll
+C:\Tasks\work\DM\DocumentMaster\Models\obj\Release\net6.0\Models.pdb
+C:\Tasks\work\DM\DocumentMaster\Models\obj\Release\net6.0\ref\Models.dll
