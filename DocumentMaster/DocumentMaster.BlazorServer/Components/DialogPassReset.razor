@@ -1,4 +1,5 @@
 ﻿@using DM.BLL.Authorization
+@using DocumentMaster.BlazorServer.Authentication
 @using Models
 
 @inject DialogService DialogService
@@ -66,13 +67,14 @@
     private async void OnSubmit(Model model)
     {
         var userAccount =await AccountService.GetByPersonId(Person.Id);
+        var h = SecureData.GetHashData(model.OldPassword);
 
-        if (userAccount == null || userAccount.Password != model.OldPassword)
+        if (userAccount == null || userAccount.Password != h)
         {
             await js.InvokeVoidAsync("alert", "Invalid Password");
             return;
         }
-        userAccount.Password = model.Password;
+        userAccount.Password = SecureData.GetHashData(model.Password);
         await AccountService.UpdatePassword(userAccount);
         DialogService.Close();
 

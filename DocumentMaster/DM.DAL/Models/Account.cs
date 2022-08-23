@@ -17,7 +17,6 @@ namespace DM.DAL.Models
         [StringLength(50, MinimumLength = 5)]
         public string UserName { get; set; }=String.Empty;
         [Required]
-        [StringLength(100)]
         public string Password { get; set; }=String.Empty;
         public string Role { get; set; } = String.Empty;
         public Person? Person { get; set; }       

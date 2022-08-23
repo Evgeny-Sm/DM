@@ -51,8 +51,8 @@
     private async Task Authenticate()
     {
         var userAccount =await accountService.GetByUserName(model.UserName);
-
-        if (userAccount == null || userAccount.Password != model.Password)
+        var h = SecureData.GetHashData(model.Password);
+        if (userAccount == null || userAccount.Password != h)
         {
             await js.InvokeVoidAsync("alert", "Invalid User Name or Password");
             return;
@@ -61,7 +61,7 @@
 
         if (person == null || person.IsConfirmed==false || person.IsDeleted==true)
         {
-            await js.InvokeVoidAsync("alert", "Invalid User Name or Password");
+            await js.InvokeVoidAsync("alert", "This account is not confirmed yet or was deleted");
             return;
         }
 
