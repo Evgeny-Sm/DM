@@ -12,13 +12,6 @@
 <AuthorizeView>
     <Authorized>
 
-        <RadzenCard>
-            <div class="d-inline-block">
-                <RadzenCheckBox @bind-Value=@CheckBoxUser Name="CheckBox1" TValue="bool" Change=@(args => OnChange(args)) />
-                <RadzenLabel Text="Только мои" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
-            </div>
-        </RadzenCard>
-
         <RadzenDataGrid Data="@files" TItem="FileUnit" ValueChanged="@(args=>ValueChanged(args))" AllowVirtualization="true" Style="height:800px"
                         AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.Or"
                         AllowSorting="true">
@@ -48,16 +41,18 @@
     [CascadingParameter]
     private Task<AuthenticationState> authenticationState { get; set; }
 
-    [Parameter] 
+    [Parameter]
+    public bool OnlyMy { get; set; } = false;
+
+    [Parameter]
     public IEnumerable<FileUnit>? files { get; set; }
 
     [Parameter]
     public EventCallback<IList<FileUnit>> FilesGetCallBack { get; set; }
 
+
     private PersonDTO CurrentPerson { get; set; }
 
-    private bool CheckBoxUser = false;
-    private bool CheckBoxStatus;
 
 
     protected override async void OnInitialized()
@@ -74,7 +69,14 @@
 
     protected override async Task OnParametersSetAsync()
     {
-
+        if (OnlyMy)
+        {
+            files = db.FileUnits.Include(f => f.UserActions).ThenInclude(u => u.Person).Where(t => t.UserActions.First().PersonId == CurrentPerson.Id).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
+        }
+        else
+        {
+            files = db.FileUnits.Include(f => f.UserActions).ThenInclude(u => u.Person).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
+        }
     }
 
     private async void ValueChanged(IList<FileUnit> args)
@@ -89,14 +91,7 @@
 
     private void OnChange(bool value)
     {
-        if (value)
-        {
-            files = db.FileUnits.Include(f => f.UserActions).ThenInclude(u => u.Person).Where(t => t.UserActions.First().PersonId == CurrentPerson.Id).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
-        }
-        else
-        {
-            files = db.FileUnits.Include(f => f.UserActions).ThenInclude(u => u.Person).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
-        }
+
 
     }
 }

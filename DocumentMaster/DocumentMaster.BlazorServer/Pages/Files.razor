@@ -26,7 +26,13 @@
         <RadzenButton Icon="add_circle_outline" ButtonStyle="ButtonStyle.Secondary" Text="Добавить" Click="@NavigatetoToAddFile" />
         <div class="row" >
             <div class="col-md-6">
-                <FileList FilesGetCallBack="@SetSelectedFiles"/>
+                <RadzenCard>
+                    <div class="d-inline-block">
+                        <RadzenCheckBox @bind-Value=@CheckBoxUser Name="CheckBox1" TValue="bool" Change=@(args => OnChange(args)) />
+                        <RadzenLabel Text="Только мои" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
+                    </div>
+                </RadzenCard>
+                <FileList OnlyMy=@CheckBoxUser FilesGetCallBack="@SetSelectedFiles"/>
             </div>
             <div class="col-md-6">
                 @if (SelectedFiles.Count != 0)
@@ -48,11 +54,15 @@
 
     public IEnumerable<FileUnit>? files{ get; set; }
 
+    private bool CheckBoxUser = false;
+
 
     protected override async  void OnInitialized()
     {
         SelectedFiles = new List<FileUnit>();
     }
+
+
 
     private void SetSelectedFiles(IList<FileUnit> fileUnit)
     {
@@ -60,6 +70,12 @@
         {
             SelectedFiles = fileUnit;
         }
+    }
+
+    private void OnChange(bool value)
+    {
+
+
     }
 
         private void NavigatetoToAddFile()
