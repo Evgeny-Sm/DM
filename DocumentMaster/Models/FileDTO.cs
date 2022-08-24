@@ -25,6 +25,9 @@ namespace Models
         public int ProjectId { get; set; }
         public int SectionId { get; set; }
         public double TimeToDev { get; set; }
+        public double TimeToCreate { get; set; }
+        public double TimeToCheck { get; set; }
+        public double TimeToOverCheck { get; set; }
         public string ProjectName { get; set; } = string.Empty;
         public string DepartmentName { get; set; } = string.Empty;
         public int NumbersDrawings { get; set; }

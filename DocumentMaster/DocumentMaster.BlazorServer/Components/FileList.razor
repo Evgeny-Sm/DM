@@ -12,7 +12,7 @@
 <AuthorizeView>
     <Authorized>
 
-        <RadzenDataGrid Data="@files" TItem="FileUnit" ValueChanged="@(args=>ValueChanged(args))" AllowVirtualization="true" Style="height:800px"
+        <RadzenDataGrid Data="@files" TItem="FileUnit" ValueChanged="@(args=>ValueChanged(args))" AllowVirtualization="true" Style="height:600px"
                         AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.Or"
                         AllowSorting="true">
             <Columns>
@@ -42,9 +42,6 @@
     private Task<AuthenticationState> authenticationState { get; set; }
 
     [Parameter]
-    public bool OnlyMy { get; set; } = false;
-
-    [Parameter]
     public IEnumerable<FileUnit>? files { get; set; }
 
     [Parameter]
@@ -58,10 +55,7 @@
     protected override async void OnInitialized()
     {
 
-        if (files == null)
-        {
-            files = db.FileUnits.Include(f => f.UserActions).ThenInclude(u => u.Person).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
-        }
+
         var authState = await authenticationState;
 
         CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
@@ -69,14 +63,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        if (OnlyMy)
-        {
-            files = db.FileUnits.Include(f => f.UserActions).ThenInclude(u => u.Person).Where(t => t.UserActions.First().PersonId == CurrentPerson.Id).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
-        }
-        else
-        {
-            files = db.FileUnits.Include(f => f.UserActions).ThenInclude(u => u.Person).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
-        }
+        StateHasChanged();
     }
 
     private async void ValueChanged(IList<FileUnit> args)

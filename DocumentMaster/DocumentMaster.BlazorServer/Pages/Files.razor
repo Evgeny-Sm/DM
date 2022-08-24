@@ -14,7 +14,7 @@
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
 @inject FileService fileService
-@inject PersonService personService
+@inject PersonService PersonService
 @inject DMContext db
 @inject IWebHostEnvironment WebHostInvironment
 
@@ -32,7 +32,7 @@
                         <RadzenLabel Text="Только мои" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
                     </div>
                 </RadzenCard>
-                <FileList OnlyMy=@CheckBoxUser FilesGetCallBack="@SetSelectedFiles"/>
+                <FileList files="@files"  FilesGetCallBack="@SetSelectedFiles"/>
             </div>
             <div class="col-md-6">
                 @if (SelectedFiles.Count != 0)
@@ -46,9 +46,8 @@
 </AuthorizeView>
 
 @code {
-
-
-
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
 
     private IList<FileUnit> SelectedFiles { get; set; }
 
@@ -56,10 +55,19 @@
 
     private bool CheckBoxUser = false;
 
+    private PersonDTO CurrentPerson { get; set; }
+
 
     protected override async  void OnInitialized()
     {
+        if (files == null)
+        {
+            files = db.FileUnits.Include(f => f.UserActions).ThenInclude(u => u.Person).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
+        }
         SelectedFiles = new List<FileUnit>();
+        var authState = await authenticationState;
+
+        CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
     }
 
 
@@ -74,7 +82,14 @@
 
     private void OnChange(bool value)
     {
-
+        if (CheckBoxUser)
+        {
+            files = db.FileUnits.Include(f => f.UserActions).ThenInclude(u => u.Person).Where(t => t.UserActions.First().PersonId == CurrentPerson.Id).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
+        }
+        else
+        {
+            files = db.FileUnits.Include(f => f.UserActions).ThenInclude(u => u.Person).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
+        }
 
     }
 

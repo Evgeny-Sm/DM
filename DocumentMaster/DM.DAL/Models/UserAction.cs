@@ -18,6 +18,8 @@ namespace DM.DAL.Models
         public int PersonId { get; set; }
         public int ActionNumber { get; set; }
         public bool IsConfirmed { get; set; }
+        public double TimeForAction { get; set; }
+
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 
     }

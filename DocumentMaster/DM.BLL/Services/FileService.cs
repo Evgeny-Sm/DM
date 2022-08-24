@@ -28,7 +28,7 @@ namespace DM.BLL.Services
         {
             using var context = _contextFactory.CreateDbContext();
 
-            var elements = await context.FileUnits.ToListAsync();
+            var elements = await context.FileUnits.Include(f=>f.UserActions).ToListAsync();
             var result = _mapper.Map<IEnumerable<FileDTO>>(elements);
             return result;
 
@@ -37,7 +37,7 @@ namespace DM.BLL.Services
         {
             using var context = _contextFactory.CreateDbContext();
 
-            var elements = await context.FileUnits.Where(d => d.IsDeleted == false).ToListAsync();
+            var elements = await context.FileUnits.Where(d => d.IsDeleted == false).Include(f=>f.UserActions).ToListAsync();
             var result = _mapper.Map<IEnumerable<FileDTO>>(elements);
             return result;
 
@@ -47,7 +47,7 @@ namespace DM.BLL.Services
         {
             using var context = _contextFactory.CreateDbContext();
 
-            var element = await context.FileUnits.FindAsync(id);
+            var element = await context.FileUnits.Where(f=>f.Id==id).Include(f=>f.UserActions).SingleAsync();
             if (element == null)
             {
                 return null;
@@ -66,13 +66,16 @@ namespace DM.BLL.Services
                 DepartmentId = fileDTO.DepartmentId,
                 PathFile = $"{fileDTO.ProjectId}/{fileDTO.Name}", 
                 SectionId = fileDTO.SectionId, 
-                NumbersDrawings = fileDTO.NumbersDrawings, 
-                TimeToDev = fileDTO.TimeToDev,
+                NumbersDrawings = fileDTO.NumbersDrawings,          
                 Status=fileDTO.Status
             };
             await context.FileUnits.AddAsync(element);
             await context.SaveChangesAsync();
-            var action = new UserAction { FileUnitId = element.Id, PersonId = fileDTO.PersonId, ActionNumber = 1, IsConfirmed = true };
+            var action = new UserAction { FileUnitId = element.Id, 
+                PersonId = fileDTO.PersonId, 
+                ActionNumber = 1,
+                TimeForAction=fileDTO.TimeToCreate,
+                IsConfirmed = true };
             await context.UserActions.AddAsync(action);
             await context.SaveChangesAsync();
             return await GetItemByIdAsync(element.Id);
@@ -81,7 +84,7 @@ namespace DM.BLL.Services
         public async Task<int> UpdateFileAsync(FileDTO fileDTO)
         {
             using var context = _contextFactory.CreateDbContext();
-            var element = context.FileUnits.Find(fileDTO.Id);
+            var element = await context.FileUnits.Where(f => f.Id == fileDTO.Id).Include(f => f.UserActions).SingleAsync();
             if (element is null)
             {
                 element = new FileUnit();
@@ -95,9 +98,10 @@ namespace DM.BLL.Services
             element.IsDeleted = fileDTO.IsDeleted;
             element.NumbersDrawings = fileDTO.NumbersDrawings;
             element.SectionId = fileDTO.SectionId;
-            element.TimeToDev = fileDTO.TimeToDev;
             element.Status= fileDTO.Status;
             context.FileUnits.Update(element);
+            element.UserActions.First().TimeForAction = fileDTO.TimeToCreate;
+            context.UserActions.Update(element.UserActions.First());
 
             return await context.SaveChangesAsync();
 

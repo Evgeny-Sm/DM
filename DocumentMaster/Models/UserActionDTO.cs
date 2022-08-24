@@ -17,6 +17,8 @@ namespace Models
         public int PersonId { get; set; }
         [JsonPropertyName("ActionNumber")]
         public int ActionNumber { get; set; }
+        [JsonPropertyName("TimeForAction")]
+        public double TimeForAction { get; set; }
         [JsonPropertyName("CreatedDate")]
         public DateTime CreatedDate { get; set; } = DateTime.Now;
     }

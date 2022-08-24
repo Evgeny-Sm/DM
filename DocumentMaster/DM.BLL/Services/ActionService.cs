@@ -45,6 +45,13 @@ namespace DM.BLL.Services
             var result = _mapper.Map<IEnumerable<UserActionDTO>>(element);
             return result;
         }
+        public async Task<IEnumerable<UserActionDTO>> GetAllActionsByFileIdAsync(int fileId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var element = await context.UserActions.Where(a => a.FileUnitId == fileId).Include(f => f.Person).Include(t => t.FileUnit).ToListAsync();
+            var result = _mapper.Map<IEnumerable<UserActionDTO>>(element);
+            return result;
+        }
         public async Task<IEnumerable<UserActionDTO>> GetAllActionsOnDateAsync(DateTime? dateFrom,DateTime? dateTo)
         {
             using var context = _contextFactory.CreateDbContext();
