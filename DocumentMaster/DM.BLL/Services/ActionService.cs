@@ -68,6 +68,23 @@ namespace DM.BLL.Services
             var result = _mapper.Map<IEnumerable<UserActionDTO>>(element);
             return result;
         }
+        public async Task<UserActionDTO> AddAction(UserActionDTO actionDTO)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            UserAction userAction = new UserAction()
+            {
+                FileUnitId=actionDTO.FileUnitId,
+                PersonId=actionDTO.PersonId,
+                ActionNumber= actionDTO.ActionNumber,
+                TimeForAction=actionDTO.TimeForAction,
+                CreatedDate=actionDTO.CreatedDate,
+                IsConfirmed= actionDTO.IsConfirmed               
+            };
+            await context.UserActions.AddAsync(userAction);
+            await context.SaveChangesAsync();
+            return await GetActionByIdAsync(userAction.Id);
+
+        }
         public async Task<bool> Delete(int id)
         {
             using var context = _contextFactory.CreateDbContext();

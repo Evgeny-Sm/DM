@@ -1,0 +1,65 @@
+﻿@using DM.DAL.Models
+@using Models
+@using DM.BLL.Services
+
+@inject DialogService DialogService
+@inject PersonService PersonService
+
+
+    <RadzenButton Text="На проверку" ButtonStyle="ButtonStyle.Secondary" 
+Click=@OpenSendToCheckDialog />
+
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+    [Parameter]
+
+    public IList<FileUnit> SelectedFile { get; set; }
+
+
+    private PersonDTO CurrentPerson { get; set; } = new PersonDTO();
+
+
+
+    protected override async void OnInitialized()
+    {
+        DialogService.OnOpen += Open;
+        DialogService.OnClose += Close;
+
+        var authState = await authenticationState;
+
+        CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+    }
+
+    private async Task OpenSendToCheckDialog()
+    {
+
+        await DialogService.OpenAsync<SendToCheckDialog>($"Смена пароля",
+              new Dictionary<string, object>() { { "SelectedFile", SelectedFile.First() } },
+              new DialogOptions() { Width = "700px", Height = "470px", Resizable = true, Draggable = false, CloseDialogOnOverlayClick = true });
+    }
+    protected override void OnParametersSet()
+    {
+
+    }
+
+    void Open(string title, Type type, Dictionary<string, object> parameters, DialogOptions options)
+    {
+
+    }
+
+    void Close(dynamic result)
+    {
+        Dispose();
+    }
+
+    public void Dispose()
+    {
+        // The DialogService is a singleton so it is advisable to unsubscribe.
+        DialogService.OnOpen -= Open;
+        DialogService.OnClose -= Close;
+    }
+
+}

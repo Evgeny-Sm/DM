@@ -21,5 +21,6 @@ namespace Models
         public double TimeForAction { get; set; }
         [JsonPropertyName("CreatedDate")]
         public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public bool IsConfirmed { get; set; }
     }
 }

@@ -12,4 +12,11 @@ namespace Models
         public const string Checking = "Checking";
         public const string Archive = "Archive";
     }
+
+    public static class ActionsNumbers
+    { 
+        public const int Create = 1;
+        public const int Check1 = 2;
+        public const int Check2 = 3;
+    }
 }

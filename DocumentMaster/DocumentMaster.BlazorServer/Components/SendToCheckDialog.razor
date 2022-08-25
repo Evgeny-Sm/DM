@@ -1,0 +1,78 @@
+﻿@using DM.BLL.Services
+@using DM.DAL.Models
+@using Models
+@using Microsoft.EntityFrameworkCore;
+
+@inject DialogService DialogService
+@inject PersonService PersonService
+@inject ActionService ActionService
+@inject DMContext db
+
+
+<RadzenCard Style="width: 100%; overflow: hidden;">
+    <RadzenTemplateForm TItem="UserActionDTO" Data="UserAction" Submit="@OnSubmit" InvalidSubmit=@OnInvalidSubmit>
+        <div class="row mb-5">
+            <div class="col-md-4" style="align-self: center;">
+                <RadzenLabel Text="Выберите проверяющего" />
+            </div>
+            <div class="col-md-4" style="right">
+                <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                        Data=@(Persons) Style="width: 100%" AllowColumnResize="true"
+                                        TextProperty="LastName" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
+                                        Change=@(args => OnChangePerson(args))>
+                    <Columns>
+                        <RadzenDropDownDataGridColumn Property="FirstName" Title="FirstName" Width="120px" />
+                        <RadzenDropDownDataGridColumn Property="LastName" Title="LastName" Width="120px" />
+                    </Columns>
+                </RadzenDropDownDataGrid>
+            </div>
+        </div>
+
+        <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Submit"></RadzenButton>
+        <RadzenButton Click="@((args) => DialogService.Close())" ButtonStyle="ButtonStyle.Danger" Text="Cancel" Style="width: 120px" />
+    </RadzenTemplateForm>
+
+</RadzenCard>
+
+
+
+@code {
+    [Parameter]
+    public FileUnit SelectedFile { get; set; }
+
+    private UserActionDTO UserAction { get; set; }
+
+    private IList<PersonDTO> Persons { get; set; }
+
+    protected override async void OnInitialized()
+    {
+        UserAction = new UserActionDTO();
+        var p = await PersonService.GetPersonsAsync();
+        Persons = p.ToList();
+        StateHasChanged();
+    }
+
+    private async void OnSubmit()
+    {
+        UserAction.FileUnitId = SelectedFile.Id;
+        UserAction.IsConfirmed = false;
+        await ActionService.AddAction(UserAction);
+        SelectedFile.Status = StatusFile.Checking;
+        db.Update(SelectedFile);
+        await db.SaveChangesAsync();
+        db.Dispose();
+        DialogService.Close();
+
+    }
+
+    void OnChangePerson(object value)
+    {
+        UserAction.PersonId = (int)value;
+        UserAction.ActionNumber = ActionsNumbers.Check1;
+    }
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+
+    }
+
+}

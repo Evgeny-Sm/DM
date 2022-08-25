@@ -37,8 +37,15 @@
             <div class="col-md-6">
                 @if (SelectedFiles.Count != 0)
                 {
-                    <DownloadFile SelectedFiles="@SelectedFiles"/>
-                    <InfoFile SelectedFiles="@SelectedFiles"/>                   
+                    <div class="d-inline-block">
+                        <DownloadFile SelectedFiles="@SelectedFiles" />
+                    @if (IsReadyToCheck)
+                    {
+                        <SendToCheckButton SelectedFile="@SelectedFiles"/>
+                    }
+                    </div>
+                    <InfoFile SelectedFiles="@SelectedFiles"/> 
+                    
                 }
             </div>
         </div>
@@ -56,6 +63,8 @@
     private bool CheckBoxUser = false;
 
     private PersonDTO CurrentPerson { get; set; }
+
+    private bool IsReadyToCheck { get; set; } = true;
 
 
     protected override async  void OnInitialized()
@@ -77,6 +86,14 @@
         if (fileUnit != null)
         {
             SelectedFiles = fileUnit;
+            if (SelectedFiles.FirstOrDefault().UserActions.First().PersonId != CurrentPerson.Id)
+            {
+                IsReadyToCheck = false;
+            }
+            else
+            {
+                IsReadyToCheck = true;
+            }
         }
     }
 
