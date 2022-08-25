@@ -15,7 +15,7 @@
 @inject IJSRuntime JS
 @inject FileService fileService
 @inject PersonService PersonService
-@inject DMContext db
+@inject IDbContextFactory<DMContext> contextFactory
 @inject IWebHostEnvironment WebHostInvironment
 
 
@@ -71,7 +71,8 @@
     {
         if (files == null)
         {
-            files = db.FileUnits.Include(f => f.UserActions).ThenInclude(u => u.Person).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
+            using var context = contextFactory.CreateDbContext();
+            files = context.FileUnits.Include(f => f.UserActions).ThenInclude(u => u.Person).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
         }
         SelectedFiles = new List<FileUnit>();
         var authState = await authenticationState;
@@ -99,13 +100,14 @@
 
     private void OnChange(bool value)
     {
+        using var context = contextFactory.CreateDbContext();
         if (CheckBoxUser)
         {
-            files = db.FileUnits.Include(f => f.UserActions).ThenInclude(u => u.Person).Where(t => t.UserActions.First().PersonId == CurrentPerson.Id).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
+            files = context.FileUnits.Include(f => f.UserActions).ThenInclude(u => u.Person).Where(t => t.UserActions.First().PersonId == CurrentPerson.Id).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
         }
         else
         {
-            files = db.FileUnits.Include(f => f.UserActions).ThenInclude(u => u.Person).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
+            files = context.FileUnits.Include(f => f.UserActions).ThenInclude(u => u.Person).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
         }
 
     }

@@ -71,13 +71,6 @@ namespace DM.BLL.Services
             };
             await context.FileUnits.AddAsync(element);
             await context.SaveChangesAsync();
-            var action = new UserAction { FileUnitId = element.Id, 
-                PersonId = fileDTO.PersonId, 
-                ActionNumber = 1,
-                TimeForAction=fileDTO.TimeToCreate,
-                IsConfirmed = true };
-            await context.UserActions.AddAsync(action);
-            await context.SaveChangesAsync();
             return await GetItemByIdAsync(element.Id);
         }
 
@@ -100,9 +93,7 @@ namespace DM.BLL.Services
             element.SectionId = fileDTO.SectionId;
             element.Status= fileDTO.Status;
             context.FileUnits.Update(element);
-            element.UserActions.First().TimeForAction = fileDTO.TimeToCreate;
-            context.UserActions.Update(element.UserActions.First());
-
+            
             return await context.SaveChangesAsync();
 
         }

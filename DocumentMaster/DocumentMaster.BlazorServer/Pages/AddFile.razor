@@ -14,6 +14,7 @@
 @inject PersonService personService
 @inject ProjectService projectService
 @inject SectionService sectionService
+@inject ActionService ActionService
 @inject DialogService DialogService
 @inject NavigationManager Navigation
 @inject ProtectedSessionStorage sessionStorage
@@ -121,7 +122,9 @@ else
     private PersonDTO CurrentPerson { get; set; }
     private IList<ProjectDTO> Projects { get; set; }
     private IList<SectionDTO> SectionsList { get; set; }
+
     private RadzenUpload upload;
+
     private string TimeToDevelop { get; set; } = string.Empty;
     private string NumbersDrawings { get; set; } = string.Empty;
     private int ProjectId { get; set; }
@@ -140,14 +143,15 @@ else
         Projects = p.ToList();
 
         _file = await fileService.AddFileAsync(new FileDTO
-            { Name = "new_file",
+            {
+                Name = "new_file",
                 DepartmentId = CurrentPerson.DepartmentId,
                 ProjectId = Projects.First().Id,
                 SectionId = SectionsList.First().Id,
                 IsDeleted = true,
                 PersonId = CurrentPerson.Id,
                 Status = StatusFile.Work
-    });
+            });
 
 
         StateHasChanged();
@@ -180,6 +184,16 @@ else
         var result= await fileService.UpdateFileAsync(arg);
 
         ProjectId = arg.ProjectId;
+        UserActionDTO action = new UserActionDTO
+        {
+            FileUnitId=_file.Id,
+            PersonId=CurrentPerson.Id,
+            ActionNumber=ActionsNumbers.Create,
+            TimeForAction=_file.TimeToCreate,
+            IsConfirmed=true
+        };
+
+        await ActionService.AddAction(action);
 
 
         StateHasChanged();

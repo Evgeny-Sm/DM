@@ -26,6 +26,13 @@ namespace DM.BLL.Services
             var result = _mapper.Map<IEnumerable<UserActionDTO>>(element);
             return result;
         }
+        public async Task<int> GetCountActionsOnCheckAsync(int personId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var element = await context.UserActions.Where(u=>u.ActionNumber > 1&&u.PersonId==personId).ToListAsync();
+            var result = element.Count;
+            return result;
+        }
 
         public async Task<UserActionDTO> GetActionByIdAsync(int id)
         {

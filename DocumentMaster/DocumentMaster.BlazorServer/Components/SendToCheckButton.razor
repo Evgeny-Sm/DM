@@ -36,7 +36,7 @@ Click=@OpenSendToCheckDialog />
     private async Task OpenSendToCheckDialog()
     {
 
-        await DialogService.OpenAsync<SendToCheckDialog>($"Смена пароля",
+        await DialogService.OpenAsync<SendToCheckDialog>($"На проверку",
               new Dictionary<string, object>() { { "SelectedFile", SelectedFile.First() } },
               new DialogOptions() { Width = "700px", Height = "470px", Resizable = true, Draggable = false, CloseDialogOnOverlayClick = true });
     }

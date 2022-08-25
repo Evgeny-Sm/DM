@@ -1,9 +1,14 @@
 ﻿@inherits LayoutComponentBase
 @inject AuthenticationStateProvider authStateProvider
 @inject NavigationManager navManager
+@inject PersonService PersonService
+@inject ActionService ActionService
 
+@using DM.BLL.Services
 @using DocumentMaster.BlazorServer.Authentication
+@using Models
 @using Radzen
+
 <RadzenDialog />
 <RadzenNotification />
 <RadzenContextMenu />
@@ -18,9 +23,12 @@
     </div>
     <main>
         <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
             <AuthorizeView>
                 <Authorized>
+                    <div class="col">
+                        <span style="color:darkslateblue">@CurrentPerson.FirstName @CurrentPerson.LastName</span>
+                        <a @onclick="RedirectToCheck" href="javascript:void(0)"> На проверку: @CountToCheck</a>
+                    </div>
                     <a @onclick="Logout" href="javascript:void(0)">Logout</a>
                     <a @onclick="RedirectToUserInfo" href="javascript:void(0)">Settings</a>
                 </Authorized>
@@ -36,6 +44,27 @@
 </div>
 @code
 {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+    private PersonDTO CurrentPerson { get; set; } = new PersonDTO();
+
+    private int CountToCheck { get; set; }
+
+    protected override async void OnInitialized()
+    {
+        var authState = await authenticationState;
+        if (authState.User.Identities.FirstOrDefault().IsAuthenticated)
+        {
+            CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+
+            CountToCheck = await ActionService.GetCountActionsOnCheckAsync(CurrentPerson.Id);
+
+            StateHasChanged();
+        }
+
+    }
+
     private async Task Logout()
     {
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
@@ -46,6 +75,11 @@
     {
 
         navManager.NavigateTo("/UserInfo");
+    }
+    private void RedirectToCheck()
+    {
+
+        navManager.NavigateTo("/OnCheck");
     }
 
 }

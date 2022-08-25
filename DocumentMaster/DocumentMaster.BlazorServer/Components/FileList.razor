@@ -7,6 +7,7 @@
 
 @inject FileService fileService
 @inject PersonService PersonService
+@inject ActionService ActionService
 @inject DMContext db
 
 <AuthorizeView>
@@ -50,11 +51,14 @@
 
     private PersonDTO CurrentPerson { get; set; }
 
+    private IList<PersonDTO> Persons { get; set; }
+
 
 
     protected override async void OnInitialized()
     {
-
+        var p = await PersonService.GetPersonsAsync();
+        Persons = p.ToList();
 
         var authState = await authenticationState;
 
@@ -73,7 +77,7 @@
 
     private string GetDeveloper(FileUnit file)
     {
-        return file.UserActions.Where(u => u.ActionNumber == 1).Single().Person.LastName;
+        return file.UserActions.First().Person.LastName;
     }
 
     private void OnChange(bool value)

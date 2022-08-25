@@ -5,8 +5,10 @@
 
 @inject DialogService DialogService
 @inject PersonService PersonService
+@inject FileService FileService
 @inject ActionService ActionService
-@inject DMContext db
+
+
 
 
 <RadzenCard Style="width: 100%; overflow: hidden;">
@@ -15,7 +17,7 @@
             <div class="col-md-4" style="align-self: center;">
                 <RadzenLabel Text="Выберите проверяющего" />
             </div>
-            <div class="col-md-4" style="right">
+            <div class="col-md-4" style="align-content:center">
                 <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
                                         Data=@(Persons) Style="width: 100%" AllowColumnResize="true"
                                         TextProperty="LastName" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
@@ -44,23 +46,29 @@
 
     private IList<PersonDTO> Persons { get; set; }
 
+    private FileDTO FileDTOForSave { get; set; }
+
+
     protected override async void OnInitialized()
     {
         UserAction = new UserActionDTO();
         var p = await PersonService.GetPersonsAsync();
         Persons = p.ToList();
+
         StateHasChanged();
     }
 
     private async void OnSubmit()
     {
+        var f = await FileService.GetItemByIdAsync(SelectedFile.Id);  
+        f.Status = StatusFile.Checking;
+        await FileService.UpdateFileAsync(f);
+
         UserAction.FileUnitId = SelectedFile.Id;
         UserAction.IsConfirmed = false;
         await ActionService.AddAction(UserAction);
-        SelectedFile.Status = StatusFile.Checking;
-        db.Update(SelectedFile);
-        await db.SaveChangesAsync();
-        db.Dispose();
+
+
         DialogService.Close();
 
     }
