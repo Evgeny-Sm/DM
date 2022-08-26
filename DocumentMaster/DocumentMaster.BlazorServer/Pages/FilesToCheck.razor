@@ -1,0 +1,98 @@
+﻿@page "/FilesToCheck"
+
+@attribute [Authorize]
+
+@using DM.BLL.Services
+@using DM.DAL.Models
+@using DocumentMaster.BlazorServer.Pages
+@using Microsoft.EntityFrameworkCore
+@using Models
+
+
+@inject IDbContextFactory<DMContext> contextFactory
+@inject DMContext db
+@inject PersonService PersonService
+@inject FileService FileService
+@inject ActionService ActionService
+
+<h3>FilesToCheck</h3>
+
+<AuthorizeView>
+    <Authorized>
+        <div class="row">
+            <div class="col-md-6">
+                <FileList files="@files" FilesGetCallBack="@SetSelectedFiles" />
+            </div>
+            <div class="col-md-6">
+                @if (SelectedFiles.Count != 0)
+                {
+                    <div class="d-inline-block">
+                        <DownloadFile SelectedFiles="@SelectedFiles" />
+                        <RadzenButton Click=@(args => CheckingComplete()) ButtonStyle="ButtonStyle.Success" Text="Подтвердить" />
+                        <RadzenButton Click=@(args => CheckingDenied()) ButtonStyle="ButtonStyle.Danger" Text="Вернуть" />
+                    </div>
+                    <InfoFile SelectedFiles="@SelectedFiles" />
+                }
+            </div>
+        </div>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+    private IList<FileUnit> SelectedFiles { get; set; }
+
+    public IEnumerable<FileUnit>? files { get; set; }
+
+    private PersonDTO CurrentPerson { get; set; }
+
+    protected override async void OnInitialized()
+    {
+        SelectedFiles = new List<FileUnit>();
+        var authState = await authenticationState;
+
+        CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+        SelectedFiles = new List<FileUnit>();
+
+        var actions =await ActionService.GetActionsOnCheckAsync(CurrentPerson.Id);
+
+        var fileNumbers = actions.Select(a => a.FileUnitId);
+
+        using var context = contextFactory.CreateDbContext();
+        files = context.FileUnits.Include(f => f.UserActions).
+        ThenInclude(u => u.Person).Include(d => d.Department).
+        Include(p => p.Project).Include(s => s.Section).
+        Where(t => fileNumbers.Contains(t.Id)).ToArray();
+
+        StateHasChanged();
+
+    }
+
+    private void SetSelectedFiles(IList<FileUnit> fileUnit)
+    {
+        if (fileUnit != null)
+        {
+            SelectedFiles = fileUnit;
+        }
+    }
+
+    private async void CheckingComplete()
+    {
+        var actions = await ActionService.GetActionsByFileAndPerson(CurrentPerson.Id,SelectedFiles.FirstOrDefault().Id);
+        foreach (var action in actions)
+        {
+            action.IsConfirmed = true;
+            await ActionService.UpdateActionAcync(action);
+        }
+        var f = await FileService.GetItemByIdAsync(SelectedFiles.FirstOrDefault().Id);
+        f.Status = StatusFile.Archive;
+        await FileService.UpdateFileAsync(f);
+
+    }
+    private void CheckingDenied()
+    {
+
+    }
+}

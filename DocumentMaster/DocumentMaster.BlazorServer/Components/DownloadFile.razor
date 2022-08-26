@@ -28,6 +28,7 @@
             var name = SelectedFiles.FirstOrDefault().Name;
             var downloadPath = WebHostInvironment.WebRootPath + Configuration.GetConnectionString("ProjectRootDir")
                                 + $"\\{SelectedFiles.FirstOrDefault().ProjectId}" + $"\\{name}";
+
             var fileStream = File.OpenRead(@$"{downloadPath}");
 
             using var streamRef = new DotNetStreamReference(stream: fileStream);

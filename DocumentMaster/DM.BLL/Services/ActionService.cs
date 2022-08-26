@@ -29,8 +29,22 @@ namespace DM.BLL.Services
         public async Task<int> GetCountActionsOnCheckAsync(int personId)
         {
             using var context = _contextFactory.CreateDbContext();
-            var element = await context.UserActions.Where(u=>u.ActionNumber > 1&&u.PersonId==personId).ToListAsync();
+            var element = await context.UserActions.Where(u=>u.ActionNumber > ActionsNumbers.Create && u.PersonId==personId && u.IsConfirmed==false).ToListAsync();
             var result = element.Count;
+            return result;
+        }
+        public async Task<IEnumerable<UserActionDTO>> GetActionsOnCheckAsync(int personId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var element = await context.UserActions.Where(u => u.ActionNumber == ActionsNumbers.Check1 && u.PersonId == personId && u.IsConfirmed==false).ToListAsync();
+            var result = _mapper.Map<IEnumerable<UserActionDTO>>(element); ;
+            return result;
+        }
+        public async Task<IEnumerable<UserActionDTO>> GetActionsByFileAndPerson(int personId, int fileId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var element = await context.UserActions.Where(u => u.PersonId == personId && u.FileUnitId == fileId && u.ActionNumber > ActionsNumbers.Create).ToListAsync();
+            var result = _mapper.Map<IEnumerable<UserActionDTO>>(element); ;
             return result;
         }
 
@@ -90,6 +104,23 @@ namespace DM.BLL.Services
             await context.UserActions.AddAsync(userAction);
             await context.SaveChangesAsync();
             return await GetActionByIdAsync(userAction.Id);
+
+        }
+
+        public async Task UpdateActionAcync(UserActionDTO actionDTO)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var element = context.UserActions.Find(actionDTO.Id);
+            if (element is null)
+            {
+                element = new UserAction();
+                throw new ArgumentNullException($"Unknown {element.GetType().Name}");
+            }
+            element.ActionNumber = actionDTO.ActionNumber;
+            element.TimeForAction = actionDTO.TimeForAction;
+            element.IsConfirmed = actionDTO.IsConfirmed;
+            context.UserActions.Update(element);
+            await context.SaveChangesAsync();
 
         }
         public async Task<bool> Delete(int id)
