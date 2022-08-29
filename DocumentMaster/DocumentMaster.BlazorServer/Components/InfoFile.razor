@@ -58,20 +58,12 @@
         {
             return ;
         }
-
-        var perId = SelectedFiles.FirstOrDefault().UserActions.Where(u => u.ActionNumber == 1).Single().PersonId;
-
-        PersonDTO p = await personService.GetPersonByIdAsync(perId);
-
-        if (p != null)
-        {
-            Developer= $"{p.FirstName} {p.LastName}";
-        }
+        Developer = $"{SelectedFiles.FirstOrDefault().Person.FirstName} {SelectedFiles.FirstOrDefault().Person.LastName}";
         Department = SelectedFiles.FirstOrDefault().Department.Name;
         ProjectName = SelectedFiles.FirstOrDefault().Project.Name;
         SectionProject = SelectedFiles.FirstOrDefault().Section.Name;
         NumbersDrawing = SelectedFiles.FirstOrDefault().NumbersDrawings.ToString();
-        TimeToDev = SelectedFiles.FirstOrDefault().UserActions.Sum(u=>u.TimeForAction).ToString();
+        TimeToDev = SelectedFiles.FirstOrDefault().TimeToCreate.ToString();
 
     }
 

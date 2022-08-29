@@ -24,16 +24,14 @@ namespace Models
         [JsonPropertyName("ProjectId")]
         public int ProjectId { get; set; }
         public int SectionId { get; set; }
-        public double TimeToDev { get; set; }
         public double TimeToCreate { get; set; }
-        public double TimeToCheck { get; set; }
-        public double TimeToOverCheck { get; set; }
         public string ProjectName { get; set; } = string.Empty;
         public string DepartmentName { get; set; } = string.Empty;
         public int NumbersDrawings { get; set; }
         public string Status { get; set; } = string.Empty;
         [JsonPropertyName("PersonId")]
         public int PersonId { get; set; }
+        public DateTime CreateDate { get; set; }
 
 
     }

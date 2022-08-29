@@ -6,13 +6,13 @@
 @inject DialogService DialogService
 @inject PersonService PersonService
 @inject FileService FileService
-@inject ActionService ActionService
+@inject ControlService ControlService
 
 
 
 
 <RadzenCard Style="width: 100%; overflow: hidden;">
-    <RadzenTemplateForm TItem="UserActionDTO" Data="UserAction" Submit="@OnSubmit" InvalidSubmit=@OnInvalidSubmit>
+    <RadzenTemplateForm TItem="ControlDTO" Data="Control" Submit="@OnSubmit" InvalidSubmit=@OnInvalidSubmit>
         <div class="row mb-5">
             <div class="col-md-4" style="align-self: center;">
                 <RadzenLabel Text="Выберите проверяющего" />
@@ -42,7 +42,7 @@
     [Parameter]
     public FileUnit SelectedFile { get; set; }
 
-    private UserActionDTO UserAction { get; set; }
+    private ControlDTO Control { get; set; } = new ControlDTO();
 
     private IList<PersonDTO> Persons { get; set; }
 
@@ -51,7 +51,6 @@
 
     protected override async void OnInitialized()
     {
-        UserAction = new UserActionDTO();
         var p = await PersonService.GetPersonsAsync();
         Persons = p.ToList();
 
@@ -64,9 +63,10 @@
         f.Status = StatusFile.Checking;
         await FileService.UpdateFileAsync(f);
 
-        UserAction.FileUnitId = SelectedFile.Id;
-        UserAction.IsConfirmed = false;
-        await ActionService.AddAction(UserAction);
+        Control.FileUnitId = SelectedFile.Id;
+
+        Control.IsConfirmed = false;
+        await ControlService.AddControlAsync(Control);
 
 
         DialogService.Close();
@@ -75,8 +75,8 @@
 
     void OnChangePerson(object value)
     {
-        UserAction.PersonId = (int)value;
-        UserAction.ActionNumber = ActionsNumbers.Check1;
+        Control.PersonId = (int)value;
+
     }
     void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
     {

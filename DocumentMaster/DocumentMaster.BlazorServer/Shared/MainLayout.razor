@@ -2,7 +2,7 @@
 @inject AuthenticationStateProvider authStateProvider
 @inject NavigationManager navManager
 @inject PersonService PersonService
-@inject ActionService ActionService
+@inject ControlService ControlService
 
 @using DM.BLL.Services
 @using DocumentMaster.BlazorServer.Authentication
@@ -58,7 +58,7 @@
         {
             CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
 
-            CountToCheck = await ActionService.GetCountActionsOnCheckAsync(CurrentPerson.Id);
+            CountToCheck = await ControlService.GetCountControlsByIdAsync(CurrentPerson.Id);
 
             StateHasChanged();
         }

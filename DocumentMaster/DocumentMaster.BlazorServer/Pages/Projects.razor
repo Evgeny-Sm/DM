@@ -13,7 +13,8 @@
 @inject NavigationManager Navigation
 @inject PersonService personService
 @inject ProjectService projectService
-@inject DMContext db
+
+@inject IDbContextFactory<DMContext> contextFactory
 
 
 
@@ -112,8 +113,8 @@
 
     private IEnumerable<FileUnit> GetFilesInProject(int id)
     {
-        
-        return db.FileUnits.Where(f=>f.ProjectId==id).Include(f => f.UserActions).ThenInclude(u=>u.Person).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
+        using var context = contextFactory.CreateDbContext();
+        return context.FileUnits.Where(f=>f.ProjectId==id).Include(p=>p.Person).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
 
     }
 

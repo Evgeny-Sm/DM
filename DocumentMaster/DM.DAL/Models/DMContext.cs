@@ -20,6 +20,7 @@ namespace DM.DAL.Models
         public DbSet<UserAction>? UserActions { get; set; }
         public DbSet<Position>? Positions { get; set; }
         public DbSet<Section>? Sections { get; set; }
+        public DbSet<Control>? Controls { get; set; }
 
     }
 }

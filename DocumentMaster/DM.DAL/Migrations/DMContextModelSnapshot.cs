@@ -57,6 +57,36 @@ namespace DM.DAL.Migrations
                     b.ToTable("Accounts");
                 });
 
+            modelBuilder.Entity("DM.DAL.Models.Control", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FileUnitId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PersonId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FileUnitId")
+                        .IsUnique();
+
+                    b.HasIndex("PersonId");
+
+                    b.ToTable("Controls");
+                });
+
             modelBuilder.Entity("DM.DAL.Models.Department", b =>
                 {
                     b.Property<int>("Id")
@@ -89,6 +119,9 @@ namespace DM.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("DepartmentId")
                         .HasColumnType("int");
 
@@ -110,6 +143,9 @@ namespace DM.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("PersonId")
+                        .HasColumnType("int");
+
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
@@ -120,9 +156,14 @@ namespace DM.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<double>("TimeToCreate")
+                        .HasColumnType("float");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentId");
+
+                    b.HasIndex("PersonId");
 
                     b.HasIndex("ProjectId");
 
@@ -292,11 +333,36 @@ namespace DM.DAL.Migrations
                     b.Navigation("Person");
                 });
 
+            modelBuilder.Entity("DM.DAL.Models.Control", b =>
+                {
+                    b.HasOne("DM.DAL.Models.FileUnit", "FileUnit")
+                        .WithOne("Control")
+                        .HasForeignKey("DM.DAL.Models.Control", "FileUnitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DM.DAL.Models.Person", "Person")
+                        .WithMany()
+                        .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FileUnit");
+
+                    b.Navigation("Person");
+                });
+
             modelBuilder.Entity("DM.DAL.Models.FileUnit", b =>
                 {
                     b.HasOne("DM.DAL.Models.Department", "Department")
                         .WithMany("FileUnits")
                         .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DM.DAL.Models.Person", "Person")
+                        .WithMany()
+                        .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -313,6 +379,8 @@ namespace DM.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Department");
+
+                    b.Navigation("Person");
 
                     b.Navigation("Project");
 
@@ -377,6 +445,8 @@ namespace DM.DAL.Migrations
 
             modelBuilder.Entity("DM.DAL.Models.FileUnit", b =>
                 {
+                    b.Navigation("Control");
+
                     b.Navigation("UserActions");
                 });
 

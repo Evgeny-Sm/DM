@@ -24,7 +24,12 @@ namespace DM.DAL.Models
         public int ProjectId { get; set; }
         public Section? Section { get; set; }
         public int SectionId { get; set; }
+        public Person? Person { get; set; }
+        public int PersonId { get; set; }
+        public Control? Control { get; set; }
         public int NumbersDrawings { get; set; }
+        public double TimeToCreate { get; set; }
+        public DateTime CreateDate { get; set; }=DateTime.Now;
         public string Status { get; set; }
         public FileUnit()
         { 

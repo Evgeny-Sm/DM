@@ -13,7 +13,7 @@
 @inject DMContext db
 @inject PersonService PersonService
 @inject FileService FileService
-@inject ActionService ActionService
+@inject ControlService ControlService
 
 <h3>FilesToCheck</h3>
 
@@ -42,7 +42,7 @@
     [CascadingParameter]
     private Task<AuthenticationState> authenticationState { get; set; }
 
-    private IList<FileUnit> SelectedFiles { get; set; }
+    private IList<FileUnit> SelectedFiles { get; set; }=new List<FileUnit>();
 
     public IList<FileUnit>? files { get; set; }
 
@@ -50,21 +50,19 @@
 
     protected override async void OnInitialized()
     {
-        SelectedFiles = new List<FileUnit>();
         var authState = await authenticationState;
 
         CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
         SelectedFiles = new List<FileUnit>();
 
-        var actions =await ActionService.GetActionsOnCheckAsync(CurrentPerson.Id);
+        var controls =await ControlService.GetControlsToCheckAsync(CurrentPerson.Id);
 
-        var fileNumbers = actions.Select(a => a.FileUnitId);
+        var fileNumbers = controls.Select(a => a.FileUnitId);
 
         using var context = contextFactory.CreateDbContext();
-        files = context.FileUnits.Include(f => f.UserActions).
-        ThenInclude(u => u.Person).Include(d => d.Department).
-        Include(p => p.Project).Include(s => s.Section).
-        Where(t => fileNumbers.Contains(t.Id)).ToList();
+        files = context.FileUnits.Where(t => fileNumbers.Contains(t.Id)).Include(p => p.Person).Include(d => d.Department).
+        Include(p => p.Project).Include(s => s.Section).Include(c=>c.Control)
+        .ToList();
 
         StateHasChanged();
 
@@ -80,31 +78,27 @@
 
     private async void CheckingComplete()
     {
-        var actions = await ActionService.GetActionsByFileAndPerson(CurrentPerson.Id,SelectedFiles.FirstOrDefault().Id);
-        foreach (var action in actions)
-        {
-            action.IsConfirmed = true;
-            await ActionService.UpdateActionAcync(action);
-        }
+        var c = await ControlService.GetControlByIdAsync(SelectedFiles.FirstOrDefault().Control.Id);
+        c.IsConfirmed = true;
+        await ControlService.UpdateControlAsync(c);
+
         var f = await FileService.GetItemByIdAsync(SelectedFiles.FirstOrDefault().Id);
         f.Status = StatusFile.Archive;
         await FileService.UpdateFileAsync(f);
         files.Remove(SelectedFiles.First()); 
+
         StateHasChanged();
 
     }
     private async void CheckingDenied()
     {
-        var actions = await ActionService.GetActionsByFileAndPerson(CurrentPerson.Id, SelectedFiles.FirstOrDefault().Id);
-        foreach (var action in actions)
-        {
-            
-            await ActionService.Delete(action.Id);
-        }
+        await ControlService.RemoveControlAsynk(SelectedFiles.FirstOrDefault().Control.Id);
+
         var f = await FileService.GetItemByIdAsync(SelectedFiles.FirstOrDefault().Id);
         f.Status = StatusFile.Work;
         await FileService.UpdateFileAsync(f);
         files.Remove(SelectedFiles.First());
+
         StateHasChanged();
 
     }

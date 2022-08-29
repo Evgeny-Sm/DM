@@ -67,7 +67,8 @@ namespace DM.BLL.Services
                 PathFile = $"{fileDTO.ProjectId}/{fileDTO.Name}", 
                 SectionId = fileDTO.SectionId, 
                 NumbersDrawings = fileDTO.NumbersDrawings,          
-                Status=fileDTO.Status
+                Status=fileDTO.Status,
+                PersonId=fileDTO.PersonId
             };
             await context.FileUnits.AddAsync(element);
             await context.SaveChangesAsync();

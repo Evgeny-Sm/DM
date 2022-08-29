@@ -144,7 +144,7 @@ else
 
         _file = await fileService.AddFileAsync(new FileDTO
             {
-                Name = "new_file",
+                Name = "",
                 DepartmentId = CurrentPerson.DepartmentId,
                 ProjectId = Projects.First().Id,
                 SectionId = SectionsList.First().Id,
@@ -152,8 +152,6 @@ else
                 PersonId = CurrentPerson.Id,
                 Status = StatusFile.Work
             });
-
-
         StateHasChanged();
 
     }
@@ -179,21 +177,17 @@ else
         {
             arg.TimeToCreate = t;
         }
+
+        arg.PersonId = CurrentPerson.Id;
+
         arg.IsDeleted = false;
 
         var result= await fileService.UpdateFileAsync(arg);
+       
+
 
         ProjectId = arg.ProjectId;
-        UserActionDTO action = new UserActionDTO
-        {
-            FileUnitId=_file.Id,
-            PersonId=CurrentPerson.Id,
-            ActionNumber=ActionsNumbers.Create,
-            TimeForAction=_file.TimeToCreate,
-            IsConfirmed=true
-        };
-
-        await ActionService.AddAction(action);
+        
 
 
         StateHasChanged();

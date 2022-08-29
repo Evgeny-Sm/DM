@@ -72,7 +72,7 @@
         if (files == null)
         {
             using var context = contextFactory.CreateDbContext();
-            files = context.FileUnits.Include(f => f.UserActions).ThenInclude(u => u.Person).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
+            files = context.FileUnits.Include(d => d.Department).Include(p=>p.Person).Include(p => p.Project).Include(s => s.Section).ToArray();
         }
         SelectedFiles = new List<FileUnit>();
         var authState = await authenticationState;
@@ -87,9 +87,9 @@
         if (fileUnit != null)
         {
             SelectedFiles = fileUnit;
-            if (SelectedFiles.FirstOrDefault().UserActions.First().PersonId != CurrentPerson.Id 
+            if (SelectedFiles.FirstOrDefault().PersonId != CurrentPerson.Id 
                 | SelectedFiles.FirstOrDefault().Status != StatusFile.Work) 
-                
+
             {
                 IsReadyToCheck = false;
             }
@@ -105,11 +105,11 @@
         using var context = contextFactory.CreateDbContext();
         if (CheckBoxUser)
         {
-            files = context.FileUnits.Include(f => f.UserActions).ThenInclude(u => u.Person).Where(t => t.UserActions.First().PersonId == CurrentPerson.Id).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
+            files = context.FileUnits.Include(p=>p.Person).Where(t => t.Person.Id == CurrentPerson.Id).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
         }
         else
         {
-            files = context.FileUnits.Include(f => f.UserActions).ThenInclude(u => u.Person).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
+            files = context.FileUnits.Include(d => d.Department).Include(p => p.Person).Include(p => p.Project).Include(s => s.Section).ToArray();
         }
 
     }
@@ -119,7 +119,8 @@
         if (statusFromDialog)
         {
             using var context = contextFactory.CreateDbContext();
-            files = context.FileUnits.Include(f => f.UserActions).ThenInclude(u => u.Person).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
+            files = context.FileUnits.Include(d => d.Department).Include(p => p.Person).Include(p => p.Project).Include(s => s.Section).ToArray();
+            SelectedFiles = new List<FileUnit>();
         }
     }
 

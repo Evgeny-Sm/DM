@@ -43,6 +43,7 @@ builder.Services.AddScoped<PositionService>();
 builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<SectionService>();
 builder.Services.AddScoped<ProjectService>();
+builder.Services.AddScoped<ControlService>();
 
 
 

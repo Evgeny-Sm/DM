@@ -7,7 +7,6 @@
 
 @inject FileService fileService
 @inject PersonService PersonService
-@inject ActionService ActionService
 @inject DMContext db
 
 <AuthorizeView>
@@ -21,7 +20,7 @@
                 <RadzenDataGridColumn TItem="FileUnit" Property="Name" Title="Название" Width="200px" />
                 <RadzenDataGridColumn TItem="FileUnit"  Title="Разработчик" Width="80px">
                     <Template Context="file">
-                        <RadzenLabel Text="@GetDeveloper(file)"/>
+                        <RadzenLabel Text="@file.Person.LastName"/>
                     </Template>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="FileUnit" Title="Статус" Width="60px">
@@ -75,10 +74,6 @@
         await FilesGetCallBack.InvokeAsync(args);
     }
 
-    private string GetDeveloper(FileUnit file)
-    {
-        return file.UserActions.First().Person.LastName;
-    }
 
     private void OnChange(bool value)
     {
