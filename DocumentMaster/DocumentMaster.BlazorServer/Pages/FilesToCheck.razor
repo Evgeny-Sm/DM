@@ -20,10 +20,10 @@
 <AuthorizeView>
     <Authorized>
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-8">
                 <FileList files="@files" FilesGetCallBack="@SetSelectedFiles" />
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 @if (SelectedFiles.Count != 0)
                 {
                     <div class="d-inline-block">
@@ -44,7 +44,7 @@
 
     private IList<FileUnit> SelectedFiles { get; set; }
 
-    public IEnumerable<FileUnit>? files { get; set; }
+    public IList<FileUnit>? files { get; set; }
 
     private PersonDTO CurrentPerson { get; set; }
 
@@ -64,7 +64,7 @@
         files = context.FileUnits.Include(f => f.UserActions).
         ThenInclude(u => u.Person).Include(d => d.Department).
         Include(p => p.Project).Include(s => s.Section).
-        Where(t => fileNumbers.Contains(t.Id)).ToArray();
+        Where(t => fileNumbers.Contains(t.Id)).ToList();
 
         StateHasChanged();
 
@@ -89,10 +89,23 @@
         var f = await FileService.GetItemByIdAsync(SelectedFiles.FirstOrDefault().Id);
         f.Status = StatusFile.Archive;
         await FileService.UpdateFileAsync(f);
+        files.Remove(SelectedFiles.First()); 
+        StateHasChanged();
 
     }
-    private void CheckingDenied()
+    private async void CheckingDenied()
     {
+        var actions = await ActionService.GetActionsByFileAndPerson(CurrentPerson.Id, SelectedFiles.FirstOrDefault().Id);
+        foreach (var action in actions)
+        {
+            
+            await ActionService.Delete(action.Id);
+        }
+        var f = await FileService.GetItemByIdAsync(SelectedFiles.FirstOrDefault().Id);
+        f.Status = StatusFile.Work;
+        await FileService.UpdateFileAsync(f);
+        files.Remove(SelectedFiles.First());
+        StateHasChanged();
 
     }
 }
