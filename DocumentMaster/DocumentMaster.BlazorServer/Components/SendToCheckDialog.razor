@@ -18,8 +18,8 @@
                 <RadzenLabel Text="Выберите проверяющего" />
             </div>
             <div class="col-md-4" style="align-content:center">
-                <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
-                                        Data=@(Persons) Style="width: 100%" AllowColumnResize="true"
+                <RadzenDropDownDataGrid  TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                        Data=@(Persons) Style="width: 200%" AllowColumnResize="true"
                                         TextProperty="LastName" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
                                         Change=@(args => OnChangePerson(args))>
                     <Columns>

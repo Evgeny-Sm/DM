@@ -41,7 +41,8 @@
                         <DownloadFile SelectedFiles="@SelectedFiles" />
                     @if (IsReadyToCheck)
                     {
-                        <SendToCheckButton SendedToCheck="@SetSendedStatus" SelectedFile="@SelectedFiles"/>
+                        <SendToCheckButton SendedToCheck="@SetSendedStatus" SelectedFiles="@SelectedFiles"/>
+                        <ReloadFileButton SelectedFiles="@SelectedFiles"/>
                     }
                     </div>
                     <InfoFile SelectedFiles="@SelectedFiles"/> 

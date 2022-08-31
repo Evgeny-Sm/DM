@@ -1,0 +1,73 @@
+﻿@using DM.BLL.Services
+@using DM.DAL.Models
+@using Models
+@using Microsoft.EntityFrameworkCore;
+
+@inject DialogService DialogService
+@inject FileService FileService
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+
+
+
+<RadzenCard Style="width: 100%; overflow: hidden;">
+    <RadzenUpload @ref="upload" Auto="false" Multiple="false" Url=@($"upload?id={ProjectId}&fileName={FileName}")
+                  Change=@(args => OnChangeUpload(args)) class="w-100" />
+                  <br />
+                  <br />
+    <div>
+        <RadzenButton Size="Radzen.ButtonSize.Small" ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Ok" Click=@(args => UploadFile()) />
+    </div>
+</RadzenCard>
+
+@code {
+
+    [Parameter]
+    public IList<FileUnit> SelectedFiles { get; set; }
+
+    private string FileName = string.Empty;
+
+    private bool FileReadyToUpload { get; set; }
+
+    private RadzenUpload upload;
+
+    private int ProjectId { get; set; }
+
+    protected override  void OnInitialized()
+    {
+
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (SelectedFiles != null)
+        {
+            FileName = SelectedFiles.FirstOrDefault().Name;
+            ProjectId = SelectedFiles.FirstOrDefault().ProjectId;
+        }
+    }
+    void OnChangeUpload(UploadChangeEventArgs args)
+    {
+        if (args.Files.Count() == 0)
+        {
+            FileReadyToUpload = false;
+            return;
+        }
+
+        FileReadyToUpload = true;
+
+
+
+    }
+    private async Task UploadFile()
+    { 
+        if (!FileReadyToUpload)
+        {
+            await JS.InvokeVoidAsync("alert", "Выберите файл");
+            return;
+        }
+        await upload.Upload();
+        Navigation.NavigateTo("/Files");
+
+    }
+}

@@ -6,8 +6,8 @@
 
 
 
-    <RadzenButton Text="На проверку" ButtonStyle="ButtonStyle.Secondary" 
-Click=@OpenSendToCheckDialog />
+<RadzenButton Text="Заменить" ButtonStyle="ButtonStyle.Secondary"
+              Click=@OpenReloadDialog />
 
 
 @code {
@@ -15,28 +15,20 @@ Click=@OpenSendToCheckDialog />
     [Parameter]
     public IList<FileUnit> SelectedFiles { get; set; }
 
-    [Parameter]
-    public EventCallback<bool> SendedToCheck { get; set; }
-
-
-
-
-
-
     protected override async void OnInitialized()
     {
+
         DialogService.OnOpen += Open;
         DialogService.OnClose += Close;
 
-
     }
 
-    private async Task OpenSendToCheckDialog()
+    private async Task OpenReloadDialog()
     {
-
-        await DialogService.OpenAsync<SendToCheckDialog>($"На проверку",
-              new Dictionary<string, object>() { { "SelectedFile", SelectedFiles.First() } },
-              new DialogOptions() { Width = "700px", Height = "470px", Resizable = true, Draggable = false, CloseDialogOnOverlayClick = true });
+        await DialogService.OpenAsync<ReloadFileDialog>($"На проверку",
+              new Dictionary<string, object>() { { "SelectedFiles", SelectedFiles } },
+              new DialogOptions() { Width = "500px", Height = "300px", Resizable = true,
+              Draggable = false, CloseDialogOnOverlayClick = true });
     }
     protected override void OnParametersSet()
     {
@@ -50,7 +42,7 @@ Click=@OpenSendToCheckDialog />
 
     void Close(dynamic result)
     {
-        SendedToCheck.InvokeAsync(true);
+
         Dispose();
     }
 
