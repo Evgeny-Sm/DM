@@ -11,8 +11,6 @@
 
 
 
-
-
 <PageTitle>Index</PageTitle>
 
 <AuthorizeView>
@@ -21,6 +19,7 @@
     </Authorized>
     <NotAuthorized>
         <h1>Hello, Guest!</h1>
+        <img src="/images/background.jpg" class="background" />
     </NotAuthorized>
 </AuthorizeView>
 
@@ -28,42 +27,15 @@ Welcome to your new app.
 
 
 
-<SurveyPrompt Title="How is Blazor working for you?" />
 
-<AuthorizeView>
-    <Authorized>
-        <br /><br />
-        <button class="btn btn-btn-outline-primary" @onclick="DisplayGreetingAlert">Display Greeting Alert</button>
-    </Authorized>
-</AuthorizeView>
+
+
 
 @code
 {
     [CascadingParameter]
     private Task<AuthenticationState> authenticationState { get; set; }
 
-    RadzenUpload upload;
-    int progress;
-    string info;
-    string Nname;
-    bool showProgress;
-    bool showComplete;
 
-
-    private async Task DisplayGreetingAlert()
-    {
-        var authState = await authenticationState;
-        var b=authState.User.IsInRole("user");
-        var userSessionStorageResult = await sessionStorage.GetAsync<UserSession>("UserSession");
-        var personId = userSessionStorageResult.Value.PersonId;
-        var message = $"Hello {authState.User.Identity.Name} {personId} {b}";
-        await JS.InvokeVoidAsync("alert", message);
-    }
-
-    void OnProgress(UploadProgressArgs args, string name)
-    {
-        this.info = $"%'{name}'/{args.Loaded} of {args.Total} bytes";
-        this.progress = args.Progress;
-    }
 
 }
