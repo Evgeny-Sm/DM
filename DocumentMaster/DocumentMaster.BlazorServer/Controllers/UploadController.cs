@@ -2,7 +2,7 @@
 
 namespace DocumentMaster.BlazorServer.Controllers
 {
-
+    [DisableRequestSizeLimit]
     public partial class UploadController : Controller
     {
         private readonly IWebHostEnvironment _webHostEnvironment;
@@ -14,7 +14,7 @@ namespace DocumentMaster.BlazorServer.Controllers
             _configuration = configuration;
         }
         [HttpPost("upload")]
-        [RequestSizeLimit(400000000)]      
+     
         public async Task<IActionResult> Single(IFormFile file,[FromQuery]int id,[FromQuery] string fileName)
         {
             try
@@ -41,8 +41,9 @@ namespace DocumentMaster.BlazorServer.Controllers
                 var fullPath=Path.Combine(uploadPath, fileName);
                 using (var fileStream = new FileStream(fullPath, FileMode.Create,FileAccess.Write))
                 {
-                    await file.CopyToAsync(fileStream);
-                    var i = 1;
+                    
+                    await file.OpenReadStream().CopyToAsync(fileStream);
+
                 }
             }
         }
