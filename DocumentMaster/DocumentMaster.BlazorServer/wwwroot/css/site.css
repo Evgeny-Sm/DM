@@ -62,6 +62,7 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
 img.background {
     min-height: 100%;
     min-width: 640px;
@@ -78,5 +79,6 @@ img.background {
         }
     }
 }
+
 
 

@@ -19,7 +19,8 @@
 @inject NavigationManager Navigation
 @inject ProtectedSessionStorage sessionStorage
 @inject IJSRuntime JS
-
+@inject IWebHostEnvironment WebHostEnvironment
+@inject IConfiguration Configuration
 
 
 
@@ -72,8 +73,7 @@ else
                                     <RadzenTextBox style="width: 100%;" @bind-Value="_file.Name" Name="FileName" />
                                 </div>
                                 <div class="col-md-6">
-                                    <RadzenUpload @ref="upload"  Auto="false"  Multiple="false" Url=@($"upload?id={ProjectId}&fileName={_file.Name}")                                  
-                                    Change=@(args => OnChangeUpload(args, "Manual Upload"))/>
+                                    <InputFile OnChange="@LoadFiles" multiple />
                                 </div>
                             </div>
                         </RadzenFieldset>
@@ -118,11 +118,10 @@ else
     private IList<ProjectDTO> Projects { get; set; }
     private IList<SectionDTO> SectionsList { get; set; }
 
-    private RadzenUpload upload;
+    private IBrowserFile? BrowserFile { get; set; }
 
     private string TimeToDevelop { get; set; } = string.Empty;
     private string NumbersDrawings { get; set; } = string.Empty;
-    private int ProjectId { get; set; }
 
     protected override async void OnInitialized()
     {
@@ -178,12 +177,21 @@ else
         arg.IsDeleted = false;
 
         var result= await fileService.UpdateFileAsync(arg);
-       
-        ProjectId = arg.ProjectId;     
 
-        StateHasChanged();
 
-        await upload.Upload();
+
+        string path = Configuration.GetConnectionString("ProjectRootDir") + $"\\{arg.ProjectId}\\";
+        var uploadPath = WebHostEnvironment.WebRootPath + path;
+        if (!Directory.Exists(uploadPath))
+        {
+            Directory.CreateDirectory(uploadPath);
+        }
+        var fullPath = Path.Combine(uploadPath, _file.Name);
+
+        await using FileStream fs = new(fullPath, FileMode.Create);
+
+        await BrowserFile.OpenReadStream(maxAllowedSize: 100000000).CopyToAsync(fs);
+
         if (result != 0)
         {
             Navigation.NavigateTo("/Files");
@@ -202,19 +210,6 @@ else
         _file.SectionId = (int)value;
     }
 
-    void OnChangeUpload(UploadChangeEventArgs args, string name)
-    {
-        if (args.Files.Count() == 0)
-        {
-            FileReadyToUpload = false;
-            return;
-        }
-
-        FileReadyToUpload = true;
-        _file.Name = args.Files.First().Name;
-
-        
-    }
     private string GetPrefix(int id)
     {
         var s = "000000" + id;
@@ -227,6 +222,20 @@ else
         await fileService.RemoveFile(_file.Id);
         Navigation.NavigateTo("/Files");
     }
+
+    private void LoadFiles(InputFileChangeEventArgs e)
+    {
+        if (e.File is null)
+        {
+            FileReadyToUpload = false;
+            return;
+        }
+
+        FileReadyToUpload = true;
+        BrowserFile = e.File;
+        _file.Name = BrowserFile.Name;
+    }
+
 
 
 }

@@ -7,12 +7,13 @@
 @inject FileService FileService
 @inject IJSRuntime JS
 @inject NavigationManager Navigation
+@inject IWebHostEnvironment WebHostEnvironment
+@inject IConfiguration Configuration
 
 
 
 <RadzenCard Style="width: 100%; overflow: hidden;">
-    <RadzenUpload @ref="upload" Auto="false" Multiple="false" Url=@($"upload?id={ProjectId}&fileName={FileName}")
-                  Change=@(args => OnChangeUpload(args)) class="w-100" />
+    <InputFile OnChange="@LoadFiles" multiple />
                   <br />
                   <br />
     <div>
@@ -28,10 +29,9 @@
     private string FileName = string.Empty;
 
     private bool FileReadyToUpload { get; set; }
+    private string Path { get; set; } = string.Empty;
 
-    private RadzenUpload upload;
-
-    private int ProjectId { get; set; }
+    private IBrowserFile? BrowserFile { get; set; }
 
     protected override  void OnInitialized()
     {
@@ -43,7 +43,7 @@
         if (SelectedFiles != null)
         {
             FileName = SelectedFiles.FirstOrDefault().Name;
-            ProjectId = SelectedFiles.FirstOrDefault().ProjectId;
+            Path = SelectedFiles.FirstOrDefault().PathFile;
         }
     }
     void OnChangeUpload(UploadChangeEventArgs args)
@@ -66,8 +66,25 @@
             await JS.InvokeVoidAsync("alert", "Выберите файл");
             return;
         }
-        await upload.Upload();
+        var fullPath = $"{WebHostEnvironment.WebRootPath}\\{Configuration.GetConnectionString("ProjectRootDir")}\\{Path}";
+        
+        await using FileStream fs = new(fullPath, FileMode.Create);
+
+        await BrowserFile.OpenReadStream(maxAllowedSize: 100000000).CopyToAsync(fs);
+
         Navigation.NavigateTo("/Files");
 
+    }
+
+    private void LoadFiles(InputFileChangeEventArgs e)
+    {
+        if (e.File is null)
+        {
+            FileReadyToUpload = false;
+            return;
+        }
+
+        FileReadyToUpload = true;
+        BrowserFile = e.File;
     }
 }
