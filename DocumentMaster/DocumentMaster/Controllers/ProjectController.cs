@@ -78,7 +78,7 @@ namespace DocumentMaster.API.Controllers
         {
             try
             {
-                var result = await _projectService.DeleteDevice(id);
+                var result = await _projectService.RemoveProject(id);
                 if (result)
                 {
                     return NoContent();

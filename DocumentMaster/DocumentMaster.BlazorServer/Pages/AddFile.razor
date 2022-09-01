@@ -23,11 +23,6 @@
 
 
 
-<RadzenDialog />
-<RadzenNotification />
-<RadzenContextMenu />
-<RadzenTooltip />
-
 @if (Projects == null)
 {
     <div>Loading...</div>
@@ -42,7 +37,7 @@ else
                 <div class="col-md-10">
                         <RadzenFieldset Text="Выберите проект">
                             <div class="row">
-                                <div class="col-md-4 ">
+                                <div class="col-md-6 ">
                                     <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
                                                         Data=@(Projects) Style="width: 100%" AllowColumnResize="true"
                                                         TextProperty="Name" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
@@ -58,7 +53,7 @@ else
 
                         <RadzenFieldset Text="Выберите раздел проекта">
                             <div class="row">
-                                <div class="col-md-4 ">
+                                <div class="col-md-6 ">
                                     <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
                                                         Data=@(SectionsList) Style="width: 100%" AllowColumnResize="true"
                                                         TextProperty="Name" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
@@ -73,10 +68,10 @@ else
                         </RadzenFieldset>
                         <RadzenFieldset Text="Название файла">
                             <div class="row">
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <RadzenTextBox style="width: 100%;" @bind-Value="_file.Name" Name="FileName" />
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <RadzenUpload @ref="upload"  Auto="false"  Multiple="false" Url=@($"upload?id={ProjectId}&fileName={_file.Name}")                                  
                                     Change=@(args => OnChangeUpload(args, "Manual Upload"))/>
                                 </div>
@@ -85,7 +80,7 @@ else
 
                         <RadzenFieldset Text="Количество листов в файле">
                             <div class="row">
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <RadzenTextBox style="width: 100%;" @bind-Value="NumbersDrawings" Name="NumbDr" />
                                 </div>
                             </div>
@@ -93,7 +88,7 @@ else
 
                         <RadzenFieldset Text="Время на разработку(часов)">
                             <div class="row">
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <RadzenTextBox style="width: 100%;" @bind-Value="TimeToDevelop" Name="TimeToDev" />
                                 </div>
                             </div>
@@ -184,11 +179,7 @@ else
 
         var result= await fileService.UpdateFileAsync(arg);
        
-
-
-        ProjectId = arg.ProjectId;
-        
-
+        ProjectId = arg.ProjectId;     
 
         StateHasChanged();
 

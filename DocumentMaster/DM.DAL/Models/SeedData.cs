@@ -22,15 +22,15 @@ namespace DM.DAL.Models
                 context1.Departments.AddRange(
                     new Department
                     {
-                        Name = "CO",
-                        Description = "Строительный отдел"
+                        Name = "A",
+                        Description = "Управление"
                     });
                 context1.SaveChanges();
 
                 context1.Positions.AddRange(
                     new Position
                     {
-                        Name = "Начальнике",
+                        Name = "Администратор",
                         
                     });
                 context1.SaveChanges();
@@ -55,57 +55,7 @@ namespace DM.DAL.Models
                        PersonId = 1
                    });
                 context1.SaveChanges();
-                context1.Persons.AddRange(
-                new Person
-                {
-                    FirstName = "Раб",
-                    LastName = "Рабонский",
-                    DepartmentId = 1,
-                    PositionId = 1,
-
-                });
-                context1.SaveChanges();
-
-               
-                context1.Accounts.AddRange(
-                new Account
-                {
-                    UserName = "rab@user.com",
-                    Password = "11111",
-                    Role = "user",
-                    PersonId = 2
-                });
-                context1.SaveChanges();
-
-                context1.Projects.AddRange(
-               new Project
-               {
-                   Name = "Волна",
-                   Description = "проект реконструкции",
-                   Client = "ЛСР",
-                   PersonId=1
-               });
-                context1.SaveChanges();
-
-                context1.FileUnits.AddRange(
-                    new FileUnit
-                    {
-                        Name = "План демонтажа",
-                        Description = "Описание",
-                        PathFile = AppDomain.CurrentDomain.BaseDirectory,
-                        DepartmentId=1,
-                        ProjectId=1,
-                    });
-                context1.SaveChanges();
-
-                context1.UserActions.AddRange(
-                    new UserAction
-                    {
-                        FileUnitId = 1,
-                        PersonId = 1,
-                        ActionNumber = 1
-                    });
-                context1.SaveChanges();
+                context1.Dispose();
             }
         }
         

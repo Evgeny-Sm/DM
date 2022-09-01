@@ -2,18 +2,20 @@
 
 namespace DocumentMaster.BlazorServer.Controllers
 {
-    public partial class UploadController:Controller
+
+    public partial class UploadController : Controller
     {
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IConfiguration _configuration;
         public UploadController(IWebHostEnvironment webHostEnvironment, IConfiguration configuration)
         {
-           _webHostEnvironment = webHostEnvironment;
+            _webHostEnvironment = webHostEnvironment;
 
             _configuration = configuration;
         }
         [HttpPost("upload")]
-        public IActionResult Single(IFormFile file,[FromQuery]int id,[FromQuery] string fileName)
+        [RequestSizeLimit(400000000)]      
+        public async Task<IActionResult> Single(IFormFile file,[FromQuery]int id,[FromQuery] string fileName)
         {
             try
             {
@@ -40,6 +42,7 @@ namespace DocumentMaster.BlazorServer.Controllers
                 using (var fileStream = new FileStream(fullPath, FileMode.Create,FileAccess.Write))
                 {
                     await file.CopyToAsync(fileStream);
+                    var i = 1;
                 }
             }
         }
