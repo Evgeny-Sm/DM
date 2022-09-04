@@ -16,6 +16,15 @@
     <InputFile OnChange="@LoadFiles" multiple />
                   <br />
                   <br />
+    <div class="row">
+        <div class="col-md-4 align-items-center d-flex">
+            <RadzenLabel Text="Время на доработку(часов)" />
+        </div>
+
+        <div class="col-md-8">
+            <RadzenTextBox style="width: 100%;" @bind-Value="AdditionalTime" Name="AddTime" />
+        </div>
+    </div>
     <div>
         <RadzenButton Size="Radzen.ButtonSize.Small" ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Ok" Click=@(args => UploadFile()) />
     </div>
@@ -29,7 +38,12 @@
     private string FileName = string.Empty;
 
     private bool FileReadyToUpload { get; set; }
+
     private string Path { get; set; } = string.Empty;
+
+    private string AdditionalTime { get; set; } = "0";
+
+    private FileDTO CurrentFile { get; set; } = new FileDTO();
 
     private IBrowserFile? BrowserFile { get; set; }
 
@@ -38,12 +52,13 @@
 
     }
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
         if (SelectedFiles != null)
         {
             FileName = SelectedFiles.FirstOrDefault().Name;
             Path = SelectedFiles.FirstOrDefault().PathFile;
+            CurrentFile = await FileService.GetItemByIdAsync(SelectedFiles.FirstOrDefault().Id);
         }
     }
     void OnChangeUpload(UploadChangeEventArgs args)
@@ -66,11 +81,22 @@
             await JS.InvokeVoidAsync("alert", "Выберите файл");
             return;
         }
+        if (double.TryParse(AdditionalTime, out double t))
+        {
+            CurrentFile.TimeToCreate += t;
+        }
+        else
+        { 
+            await JS.InvokeVoidAsync("alert", "Введите время на доработку в часах или 0");
+            return;
+        }
         var fullPath = $"{WebHostEnvironment.WebRootPath}\\{Configuration.GetConnectionString("ProjectRootDir")}\\{Path}";
-        
+
         await using FileStream fs = new(fullPath, FileMode.Create);
 
         await BrowserFile.OpenReadStream(maxAllowedSize: 100000000).CopyToAsync(fs);
+
+        await FileService.UpdateFileAsync(CurrentFile);
 
         Navigation.NavigateTo("/Files");
 

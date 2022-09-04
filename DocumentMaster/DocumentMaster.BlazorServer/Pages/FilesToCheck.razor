@@ -14,6 +14,7 @@
 @inject PersonService PersonService
 @inject FileService FileService
 @inject ControlService ControlService
+@inject DialogService DialogService
 
 <h3>FilesToCheck</h3>
 
@@ -46,10 +47,15 @@
 
     public IList<FileUnit>? files { get; set; }
 
+    private double AddTime { get; set; }
+
     private PersonDTO CurrentPerson { get; set; }
 
     protected override async void OnInitialized()
     {
+        DialogService.OnOpen += Open;
+        DialogService.OnClose += Close;
+
         var authState = await authenticationState;
 
         CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
@@ -78,21 +84,35 @@
 
     private async void CheckingComplete()
     {
+        await DialogService.OpenAsync<ResultCheckDialog>($"Затраченное время",
+      new Dictionary<string, object>(),
+      new DialogOptions()
+          {
+              Width = "500px",
+              Height = "200px",
+              Resizable = true,
+              Draggable = false,
+              CloseDialogOnOverlayClick = true
+          });
+
         var c = await ControlService.GetControlByIdAsync(SelectedFiles.FirstOrDefault().Control.Id);
         c.IsConfirmed = true;
+        c.TimeForChecking += AddTime;
+
+
         await ControlService.UpdateControlAsync(c);
 
         var f = await FileService.GetItemByIdAsync(SelectedFiles.FirstOrDefault().Id);
         f.Status = StatusFile.Archive;
         await FileService.UpdateFileAsync(f);
-        files.Remove(SelectedFiles.First()); 
+        files.Remove(SelectedFiles.First());
 
         StateHasChanged();
-
+        
     }
     private async void CheckingDenied()
     {
-        await ControlService.RemoveControlAsynk(SelectedFiles.FirstOrDefault().Control.Id);
+        await ControlService.RemoveControlAsync(SelectedFiles.FirstOrDefault().Control.Id);
 
         var f = await FileService.GetItemByIdAsync(SelectedFiles.FirstOrDefault().Id);
         f.Status = StatusFile.Work;
@@ -101,5 +121,22 @@
 
         StateHasChanged();
 
+    }
+    void Open(string title, Type type, Dictionary<string, object> parameters, DialogOptions options)
+    {
+
+    }
+
+    void Close(dynamic result)
+    {
+        AddTime = result;
+        Dispose();
+    }
+
+    public void Dispose()
+    {
+        // The DialogService is a singleton so it is advisable to unsubscribe.
+        DialogService.OnOpen -= Open;
+        DialogService.OnClose -= Close;
     }
 }

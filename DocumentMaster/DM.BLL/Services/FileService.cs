@@ -68,7 +68,8 @@ namespace DM.BLL.Services
                 SectionId = fileDTO.SectionId, 
                 NumbersDrawings = fileDTO.NumbersDrawings,          
                 Status=fileDTO.Status,
-                PersonId=fileDTO.PersonId
+                PersonId=fileDTO.PersonId,
+                TimeToCreate = fileDTO.TimeToCreate
             };
             await context.FileUnits.AddAsync(element);
             await context.SaveChangesAsync();
@@ -93,6 +94,7 @@ namespace DM.BLL.Services
             element.NumbersDrawings = fileDTO.NumbersDrawings;
             element.SectionId = fileDTO.SectionId;
             element.Status= fileDTO.Status;
+            element.TimeToCreate= fileDTO.TimeToCreate;
             context.FileUnits.Update(element);
             
             return await context.SaveChangesAsync();

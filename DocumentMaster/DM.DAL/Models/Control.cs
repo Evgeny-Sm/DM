@@ -17,7 +17,9 @@ namespace DM.DAL.Models
         public int PersonId { get; set; }
         public bool IsConfirmed { get; set; }
         public DateTime DateTime { get; set; }
-        
+        public double TimeForChecking { get; set; }
+
+
 
     }
 }

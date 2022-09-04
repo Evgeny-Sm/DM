@@ -65,6 +65,7 @@ namespace DM.BLL.Services
                 FileUnitId=controlDTO.FileUnitId,
                 PersonId=controlDTO.PersonId,
                 IsConfirmed=controlDTO.IsConfirmed,
+                TimeForChecking=controlDTO.TimeForChecking
 
             };
             await context.Controls.AddAsync(control);
@@ -83,12 +84,13 @@ namespace DM.BLL.Services
             element.FileUnitId = controlDTO.FileUnitId;
             element.PersonId = controlDTO.PersonId;
             element.IsConfirmed = controlDTO.IsConfirmed;
+            element.TimeForChecking = controlDTO.TimeForChecking;
             context.Controls.Update(element);
             await context.SaveChangesAsync();
 
         }
 
-        public async Task RemoveControlAsynk(int id)
+        public async Task RemoveControlAsync(int id)
         {
             using var context = _contextFactory.CreateDbContext();
             Control element = await context.Controls.FindAsync(id);
