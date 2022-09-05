@@ -4,23 +4,23 @@
 @using Microsoft.EntityFrameworkCore;
 
 @inject DialogService DialogService
-@inject FileService FileService
 @inject IJSRuntime JS
 @inject NavigationManager Navigation
-@inject IWebHostEnvironment WebHostEnvironment
-@inject IConfiguration Configuration
+
 
 
 
 <RadzenCard Style="width: 100%; overflow: hidden;">
-    <div class="row">
-        <div class="col-md-4 align-items-center d-flex">
-            <RadzenLabel Text="Время на проверку(часов)" />
-        </div>
-        <div class="col-md-8">
-            <RadzenTextBox style="width: 100%;" @bind-Value="AdditionalTime" Name="AddTime" />
-        </div>
+
+    <div>
+        <RadzenLabel Text="Время на проверку(часов)" />
     </div>
+    <br />
+    <div class="col-md-8">
+        <RadzenTextBox style="width: 100%;" @bind-Value="AdditionalTime" Name="AddTime" />
+    </div>
+
+    <br />
     <div>
         <RadzenButton Size="Radzen.ButtonSize.Small" ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Ok" Click=@(args => Submit()) />
     </div>

@@ -97,6 +97,7 @@
         {
             SelectedProjects = projects;
             _Files = GetFilesInProject(projects.FirstOrDefault().Id).ToList();
+            SelectedFiles = new List<FileUnit>();
         }
         
 
@@ -114,7 +115,7 @@
     private IEnumerable<FileUnit> GetFilesInProject(int id)
     {
         using var context = contextFactory.CreateDbContext();
-        return context.FileUnits.Where(f=>f.ProjectId==id).Include(p=>p.Person).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
+        return context.FileUnits.Where(f => f.ProjectId == id).Include(p => p.Person).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).OrderByDescending(f => f.Id).ToArray();
 
     }
 

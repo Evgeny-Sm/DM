@@ -26,7 +26,7 @@ namespace DM.DAL.Models
         public int SectionId { get; set; }
         public Person? Person { get; set; }
         public int PersonId { get; set; }
-        public Control? Control { get; set; }
+        public ICollection<Control>? Controls { get; set; }
         public int NumbersDrawings { get; set; }
         public double TimeToCreate { get; set; }
         public DateTime CreateDate { get; set; }=DateTime.Now;
@@ -34,6 +34,7 @@ namespace DM.DAL.Models
         public FileUnit()
         { 
             UserActions = new List<UserAction>();
+            Controls = new List<Control>();
         }
 
     }

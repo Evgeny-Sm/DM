@@ -12,6 +12,7 @@ namespace Models
         public int FileUnitId { get; set; }
         public int PersonId { get; set; }
         public bool IsConfirmed { get; set; }
+        public bool IsInAction { get; set; }
         public DateTime DateTime { get; set; }= DateTime.Now;
         public double TimeForChecking { get; set; }
     }

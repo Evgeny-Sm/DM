@@ -66,6 +66,8 @@
         Control.FileUnitId = SelectedFile.Id;
 
         Control.IsConfirmed = false;
+        Control.IsInAction = true;
+
         await ControlService.AddControlAsync(Control);
 
 

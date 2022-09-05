@@ -73,7 +73,7 @@
         if (files == null)
         {
             using var context = contextFactory.CreateDbContext();
-            files = context.FileUnits.Include(d => d.Department).Include(p=>p.Person).Include(p => p.Project).Include(s => s.Section).ToArray();
+            files = context.FileUnits.Include(d => d.Department).Include(p => p.Person).Include(p => p.Project).Include(s => s.Section).OrderByDescending(f => f.Id).ToArray();
         }
         SelectedFiles = new List<FileUnit>();
         var authState = await authenticationState;
@@ -89,7 +89,7 @@
         {
             SelectedFiles = fileUnit;
             if (SelectedFiles.FirstOrDefault().PersonId != CurrentPerson.Id 
-                | SelectedFiles.FirstOrDefault().Status != StatusFile.Work) 
+                || SelectedFiles.FirstOrDefault().Status != StatusFile.Work) 
 
             {
                 IsReadyToCheck = false;
@@ -106,11 +106,11 @@
         using var context = contextFactory.CreateDbContext();
         if (CheckBoxUser)
         {
-            files = context.FileUnits.Include(p=>p.Person).Where(t => t.Person.Id == CurrentPerson.Id).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).ToArray();
+            files = context.FileUnits.Include(p=>p.Person).Where(t => t.Person.Id == CurrentPerson.Id).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).OrderByDescending(f=>f.Id).ToArray();
         }
         else
         {
-            files = context.FileUnits.Include(d => d.Department).Include(p => p.Person).Include(p => p.Project).Include(s => s.Section).ToArray();
+            files = context.FileUnits.Include(d => d.Department).Include(p => p.Person).Include(p => p.Project).Include(s => s.Section).OrderByDescending(f => f.Id).ToArray();
         }
 
     }
@@ -120,7 +120,7 @@
         if (statusFromDialog)
         {
             using var context = contextFactory.CreateDbContext();
-            files = context.FileUnits.Include(d => d.Department).Include(p => p.Person).Include(p => p.Project).Include(s => s.Section).ToArray();
+            files = context.FileUnits.Include(d => d.Department).Include(p => p.Person).Include(p => p.Project).Include(s => s.Section).OrderByDescending(f => f.Id).ToArray();
             SelectedFiles = new List<FileUnit>();
         }
     }

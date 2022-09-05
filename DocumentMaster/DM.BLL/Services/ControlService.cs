@@ -37,10 +37,22 @@ namespace DM.BLL.Services
             var result = _mapper.Map<ControlDTO>(element);
             return result;
         }
+        public async Task<ControlDTO> GetActualControlForPersonAsync(int fileId,int personId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            Control element = await context.Controls.Where
+                (c=>c.FileUnitId==fileId && c.PersonId==personId && c.IsInAction==true).SingleAsync();
+            if (element == null)
+            {
+                return null;
+            }
+            var result = _mapper.Map<ControlDTO>(element);
+            return result;
+        }
         public async Task<int> GetCountControlsByIdAsync(int id)
         {
             using var context = _contextFactory.CreateDbContext();
-            var element = await context.Controls.Where(c=>c.PersonId==id && c.IsConfirmed==false).ToListAsync();
+            var element = await context.Controls.Where(c=>c.PersonId==id && c.IsConfirmed==false && c.IsInAction==true).ToListAsync();
             if (element == null)
             {
                 return 0;
@@ -52,7 +64,7 @@ namespace DM.BLL.Services
         public async Task<IEnumerable<ControlDTO>> GetControlsToCheckAsync(int personId)
         {
             using var context = _contextFactory.CreateDbContext();
-            var element = await context.Controls.Where(c => c.PersonId == personId && c.IsConfirmed == false).ToListAsync();
+            var element = await context.Controls.Where(c => c.PersonId == personId && c.IsConfirmed == false && c.IsInAction == true).ToListAsync();
             var result = _mapper.Map<IEnumerable<ControlDTO>>(element);
             return result;
         }
@@ -65,7 +77,8 @@ namespace DM.BLL.Services
                 FileUnitId=controlDTO.FileUnitId,
                 PersonId=controlDTO.PersonId,
                 IsConfirmed=controlDTO.IsConfirmed,
-                TimeForChecking=controlDTO.TimeForChecking
+                TimeForChecking=controlDTO.TimeForChecking,
+                IsInAction=controlDTO.IsInAction
 
             };
             await context.Controls.AddAsync(control);
@@ -85,6 +98,7 @@ namespace DM.BLL.Services
             element.PersonId = controlDTO.PersonId;
             element.IsConfirmed = controlDTO.IsConfirmed;
             element.TimeForChecking = controlDTO.TimeForChecking;
+            element.IsInAction = controlDTO.IsInAction;
             context.Controls.Update(element);
             await context.SaveChangesAsync();
 

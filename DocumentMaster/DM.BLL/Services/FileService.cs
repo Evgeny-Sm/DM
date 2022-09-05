@@ -28,7 +28,7 @@ namespace DM.BLL.Services
         {
             using var context = _contextFactory.CreateDbContext();
 
-            var elements = await context.FileUnits.Include(f=>f.UserActions).ToListAsync();
+            var elements = await context.FileUnits.ToListAsync();
             var result = _mapper.Map<IEnumerable<FileDTO>>(elements);
             return result;
 
@@ -37,7 +37,7 @@ namespace DM.BLL.Services
         {
             using var context = _contextFactory.CreateDbContext();
 
-            var elements = await context.FileUnits.Where(d => d.IsDeleted == false).Include(f=>f.UserActions).ToListAsync();
+            var elements = await context.FileUnits.Where(d => d.IsDeleted == false).ToListAsync();
             var result = _mapper.Map<IEnumerable<FileDTO>>(elements);
             return result;
 
@@ -47,7 +47,7 @@ namespace DM.BLL.Services
         {
             using var context = _contextFactory.CreateDbContext();
 
-            var element = await context.FileUnits.Where(f=>f.Id==id).Include(f=>f.UserActions).SingleAsync();
+            var element = await context.FileUnits.Where(f=>f.Id==id).SingleAsync();
             if (element == null)
             {
                 return null;

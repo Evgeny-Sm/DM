@@ -15,6 +15,7 @@
 @inject FileService FileService
 @inject ControlService ControlService
 @inject DialogService DialogService
+@inject NavigationManager Navigation
 
 <h3>FilesToCheck</h3>
 
@@ -67,7 +68,7 @@
 
         using var context = contextFactory.CreateDbContext();
         files = context.FileUnits.Where(f => f.Status == StatusFile.Checking && fileNumbers.Contains(f.Id)).Include(p => p.Person).Include(d => d.Department).
-        Include(p => p.Project).Include(s => s.Section).Include(c=>c.Control)
+        Include(p => p.Project).Include(s => s.Section).Include(c=>c.Controls)
         .ToList();
 
         StateHasChanged();
@@ -89,13 +90,13 @@
       new DialogOptions()
           {
               Width = "500px",
-              Height = "200px",
+              Height = "300px",
               Resizable = true,
               Draggable = false,
               CloseDialogOnOverlayClick = true
           });
 
-        var c = await ControlService.GetControlByIdAsync(SelectedFiles.FirstOrDefault().Control.Id);
+        var c = await ControlService.GetActualControlForPersonAsync(SelectedFiles.FirstOrDefault().Id,CurrentPerson.Id);
         c.IsConfirmed = true;
         c.TimeForChecking += AddTime;
 
@@ -105,19 +106,46 @@
         var f = await FileService.GetItemByIdAsync(SelectedFiles.FirstOrDefault().Id);
         f.Status = StatusFile.Archive;
         await FileService.UpdateFileAsync(f);
+
         files.Remove(SelectedFiles.First());
 
+        SelectedFiles = new List<FileUnit>();
+
+        if (files.Count == 0)
+        {
+            NavigatetoToFiles();
+        }
+
         StateHasChanged();
-        
+
     }
     private async void CheckingDenied()
     {
-        await ControlService.RemoveControlAsync(SelectedFiles.FirstOrDefault().Control.Id);
+        await DialogService.OpenAsync<ResultCheckDialog>($"Затраченное время",
+      new Dictionary<string, object>(),
+      new DialogOptions()
+          {
+              Width = "500px",
+              Height = "300px",
+              Resizable = true,
+              Draggable = false,
+              CloseDialogOnOverlayClick = true
+          });
+        var c = await ControlService.GetActualControlForPersonAsync(SelectedFiles.FirstOrDefault().Id, CurrentPerson.Id);
+        c.IsInAction = false;
+        c.TimeForChecking += AddTime;
+        await ControlService.UpdateControlAsync(c);
 
         var f = await FileService.GetItemByIdAsync(SelectedFiles.FirstOrDefault().Id);
         f.Status = StatusFile.Work;
         await FileService.UpdateFileAsync(f);
         files.Remove(SelectedFiles.First());
+        SelectedFiles = new List<FileUnit>();
+
+        if (files.Count == 0)
+        {
+            NavigatetoToFiles();
+        }
 
         StateHasChanged();
 
@@ -129,7 +157,10 @@
 
     void Close(dynamic result)
     {
-        AddTime = result;
+        if (result != null)
+        {
+            AddTime = result;
+        }
         Dispose();
     }
 
@@ -138,5 +169,9 @@
         // The DialogService is a singleton so it is advisable to unsubscribe.
         DialogService.OnOpen -= Open;
         DialogService.OnClose -= Close;
+    }
+    private void NavigatetoToFiles()
+    {
+        Navigation.NavigateTo("/Files");
     }
 }

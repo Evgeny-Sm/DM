@@ -45,7 +45,7 @@ namespace DocumentMaster.API.Controllers
         {
             try
             {
-                await _projectService.UpdateProjectAsync(id, unit);
+                await _projectService.UpdateProjectAsync(unit);
             }
             catch (Exception ex)
             {
