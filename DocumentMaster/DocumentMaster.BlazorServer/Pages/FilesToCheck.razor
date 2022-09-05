@@ -66,7 +66,7 @@
         var fileNumbers = controls.Select(a => a.FileUnitId);
 
         using var context = contextFactory.CreateDbContext();
-        files = context.FileUnits.Where(t => fileNumbers.Contains(t.Id)).Include(p => p.Person).Include(d => d.Department).
+        files = context.FileUnits.Where(f => f.Status == StatusFile.Checking && fileNumbers.Contains(f.Id)).Include(p => p.Person).Include(d => d.Department).
         Include(p => p.Project).Include(s => s.Section).Include(c=>c.Control)
         .ToList();
 
