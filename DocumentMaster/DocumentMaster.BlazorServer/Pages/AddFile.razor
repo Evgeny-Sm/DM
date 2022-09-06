@@ -10,14 +10,10 @@
 
 
 @inject FileService fileService
-@inject DepartmentService departmentService
 @inject PersonService personService
 @inject ProjectService projectService
 @inject SectionService sectionService
-@inject ActionService ActionService
-@inject DialogService DialogService
 @inject NavigationManager Navigation
-@inject ProtectedSessionStorage sessionStorage
 @inject IJSRuntime JS
 @inject IWebHostEnvironment WebHostEnvironment
 @inject IConfiguration Configuration
@@ -34,8 +30,7 @@ else
     <Authorized>
         <h3>Добавление файла</h3>
         <RadzenTemplateForm Context="Context1" Data="@_file" Submit="@((FileDTO args) => { Submit(args);})">
-            <div class="row">
-                <div class="col-md-10">
+            <div class="row">             
                         <RadzenFieldset Text="Выберите проект">
                             <div class="row">
                                 <div class="col-md-6 ">
@@ -94,7 +89,7 @@ else
                             </div>
                         </RadzenFieldset>
 
-                </div>
+                
             </div>
             <div class="row justify-content-center">
                 <div class="col-md-12 d-flex align-items-end justify-content-center" style="margin-top: 16px;">

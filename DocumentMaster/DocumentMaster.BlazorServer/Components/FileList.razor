@@ -11,21 +11,16 @@
 
 <AuthorizeView>
     <Authorized>
-
         <RadzenDataGrid Data="@files" TItem="FileUnit" ValueChanged="@(args=>ValueChanged(args))" AllowVirtualization="true" Style="height:600px"
                         AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.Or"
                         AllowSorting="true">
             <Columns>
                 <RadzenDataGridColumn TItem="FileUnit" Property="Id" Title="Id" Width="50px" />
                 <RadzenDataGridColumn TItem="FileUnit" Property="Name" Title="Название" Width="200px" />
-                <RadzenDataGridColumn TItem="FileUnit"  Title="Разработчик" Width="80px">
+                <RadzenDataGridColumn TItem="FileUnit" Property="Status" Title="Статус" Width="80px" />
+                <RadzenDataGridColumn TItem="FileUnit"  Title="Разработчик" Width="60px">
                     <Template Context="file">
                         <RadzenLabel Text="@file.Person.LastName"/>
-                    </Template>
-                </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="FileUnit" Title="Статус" Width="60px">
-                    <Template Context="file">
-                        <RadzenLabel Text="@file.Status" />
                     </Template>
                 </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="FileUnit" Property="ProjectId" Title="Проект" Width="60px" />
