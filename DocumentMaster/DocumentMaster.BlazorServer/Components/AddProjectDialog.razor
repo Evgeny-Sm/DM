@@ -1,0 +1,122 @@
+﻿@using DM.BLL.Services
+@using Models
+
+@inject DialogService DialogService
+@inject ProjectService ProjectService
+
+@inject PersonService PersonService
+@inject IJSRuntime JS
+
+
+<RadzenTemplateForm Context="Cont" Data="@Project" Submit="@((ProjectDTO args) => { Submit(args);})">
+    <RadzenFieldset Text="Новый проект">
+        <div class="row">
+            <div class="col-md-4 align-items-center d-flex">
+                <RadzenLabel Text="Название" />
+            </div>
+
+            <div class="col-md-8">
+                <RadzenTextBox style="width: 100%;" @bind-Value="Project.Name" Name="ProjectName" />
+            </div>
+        </div>
+
+
+        <br />
+        <div class="row">
+            <div class="col-md-4 align-items-center d-flex">
+                <RadzenLabel Text="Описание" />
+            </div>
+            <div class="col">
+                <RadzenTextArea Style="width:inherit"  @bind-Value="Project.Description" Name="ProjectName" />
+            </div>
+        </div>
+
+        <br />
+        <div class="row">
+            <div class="col-md-4 align-items-center d-flex">
+                <RadzenLabel Text="Заказчик" />
+            </div>
+            <div class="col-md-8">
+                <RadzenTextBox style="width: 100%;" @bind-Value="Project.Client" Name="ProjectName" />
+            </div>
+        </div>
+
+        <br />
+        <div class="row">
+            <div class="col-md-4 align-items-center d-flex">
+                <RadzenLabel Text="Главный инженер" />
+            </div>
+            <div class="col-md-8 ">
+                <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                        Data=@(Persons) Style="width: 100%" AllowColumnResize="true"
+                                        TextProperty="LastName" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
+                                        Change=@(args => OnChangePerson(args))>
+                    <Columns>
+                        <RadzenDropDownDataGridColumn Property="FirstName" Title="FirstName" Width="100px" />
+                        <RadzenDropDownDataGridColumn Property="LastName" Title="LastName" Width="100px" />
+                    </Columns>
+                </RadzenDropDownDataGrid>
+            </div>
+        </div>
+
+        <br />
+        <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Submit"></RadzenButton>
+        <RadzenButton Click="@Cancel" ButtonStyle="ButtonStyle.Danger" Text="Cancel" Style="width: 120px" />
+    </RadzenFieldset>
+
+</RadzenTemplateForm>
+
+
+
+
+
+@code {
+    private ProjectDTO Project { get; set; } = new ProjectDTO();
+
+    private IList<PersonDTO> Persons { get; set; }
+
+    protected override async void OnInitialized()
+    {
+        var p = await PersonService.GetPersonsAsync();
+        Persons = p.ToList();
+
+
+        StateHasChanged();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+    }
+
+    async void Submit(ProjectDTO arg)
+    {
+        if (!Persons.Select(p=>p.Id).Contains(Project.MainIngId))
+        {
+            await JS.InvokeVoidAsync("alert", "Выберите ГИПа");
+            return;
+        }
+        arg.IsDeleted = false;
+
+        var p = await ProjectService.AddProjectAsync(arg);
+
+        if (p == null)
+        {
+            await JS.InvokeVoidAsync("alert", "Ошибка базы данных");
+
+        }
+        DialogService.Close();
+
+    }
+    void OnChangePerson(object value)
+    {
+        Project.MainIngId = (int)value;
+
+    }
+
+    async void Cancel()
+    {
+        DialogService.Close();
+    }
+
+
+}

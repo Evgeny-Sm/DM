@@ -27,79 +27,79 @@
 else
 {
     <AuthorizeView>
-    <Authorized>
-        <h3>Добавление файла</h3>
-        <RadzenTemplateForm Context="Context1" Data="@_file" Submit="@((FileDTO args) => { Submit(args);})">
-            <div class="row">             
-                        <RadzenFieldset Text="Выберите проект">
-                            <div class="row">
-                                <div class="col-md-6 ">
-                                    <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
-                                                        Data=@(Projects) Style="width: 100%" AllowColumnResize="true"
-                                                        TextProperty="Name" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
-                                                        Change=@(args => OnChange(args, "DropDownDataGrid with filtering by all string columns"))>
-                                        <Columns>
-                                            <RadzenDropDownDataGridColumn Property="Id" Title="ID" Width="100px" />
-                                            <RadzenDropDownDataGridColumn Property="Name" Title="Name" Width="200px"/>                                          
-                                        </Columns>
-                                    </RadzenDropDownDataGrid>
-                                </div>
+        <Authorized>
+            <h3>Добавление файла</h3>
+            <RadzenTemplateForm Context="Context1" Data="@_file" Submit="@((FileDTO args) => { Submit(args);})">
+                <div class="row">
+                    <RadzenFieldset Text="Выберите проект">
+                        <div class="row">
+                            <div class="col-md-6 ">
+                                <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                                    Data=@(Projects) Style="width: 100%" AllowColumnResize="true"
+                                                    TextProperty="Name" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
+                                                    Change=@(args => OnChange(args, "DropDownDataGrid with filtering by all string columns"))>
+                                    <Columns>
+                                        <RadzenDropDownDataGridColumn Property="Id" Title="ID" Width="100px" />
+                                        <RadzenDropDownDataGridColumn Property="Name" Title="Name" Width="200px" />
+                                    </Columns>
+                                </RadzenDropDownDataGrid>
                             </div>
-                        </RadzenFieldset>
+                        </div>
+                    </RadzenFieldset>
 
-                        <RadzenFieldset Text="Выберите раздел проекта">
-                            <div class="row">
-                                <div class="col-md-6 ">
-                                    <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
-                                                        Data=@(SectionsList) Style="width: 100%" AllowColumnResize="true"
-                                                        TextProperty="Name" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
-                                                        Change=@(args => OnChangeSection(args, "DropDownDataGrid with filtering by all string columns"))>
-                                        <Columns>
-                                            <RadzenDropDownDataGridColumn Property="Name" Title="Name" Width="50px" />
-                                            <RadzenDropDownDataGridColumn Property="Description" Title="FullName" Width="200px" />
-                                        </Columns>
-                                    </RadzenDropDownDataGrid>
-                                </div>
+                    <RadzenFieldset Text="Выберите раздел проекта">
+                        <div class="row">
+                            <div class="col-md-6 ">
+                                <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                                    Data=@(SectionsList) Style="width: 100%" AllowColumnResize="true"
+                                                    TextProperty="Name" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
+                                                    Change=@(args => OnChangeSection(args, "DropDownDataGrid with filtering by all string columns"))>
+                                    <Columns>
+                                        <RadzenDropDownDataGridColumn Property="Name" Title="Name" Width="50px" />
+                                        <RadzenDropDownDataGridColumn Property="Description" Title="FullName" Width="200px" />
+                                    </Columns>
+                                </RadzenDropDownDataGrid>
                             </div>
-                        </RadzenFieldset>
-                        <RadzenFieldset Text="Название файла">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <RadzenTextBox style="width: 100%;" @bind-Value="_file.Name" Name="FileName" />
-                                </div>
-                                <div class="col-md-6">
-                                    <InputFile OnChange="@LoadFiles" multiple />
-                                </div>
+                        </div>
+                    </RadzenFieldset>
+                    <RadzenFieldset Text="Название файла">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <RadzenTextBox style="width: 100%;" @bind-Value="_file.Name" Name="FileName" />
                             </div>
-                        </RadzenFieldset>
+                            <div class="col-md-6">
+                                <InputFile OnChange="@LoadFiles" multiple />
+                            </div>
+                        </div>
+                    </RadzenFieldset>
 
-                        <RadzenFieldset Text="Количество листов в файле">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <RadzenTextBox style="width: 100%;" @bind-Value="NumbersDrawings" Name="NumbDr" />
-                                </div>
+                    <RadzenFieldset Text="Количество листов в файле">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <RadzenTextBox style="width: 100%;" @bind-Value="NumbersDrawings" Name="NumbDr" />
                             </div>
-                        </RadzenFieldset>
+                        </div>
+                    </RadzenFieldset>
 
-                        <RadzenFieldset Text="Время на разработку(часов)">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <RadzenTextBox style="width: 100%;" @bind-Value="TimeToDevelop" Name="TimeToDev" />
-                                </div>
+                    <RadzenFieldset Text="Время на разработку(часов)">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <RadzenTextBox style="width: 100%;" @bind-Value="TimeToDevelop" Name="TimeToDev" />
                             </div>
-                        </RadzenFieldset>
+                        </div>
+                    </RadzenFieldset>
 
-                
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-md-12 d-flex align-items-end justify-content-center" style="margin-top: 16px;">
-                    <RadzenButton ButtonType="ButtonType.Submit" Icon="save" style="display: inline-block; margin-left: 10px;" Text="Save" />
-                    <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="cancel" style="display: inline-block; margin-left: 10px;" Text="Cancel" Click="@Cancel" />
+
                 </div>
-            </div>
-        </RadzenTemplateForm>
+                <div class="row justify-content-center">
+                    <div class="col-md-12 d-flex align-items-end justify-content-center" style="margin-top: 16px;">
+                        <RadzenButton ButtonType="ButtonType.Submit" Icon="save" style="display: inline-block; margin-left: 10px;" Text="Save" />
+                        <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="cancel" style="display: inline-block; margin-left: 10px;" Text="Cancel" Click="@Cancel" />
+                    </div>
+                </div>
+            </RadzenTemplateForm>
         </Authorized>
-</AuthorizeView>
+    </AuthorizeView>
 }
 
 

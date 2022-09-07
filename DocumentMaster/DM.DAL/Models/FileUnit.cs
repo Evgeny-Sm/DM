@@ -12,7 +12,7 @@ namespace DM.DAL.Models
     {
         [Key]
         public int Id { get; set; }
-        public bool IsDeleted { get; set; }=false;
+        public bool IsDeleted { get; set; }
         [Required]
         public string Name { get; set; }=String.Empty;
         public string Description { get; set; }=string.Empty;

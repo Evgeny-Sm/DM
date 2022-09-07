@@ -22,12 +22,9 @@
 
 <div class="row">
     <div class="col-md-6">
-        <AuthorizeView Roles="admin,head">
-            <Authorized>
-                <RadzenButton Icon="add_circle_outline" ButtonStyle="ButtonStyle.Secondary"
-                              Text="Добавить" Click="@NavigatetoToAddProject" />
-            </Authorized>
-        </AuthorizeView>
+
+                <AddProjectButton/>
+
     </div>
     <div class="col-md-6">
         @if (SelectedFiles.Count != 0)
@@ -119,8 +116,4 @@
 
     }
 
-    private void NavigatetoToAddProject()
-    {
-        Navigation.NavigateTo("/AddProject");
-    }
 }

@@ -12,7 +12,7 @@ namespace Models
         [JsonPropertyName("Id")]
         public int Id { get; set; }
         [JsonPropertyName("IsDeleted")]
-        public bool IsDeleted { get; set; } = false;   
+        public bool IsDeleted { get; set; }    
         [JsonPropertyName("Name")]
         public string Name { get; set; } = String.Empty;
         [JsonPropertyName("Description")]

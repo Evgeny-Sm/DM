@@ -68,8 +68,8 @@ namespace DM.BLL.Services
                 SectionId = fileDTO.SectionId, 
                 NumbersDrawings = fileDTO.NumbersDrawings,          
                 Status=fileDTO.Status,
-                PersonId=fileDTO.PersonId,
-                TimeToCreate = fileDTO.TimeToCreate
+                IsDeleted= fileDTO.IsDeleted,
+                PersonId=fileDTO.PersonId              
             };
             await context.FileUnits.AddAsync(element);
             await context.SaveChangesAsync();
@@ -79,7 +79,7 @@ namespace DM.BLL.Services
         public async Task<int> UpdateFileAsync(FileDTO fileDTO)
         {
             using var context = _contextFactory.CreateDbContext();
-            var element = await context.FileUnits.Where(f => f.Id == fileDTO.Id).Include(f => f.UserActions).SingleAsync();
+            var element = await context.FileUnits.Where(f => f.Id == fileDTO.Id).SingleAsync();
             if (element is null)
             {
                 element = new FileUnit();
