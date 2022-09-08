@@ -26,6 +26,13 @@ namespace DM.BLL.Services
             var result = _mapper.Map<IEnumerable<ControlDTO>>(element);
             return result;
         }
+        public async Task<IEnumerable<ControlDTO>> GetControlsByFileIdAsync(int id)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var element = await context.FileUnits.Where(c => c.Id == id).Include(c => c.Controls).ThenInclude(p=>p.Person).SingleAsync();
+            var result = _mapper.Map<IEnumerable<ControlDTO>>(element.Controls);
+            return result;
+        }
         public async Task<ControlDTO> GetControlByIdAsync(int id)
         {
             using var context = _contextFactory.CreateDbContext();
@@ -78,7 +85,8 @@ namespace DM.BLL.Services
                 PersonId=controlDTO.PersonId,
                 IsConfirmed=controlDTO.IsConfirmed,
                 TimeForChecking=controlDTO.TimeForChecking,
-                IsInAction=controlDTO.IsInAction
+                IsInAction=controlDTO.IsInAction,
+                Description=controlDTO.Description
 
             };
             await context.Controls.AddAsync(control);
@@ -99,6 +107,7 @@ namespace DM.BLL.Services
             element.IsConfirmed = controlDTO.IsConfirmed;
             element.TimeForChecking = controlDTO.TimeForChecking;
             element.IsInAction = controlDTO.IsInAction;
+            element.Description = controlDTO.Description;
             context.Controls.Update(element);
             await context.SaveChangesAsync();
 

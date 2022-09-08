@@ -23,7 +23,7 @@ namespace DM.BLL.Authorization
         {
             using var context = _contextFactory.CreateDbContext();
             {
-                Account? account = context.Accounts.Where(x => x.UserName == userName).Include(p => p.Person).Single();
+                Account? account =await context.Accounts.Where(x => x.UserName == userName).Include(p => p.Person).SingleAsync();
 
                 return _mapper.Map<AccountDTO>(account);
             }
@@ -32,7 +32,7 @@ namespace DM.BLL.Authorization
         {
             using var context = _contextFactory.CreateDbContext();
             {
-                Account? account = context.Accounts.Where(x => x.PersonId == personId).Include(p => p.Person).Single();
+                Account? account =await context.Accounts.Where(x => x.PersonId == personId).Include(p => p.Person).SingleAsync();
 
                 return _mapper.Map<AccountDTO>(account);
             }

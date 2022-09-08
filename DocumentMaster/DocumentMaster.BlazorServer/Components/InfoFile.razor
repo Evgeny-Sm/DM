@@ -7,17 +7,20 @@
 
 
 
-@inject PersonService personService
+@inject PersonService PersonService
+@inject ControlService ControlService
 
 
 <AuthorizeView>
     <Authorized>
         <RadzenCard Style="margin-bottom:20px">
             <b>Разработал: @Developer   </b>
+            <b>Проверил: @Controller   </b>
             <div>Отдел: @Department </div>
             <div>Проект: @ProjectName </div>
             <div>Раздел проекта: @SectionProject </div>
             <div>Количество листов в файле: @NumbersDrawing </div>
+
         </RadzenCard>
     </Authorized>
 </AuthorizeView>
@@ -25,6 +28,7 @@
     <Authorized>
         <RadzenCard Style="margin-bottom:20px">
             <div>Затраты на разработку: @TimeToDev </div>
+            <div>Затраты на проверку: @TimeToControl </div>
         </RadzenCard>
     </Authorized>
 </AuthorizeView>
@@ -34,11 +38,14 @@
     public IList<FileUnit>? SelectedFiles { get; set; }
 
     private string Developer { get; set; } = string.Empty;
+    private string Controller { get; set; } = string.Empty;
     private string Department { get; set; } = string.Empty;
     private string ProjectName { get; set; } = string.Empty;
     private string SectionProject { get; set; } = string.Empty;
     private string NumbersDrawing { get; set; } = string.Empty;
     private string TimeToDev { get; set; } = string.Empty;
+    private string TimeToControl { get; set; } = string.Empty;
+    private FileUnit? Unit { get; set; }
 
 
 
@@ -49,6 +56,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
+        Unit = SelectedFiles.FirstOrDefault();
         await GetData();
     }
 
@@ -58,12 +66,29 @@
         {
             return ;
         }
-        Developer = $"{SelectedFiles.FirstOrDefault().Person.FirstName} {SelectedFiles.FirstOrDefault().Person.LastName}";
-        Department = SelectedFiles.FirstOrDefault().Department.Name;
-        ProjectName = SelectedFiles.FirstOrDefault().Project.Name;
-        SectionProject = SelectedFiles.FirstOrDefault().Section.Name;
-        NumbersDrawing = SelectedFiles.FirstOrDefault().NumbersDrawings.ToString();
-        TimeToDev = SelectedFiles.FirstOrDefault().TimeToCreate.ToString();
+        var controls = await ControlService.GetControlsByFileIdAsync(Unit.Id);
+
+        var ctrl = controls.Where(c=>c.IsConfirmed==true).FirstOrDefault();
+        if (ctrl != null)
+        {
+            Controller = ctrl.PersonName;
+        }
+
+        TimeToControl = controls.Sum(c => c.TimeForChecking).ToString();
+
+        Developer = $"{Unit.Person.FirstName} {Unit.Person.LastName}";
+
+        Department = Unit.Department.Name;
+
+        ProjectName = Unit.Project.Name;
+
+        SectionProject = Unit.Section.Name;
+
+        NumbersDrawing = Unit.NumbersDrawings.ToString();
+
+        TimeToDev = Unit.TimeToCreate.ToString();
+        
+
 
     }
 

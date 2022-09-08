@@ -11,7 +11,6 @@
 
 
 @inject IConfiguration Configuration
-@inject NavigationManager Navigation
 @inject IJSRuntime JS
 @inject FileService fileService
 @inject PersonService PersonService
@@ -23,7 +22,7 @@
 <h3>Files </h3>
 <AuthorizeView>
     <Authorized>
-        <AddFileButton />
+        <AddFileButton FileCreated="HandReload" />
         <div class="row" >
             <div class="col-md-8">
                 <RadzenCard>
@@ -70,18 +69,20 @@
 
     protected override async  void OnInitialized()
     {
-        if (files == null)
-        {
-            using var context = contextFactory.CreateDbContext();
-            files = context.FileUnits.Include(d => d.Department).Include(p => p.Person).Include(p => p.Project).Include(s => s.Section).OrderByDescending(f => f.Id).ToArray();
-        }
+
+        using var context = contextFactory.CreateDbContext();
+        files = context.FileUnits.Include(d => d.Department).Include(p => p.Person).Include(p => p.Project).Include(s => s.Section).OrderByDescending(f => f.Id).ToArray();
+
         SelectedFiles = new List<FileUnit>();
         var authState = await authenticationState;
 
         CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
     }
 
-
+    private void HandReload(bool b)
+    {
+       this.OnInitialized();
+    }
 
     private void SetSelectedFiles(IList<FileUnit> fileUnit)
     {
@@ -125,8 +126,5 @@
         }
     }
 
-        private void NavigatetoToAddFile()
-    {
-        Navigation.NavigateTo("/AddFile");
-    }
+
 }

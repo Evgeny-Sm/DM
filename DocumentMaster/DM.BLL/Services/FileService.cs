@@ -48,6 +48,7 @@ namespace DM.BLL.Services
             using var context = _contextFactory.CreateDbContext();
 
             var element = await context.FileUnits.Where(f=>f.Id==id).SingleAsync();
+
             if (element == null)
             {
                 return null;
@@ -69,7 +70,8 @@ namespace DM.BLL.Services
                 NumbersDrawings = fileDTO.NumbersDrawings,          
                 Status=fileDTO.Status,
                 IsDeleted= fileDTO.IsDeleted,
-                PersonId=fileDTO.PersonId              
+                PersonId=fileDTO.PersonId,
+                TimeToCreate= fileDTO.TimeToCreate
             };
             await context.FileUnits.AddAsync(element);
             await context.SaveChangesAsync();

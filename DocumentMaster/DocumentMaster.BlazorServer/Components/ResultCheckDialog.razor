@@ -11,13 +11,24 @@
 
 
 <RadzenCard Style="width: 100%; overflow: hidden;">
-
-    <div>
-        <RadzenLabel Text="Время на проверку(часов)" />
+    <br />
+    <div class="row">
+        <div class="col-md-4 align-items-center d-flex">
+            <RadzenLabel Text="Описание" />
+        </div>
+        <div class="col">
+            <RadzenTextArea Style="width:inherit" @bind-Value="Description" Name="ProjectName" />
+        </div>
     </div>
     <br />
-    <div class="col-md-8">
-        <RadzenTextBox style="width: 100%;" @bind-Value="AdditionalTime" Name="AddTime" />
+    <div class="row">
+        <div class="col-md-4 align-items-center d-flex">
+            <RadzenLabel Text="Время на проверку(часов)" />
+        </div>
+        <br />
+        <div class="col-md-4">
+            <RadzenTextBox style="width: 100%;" @bind-Value="AdditionalTime" Name="AddTime" />
+        </div>
     </div>
 
     <br />
@@ -29,31 +40,24 @@
 @code {
 
     private string AdditionalTime { get; set; } = "0";
+    private string Description { get; set; } = string.Empty;
 
-
-    protected override void OnInitialized()
-    {
-
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-
-    }
 
     private async Task Submit()
     {
-        double time;
-        if (double.TryParse(AdditionalTime, out double t))
-        {
-            time= t;
-        }
-        else
+
+        if (!double.TryParse(AdditionalTime, out double t))
         {
             await JS.InvokeVoidAsync("alert", "Введите время на доработку в часах или 0");
             return;
         }
-        DialogService.Close(time);
+        Dictionary<string, string> result = new Dictionary<string, string>
+        { 
+            { "time", AdditionalTime},
+            { "description", Description}
+        };
+
+        DialogService.Close(result);
 
     }
 

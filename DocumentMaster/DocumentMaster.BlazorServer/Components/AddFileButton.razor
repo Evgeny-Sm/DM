@@ -15,7 +15,8 @@
 
 @code {
 
-
+    [Parameter]
+    public EventCallback<bool> FileCreated { get; set; }
 
     protected override  void OnInitialized()
     {
@@ -53,7 +54,7 @@
 
     void Close(dynamic result)
     {
-
+        FileCreated.InvokeAsync(true);
         Dispose();
     }
 

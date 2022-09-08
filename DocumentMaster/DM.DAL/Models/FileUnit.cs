@@ -19,7 +19,6 @@ namespace DM.DAL.Models
         public string PathFile { get; set; } = String.Empty;
         public Department? Department { get; set; }
         public int DepartmentId { get; set; }
-        public ICollection<UserAction>? UserActions { get; set; }
         public Project? Project { get; set; }
         public int ProjectId { get; set; }
         public Section? Section { get; set; }
@@ -33,7 +32,6 @@ namespace DM.DAL.Models
         public string Status { get; set; }
         public FileUnit()
         { 
-            UserActions = new List<UserAction>();
             Controls = new List<Control>();
         }
 

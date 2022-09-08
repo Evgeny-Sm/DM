@@ -50,6 +50,8 @@
 
     private double AddTime { get; set; }
 
+    private string Descripton { get; set; } = string.Empty;
+
     private PersonDTO CurrentPerson { get; set; }
 
     protected override async void OnInitialized()
@@ -90,7 +92,7 @@
       new DialogOptions()
           {
               Width = "500px",
-              Height = "300px",
+              Height = "400px",
               Resizable = true,
               Draggable = false,
               CloseDialogOnOverlayClick = true
@@ -99,6 +101,7 @@
         var c = await ControlService.GetActualControlForPersonAsync(SelectedFiles.FirstOrDefault().Id,CurrentPerson.Id);
         c.IsConfirmed = true;
         c.TimeForChecking += AddTime;
+        c.Description = Descripton;
 
 
         await ControlService.UpdateControlAsync(c);
@@ -126,7 +129,7 @@
       new DialogOptions()
           {
               Width = "500px",
-              Height = "300px",
+              Height = "400px",
               Resizable = true,
               Draggable = false,
               CloseDialogOnOverlayClick = true
@@ -134,6 +137,8 @@
         var c = await ControlService.GetActualControlForPersonAsync(SelectedFiles.FirstOrDefault().Id, CurrentPerson.Id);
         c.IsInAction = false;
         c.TimeForChecking += AddTime;
+        c.Description = Descripton;
+
         await ControlService.UpdateControlAsync(c);
 
         var f = await FileService.GetItemByIdAsync(SelectedFiles.FirstOrDefault().Id);
@@ -159,7 +164,8 @@
     {
         if (result != null)
         {
-            AddTime = result;
+            AddTime = double.Parse(result["time"]);
+            Descripton = result["description"];
         }
         Dispose();
     }
