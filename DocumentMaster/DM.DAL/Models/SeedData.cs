@@ -13,12 +13,14 @@ namespace DM.DAL.Models
         
         public static void Initialize(IServiceProvider serviceProvider)
         {
+            /*
             using (var context1 = new DMContext(serviceProvider.GetRequiredService<DbContextOptions<DMContext>>()))
             {
                 if (context1.Persons.Any())
                 {
                     return;
                 }
+                
                 context1.Departments.AddRange(
                     new Department
                     {
@@ -56,7 +58,9 @@ namespace DM.DAL.Models
                    });
                 context1.SaveChanges();
                 context1.Dispose();
+                
             }
+            */
         }
         
     }

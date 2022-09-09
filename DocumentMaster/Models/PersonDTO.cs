@@ -11,6 +11,7 @@ namespace Models
     {
         [JsonPropertyName("Id")]
         public int Id { get; set; }
+        public string UserName { get; set; }
 
         [JsonPropertyName("FirstName")]
         public string FirstName { get; set; } = String.Empty;

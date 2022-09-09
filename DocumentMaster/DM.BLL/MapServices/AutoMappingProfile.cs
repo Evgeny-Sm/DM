@@ -16,7 +16,7 @@ namespace DM.BLL.MapServices
             //Add as many of lines as many objects you need map to
             CreateMap<Department, DepartmentDTO>();
             CreateMap<FileUnit, FileDTO>();
-            CreateMap<Person, PersonDTO>().ForMember("Role", p => p.MapFrom(a => a.Account.Role));
+            CreateMap<Person, PersonDTO>().ForMember("Role", p => p.MapFrom(a => a.Account.Role)).ForMember("UserName", p => p.MapFrom(a => a.Account.UserName));
             CreateMap<Project, ProjectDTO>().ForMember("MainIngId", p => p.MapFrom(u=>u.PersonId)).ForMember("FilesCount",p=>p.MapFrom(k=>k.FileUnits.Count));
             CreateMap<UserAction, UserActionDTO>();
             CreateMap<Account, AccountDTO>().ForMember("PersonId", p=>p.MapFrom(a=>a.Person.Id));

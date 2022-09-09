@@ -3,6 +3,6 @@
   <PropertyGroup>
     <RazorPage_SelectedScaffolderID>RazorPageScaffolder</RazorPage_SelectedScaffolderID>
     <RazorPage_SelectedScaffolderCategoryPath>root/Common/RazorPage</RazorPage_SelectedScaffolderCategoryPath>
-    <NameOfLastUsedPublishProfile>C:\Tasks\work\DM\DocumentMaster\DocumentMaster.BlazorServer\Properties\PublishProfiles\FolderProfile.pubxml</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>C:\Tasks\work\DM\DocumentMaster\DocumentMaster.BlazorServer\Properties\PublishProfiles\IISProfile.pubxml</NameOfLastUsedPublishProfile>
   </PropertyGroup>
 </Project>

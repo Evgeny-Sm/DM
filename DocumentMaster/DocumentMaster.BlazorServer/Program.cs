@@ -4,11 +4,13 @@ using DM.BLL.MapServices;
 using DM.BLL.Services;
 using DM.DAL.Models;
 using DocumentMaster.BlazorServer.Authentication;
+using DocumentMaster.BlazorServer.Hubs;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
 
@@ -44,6 +46,10 @@ builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<SectionService>();
 builder.Services.AddScoped<ProjectService>();
 builder.Services.AddScoped<ControlService>();
+builder.Services.AddResponseCompression(opts=>{
+    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+        new[] { "application/octet-stream"});
+});
 
 
 
@@ -108,9 +114,9 @@ app.UseAuthorization();
 
 app.UseRouting();
 
-
-app.MapBlazorHub();
 app.MapControllers();
+app.MapBlazorHub();
+app.MapHub<ChatHub>("/chathub");
 app.MapFallbackToPage("/_Host");
 
 app.Run();
