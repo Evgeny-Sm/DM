@@ -12,14 +12,14 @@ namespace DM.DAL.Models
     {
         [Key]
         public int Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string FirstName { get; set; }=String.Empty;
+        public string LastName { get; set; }=string.Empty;
         public Account Account { get; set; }
         public Department? Department { get; set; }
         public int DepartmentId { get; set; }
         public Position? Position { get; set; }
         public int PositionId { get; set; }
-        public string TelegramContact { get; set; }
+        public string TelegramContact { get; set; } = String.Empty;
         public double SalaryPerH { get; set; }
         public ICollection<UserAction> UserActions { get; set; }
         public bool IsDeleted { get; set; } = false;

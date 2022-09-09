@@ -429,7 +429,7 @@ namespace DM.DAL.Migrations
             modelBuilder.Entity("DM.DAL.Models.UserAction", b =>
                 {
                     b.HasOne("DM.DAL.Models.FileUnit", "FileUnit")
-                        .WithMany("UserActions")
+                        .WithMany()
                         .HasForeignKey("FileUnitId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -455,8 +455,6 @@ namespace DM.DAL.Migrations
             modelBuilder.Entity("DM.DAL.Models.FileUnit", b =>
                 {
                     b.Navigation("Controls");
-
-                    b.Navigation("UserActions");
                 });
 
             modelBuilder.Entity("DM.DAL.Models.Person", b =>

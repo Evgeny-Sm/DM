@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DM.DAL.Migrations
 {
     [DbContext(typeof(DMContext))]
-    [Migration("20220819114918_InitalCreate2")]
-    partial class InitalCreate2
+    [Migration("20220909204422_In1")]
+    partial class In1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -34,8 +34,7 @@ namespace DM.DAL.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PersonId")
                         .HasColumnType("int");
@@ -58,6 +57,45 @@ namespace DM.DAL.Migrations
                         .IsUnique();
 
                     b.ToTable("Accounts");
+                });
+
+            modelBuilder.Entity("DM.DAL.Models.Control", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("FileUnitId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsInAction")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PersonId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("TimeForChecking")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FileUnitId");
+
+                    b.HasIndex("PersonId");
+
+                    b.ToTable("Controls");
                 });
 
             modelBuilder.Entity("DM.DAL.Models.Department", b =>
@@ -92,6 +130,9 @@ namespace DM.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("DepartmentId")
                         .HasColumnType("int");
 
@@ -113,18 +154,27 @@ namespace DM.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("PersonId")
+                        .HasColumnType("int");
+
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
                     b.Property<int>("SectionId")
                         .HasColumnType("int");
 
-                    b.Property<double>("TimeToDev")
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("TimeToCreate")
                         .HasColumnType("float");
 
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentId");
+
+                    b.HasIndex("PersonId");
 
                     b.HasIndex("ProjectId");
 
@@ -148,6 +198,9 @@ namespace DM.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsConfirmed")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -157,6 +210,13 @@ namespace DM.DAL.Migrations
 
                     b.Property<int>("PositionId")
                         .HasColumnType("int");
+
+                    b.Property<double>("SalaryPerH")
+                        .HasColumnType("float");
+
+                    b.Property<string>("TelegramContact")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -261,6 +321,9 @@ namespace DM.DAL.Migrations
                     b.Property<int>("PersonId")
                         .HasColumnType("int");
 
+                    b.Property<double>("TimeForAction")
+                        .HasColumnType("float");
+
                     b.HasKey("Id");
 
                     b.HasIndex("FileUnitId");
@@ -281,11 +344,36 @@ namespace DM.DAL.Migrations
                     b.Navigation("Person");
                 });
 
+            modelBuilder.Entity("DM.DAL.Models.Control", b =>
+                {
+                    b.HasOne("DM.DAL.Models.FileUnit", "FileUnit")
+                        .WithMany("Controls")
+                        .HasForeignKey("FileUnitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DM.DAL.Models.Person", "Person")
+                        .WithMany()
+                        .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FileUnit");
+
+                    b.Navigation("Person");
+                });
+
             modelBuilder.Entity("DM.DAL.Models.FileUnit", b =>
                 {
                     b.HasOne("DM.DAL.Models.Department", "Department")
                         .WithMany("FileUnits")
                         .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DM.DAL.Models.Person", "Person")
+                        .WithMany()
+                        .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -302,6 +390,8 @@ namespace DM.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Department");
+
+                    b.Navigation("Person");
 
                     b.Navigation("Project");
 
@@ -341,7 +431,7 @@ namespace DM.DAL.Migrations
             modelBuilder.Entity("DM.DAL.Models.UserAction", b =>
                 {
                     b.HasOne("DM.DAL.Models.FileUnit", "FileUnit")
-                        .WithMany("UserActions")
+                        .WithMany()
                         .HasForeignKey("FileUnitId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -366,7 +456,7 @@ namespace DM.DAL.Migrations
 
             modelBuilder.Entity("DM.DAL.Models.FileUnit", b =>
                 {
-                    b.Navigation("UserActions");
+                    b.Navigation("Controls");
                 });
 
             modelBuilder.Entity("DM.DAL.Models.Person", b =>
