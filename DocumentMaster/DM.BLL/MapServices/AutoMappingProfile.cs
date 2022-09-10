@@ -22,7 +22,9 @@ namespace DM.BLL.MapServices
             CreateMap<Account, AccountDTO>().ForMember("PersonId", p=>p.MapFrom(a=>a.Person.Id));
             CreateMap<Section, SectionDTO>();
             CreateMap<Position, PositionDTO>();
-            CreateMap<Control, ControlDTO>().ForMember("PersonName", p => p.MapFrom(a => $"{a.Person.FirstName} {a.Person.LastName}"));
+            CreateMap<Control, ControlDTO>().ForMember("PersonName", 
+                p => p.MapFrom(a => $"{a.Person.FirstName} {a.Person.LastName}"));
+            CreateMap<Challenge, ChallengeDTO>().ForMember("PersonIds", c => c.MapFrom(p => p.Persons.Select(s => s.Id).ToList()));
         }
     }
 }

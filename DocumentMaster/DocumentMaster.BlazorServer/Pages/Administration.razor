@@ -34,10 +34,10 @@
         <br/>
         <RadzenFieldset style="width:100%" Text="Сотрудники">
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-8">
                     <Employees PersonsGetCallBack="@SetSelectedPersons" />
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-4">
                     @if (SelectedPerson != null)
                     {
                         <PersonData Person="@SelectedPerson" />

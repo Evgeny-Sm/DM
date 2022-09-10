@@ -104,8 +104,6 @@ namespace DM.BLL.Services
                 context.Persons.Remove(element);
                 await context.SaveChangesAsync();
             }
-
-
         }
         public void Dispose()
         {

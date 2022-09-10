@@ -21,6 +21,7 @@ namespace DM.DAL.Models
         public DbSet<Position>? Positions { get; set; }
         public DbSet<Section>? Sections { get; set; }
         public DbSet<Control>? Controls { get; set; }
+        public DbSet<Challenge>? Challenges { get; set; }
 
     }
 }

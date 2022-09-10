@@ -46,6 +46,8 @@ builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<SectionService>();
 builder.Services.AddScoped<ProjectService>();
 builder.Services.AddScoped<ControlService>();
+builder.Services.AddScoped<ChallengeService>();
+
 builder.Services.AddResponseCompression(opts=>{
     opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
         new[] { "application/octet-stream"});
@@ -69,8 +71,8 @@ builder.Services.AddAuthenticationCore();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor().AddHubOptions(options =>
 {
-    // maximum message size of 100MB
-    options.MaximumReceiveMessageSize = 100000000;
+    // maximum message size of 300MB
+    options.MaximumReceiveMessageSize = 300000000;
 }); ;
 builder.Services.AddScoped<ProtectedSessionStorage>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
