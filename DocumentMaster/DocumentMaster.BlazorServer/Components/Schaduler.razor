@@ -20,7 +20,7 @@
     private Task<AuthenticationState> authenticationState { get; set; }
 
 
-    public PersonDTO CurrentPerson { get; set; }
+    private PersonDTO CurrentPerson { get; set; }
 
     RadzenScheduler<ChallengeDTO> scheduler;
 
@@ -56,34 +56,38 @@
         }
     }
 
-    async Task OnSlotSelect(SchedulerSlotSelectEventArgs args)
+    private async Task OnSlotSelect(SchedulerSlotSelectEventArgs args)
     {
 
-        ChallengeDTO data = await DialogService.OpenAsync<AddAppointmentPage>("Add Appointment",
+        ChallengeDTO data = await DialogService.OpenAsync<AddAppointmentPage>("Add Task",
             new Dictionary<string, object> { { "Start", args.Start }, { "End", args.End } });
 
         if (data != null)
         {
             data.PersonIds.Add(CurrentPerson.Id);
+            data.PersonIds = data.PersonIds.Distinct().ToList();
             await ChallengeService.AddChallengeAsync(data);
             // Either call the Reload method or reassign the Data property of the Scheduler
             await scheduler.Reload();
         }
     }
 
-    async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<ChallengeDTO> args)
+    private async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<ChallengeDTO> args)
     {
 
-        await DialogService.OpenAsync<EditAppointmentPage>("Edit Appointment", new Dictionary<string, object> { { "ChallengeDTO", args.Data } });
-
-        await scheduler.Reload();
+        ChallengeDTO data = await DialogService.OpenAsync<EditAppointmentPage>("Edit Task", new Dictionary<string, object> { { "Appointment", args.Data } });
+        if (data != null)
+        {
+            await ChallengeService.UpdateItemAsync(data);
+            await scheduler.Reload();
+        }
     }
 
     void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<ChallengeDTO> args)
     {
         // Never call StateHasChanged in AppointmentRender - would lead to infinite loop
 
-        if (args.Data.Name == "Birthday")
+        if (args.Data.Name.Contains("Birthday"))
         {
             args.Attributes["style"] = "background: red";
         }

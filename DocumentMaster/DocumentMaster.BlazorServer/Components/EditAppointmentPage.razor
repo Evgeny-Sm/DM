@@ -1,5 +1,7 @@
-﻿@using Models
+﻿@using DM.BLL.Services
+@using Models
 @inject DialogService DialogService
+@inject PersonService PersonService
 
 
 <RadzenTemplateForm TItem="ChallengeDTO" Data="@model" Submit=@OnSubmit>
@@ -31,29 +33,43 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-md-3"></div>
+    <div class="col-md-3">
+         <RadzenButton Click="@(args=>Remove())" Icon="report" Text="Save" />
+    </div>
     <div class="col">
         <RadzenButton ButtonType="ButtonType.Submit" Text="Save" />
     </div>
 </div>
 </RadzenTemplateForm>
 @code {
-    [Parameter]
-    public DateTime Start { get; set; }
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+    private PersonDTO CurrentPerson { get; set; }
 
     [Parameter]
-    public DateTime End { get; set; }
+    public ChallengeDTO Appointment { get; set; }
 
     ChallengeDTO model = new ChallengeDTO();
 
-    protected override void OnParametersSet()
+    protected override async Task OnInitializedAsync()
     {
-        model.Start = Start;
-        model.End = End;
+        var authState = await authenticationState;
+        CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
     }
 
-    void OnSubmit(ChallengeDTO model)
+    protected override void OnParametersSet()
     {
+        model = Appointment;
+    }
+
+    private void OnSubmit(ChallengeDTO model)
+    {
+        DialogService.Close(model);
+    }
+    private void Remove()
+    {
+        model.IsDeleted = true;
         DialogService.Close(model);
     }
 }

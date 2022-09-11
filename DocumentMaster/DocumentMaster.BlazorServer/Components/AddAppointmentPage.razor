@@ -1,12 +1,40 @@
-﻿@using Models
+﻿@using DM.BLL.Services
+@using Models
+
 @inject DialogService DialogService
+@inject PersonService PersonService
 
-
+<AuthorizeView Roles="admin,head">
+    <Authorized>
+        <div class="container">
+            <div class="row justify-content-start g-1">
+                <div class="col-md-8">
+                    <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                            Data=@(Persons) Style="width: 100%" AllowColumnResize="true"
+                                            TextProperty="LastName" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
+                                            Change=@(args => OnChangePerson(args))>
+                        <Columns>
+                            <RadzenDropDownDataGridColumn Property="FirstName" Title="FirstName" Width="80px" />
+                            <RadzenDropDownDataGridColumn Property="LastName" Title="LastName" Width="80px" />
+                        </Columns>
+                    </RadzenDropDownDataGrid>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" @onclick="AddPersonToTask" class="btn btn-primary">add</button>
+                </div>
+                <div class="col-md-2">
+                    <span class="overflow-hidden">(@model.PersonIds.Count)</span>
+                </div>
+            </div>
+        </div>
+        <br />
+    </Authorized>
+</AuthorizeView>
 
 <RadzenTemplateForm TItem="ChallengeDTO" Data="@model" Submit=@OnSubmit>
     <div class="row" style="margin-bottom: 16px">
         <div class="col-md-3">
-            <RadzenLabel Text="Text" />
+            <RadzenLabel Text="Name" />
         </div>
         <div class="col">
             <RadzenTextBox @bind-Value="@model.Name" Name="Text" />
@@ -45,7 +73,19 @@
     [Parameter]
     public DateTime End { get; set; }
 
+    private IEnumerable<PersonDTO> Persons = new List<PersonDTO>();
+
+    private int ChoosenPersonId { get; set; }
+
     ChallengeDTO model = new ChallengeDTO();
+
+    private bool choose = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Persons = await PersonService.GetPersonsAsync();
+        StateHasChanged();
+    }
 
     protected override void OnParametersSet()
     {
@@ -53,8 +93,23 @@
         model.End = End;
     }
 
-    void OnSubmit(ChallengeDTO model)
+    private void OnSubmit(ChallengeDTO model)
     {
+
         DialogService.Close(model);
     }
+
+    private void OnChangePerson(object value)
+    {
+        ChoosenPersonId = (int)value;
+        choose = true;
+    }
+    private void AddPersonToTask()
+    {
+        if (choose)
+        {
+            model.PersonIds.Add(ChoosenPersonId);
+        }
+    }
+
 }

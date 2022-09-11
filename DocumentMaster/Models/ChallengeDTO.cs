@@ -13,6 +13,7 @@ namespace Models
         public string Description { get; set; } = String.Empty;
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
+        public bool IsDeleted { get; set; } = false;
         public List<int> PersonIds { get; set; } = new();
     }
 }

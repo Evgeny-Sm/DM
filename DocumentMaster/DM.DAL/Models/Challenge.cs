@@ -15,6 +15,7 @@ namespace DM.DAL.Models
         public string Description { get; set; }=String.Empty;
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
+        public bool IsDeleted { get; set; }=false;
         public ICollection<Person> Persons { get; set; }=new List<Person>();
 
 
