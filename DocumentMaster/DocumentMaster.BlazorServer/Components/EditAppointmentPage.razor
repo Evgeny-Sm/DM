@@ -24,18 +24,23 @@
             </div>
             @foreach (var p in ChoosenPersons)
             {
-                <row>
-                    <div class="d-inline-block">
-                        <span style="color:cornflowerblue"> @p.LastName @p.FirstName </span>
-                        <button type="button" @onclick=@(args=>RemoveFromChallenge(p)) class="btn-close"></button>
-                    </div>
-                </row>
+                <div>
+                    <span style="color:cornflowerblue"> @p.LastName @p.FirstName </span>
+                    <button type="button" @onclick=@(args=>RemoveFromChallenge(p)) class="btn-close"></button>
+                </div>
             }
+            
         </div>
         <br />
     </Authorized>
 </AuthorizeView>
-
+@if (Creator is not null)
+{
+    <div class="container">
+        <div style="color:cornflowerblue"> создал: @Creator.UserName </div>
+    </div>
+}
+<br />
 <RadzenTemplateForm TItem="ChallengeDTO" Data="@model" Submit=@OnSubmit>
 <div class="row" style="margin-bottom: 16px">
     <div class="col-md-3">
@@ -88,6 +93,8 @@
 
     private IList<PersonDTO> ChoosenPersons = new List<PersonDTO>();
 
+    private PersonDTO Creator { get; set; }
+
     private int ChoosenPersonId { get; set; }
 
     private bool choose = false;
@@ -96,8 +103,7 @@
     {
         var authState = await authenticationState;
         CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
-        Persons = await PersonService.GetPersonsAsync();
-
+        Persons = await PersonService.GetPersonsAsync();      
         StateHasChanged();
     }
 
@@ -105,11 +111,12 @@
     {
         model = Appointment;
         ChoosenPersons = Persons.Where(p => model.PersonIds.Contains(p.Id)).ToList();
+        Creator = Persons.Where(p => p.Id == model.PersonCreatorId).FirstOrDefault();
     }
 
     private void OnSubmit(ChallengeDTO model)
     {
-        if (model.PersonIds.First() == CurrentPerson.Id)
+        if (model.PersonCreatorId == CurrentPerson.Id)
         {
             DialogService.Close(model);
         }
@@ -130,7 +137,7 @@
         {
             model.PersonIds.Add(ChoosenPersonId);
             ChoosenPersons.Add(Persons.Where(p => p.Id == ChoosenPersonId).Single());
-            
+
         }
     }
     private void RemoveFromChallenge(PersonDTO person)
@@ -141,15 +148,19 @@
 
     private void Remove()
     {
-        if (model.PersonIds.First() == CurrentPerson.Id)
+        if (model.PersonCreatorId == CurrentPerson.Id)
         {
             model.IsDeleted = true;
         }
         else
         {
-           
+
         }
-        
+
         DialogService.Close(model);
+    }
+    private void GetCreator()
+    { 
+        
     }
 }

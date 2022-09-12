@@ -13,6 +13,7 @@ namespace DM.DAL.Models
         public int Id { get; set; }
         public string Name { get; set; }=String.Empty;
         public string Description { get; set; }=String.Empty;
+        public int PersonCreatorId { get; set; }
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
         public bool IsDeleted { get; set; }=false;

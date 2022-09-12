@@ -13,6 +13,7 @@
 @inject IJSRuntime JS
 @inject ProtectedSessionStorage sessionStorage
 @inject PersonService PersonService
+@inject MessageService MessageService
 
 @implements IAsyncDisposable
 
@@ -22,14 +23,14 @@
 <AuthorizeView>
     <Authorized>
         <div class="row">
-            <div class="col-8">
+            <div class="col-9">
                <Schaduler ></Schaduler>
             </div>
-            <div class="col-4">
+            <div class="col-3">
                 <div class="container overflow-auto shadow-sm p-3 mb-5 bg-white rounded" style="height:500px">
                     @if (!userMessages.Any())
                     {
-                        <p> No messages </p>
+                        <p style="color:gray"> No messages </p>
                     }
                     @foreach (var userMessage in userMessages)
                     {
@@ -53,7 +54,7 @@
 
                 <div class="container">
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-9">
                             <textarea @bind="messageInput" type="text" class="form-control" placeholder="Start typing..."> </textarea>
                         </div>
                         <div class="col-3">
@@ -87,10 +88,12 @@
 
     protected override async Task OnInitializedAsync()
     {
+
         var authState = await authenticationState;
         if (authState.User.Identities.FirstOrDefault().IsAuthenticated)
         {          
             CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+            CompareMes();
             hubConnection = new HubConnectionBuilder().WithUrl(Navigation.ToAbsoluteUri("/chathub"))
             .Build();
             hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
@@ -103,7 +106,7 @@
                         DateSend = DateTime.Now
                     });
                 InvokeAsync(StateHasChanged);
-               
+
             });
             await hubConnection.StartAsync();
         }
@@ -122,5 +125,15 @@
         {
             await hubConnection.DisposeAsync();
         }
+    }
+    private async Task CompareMes()
+    { 
+        var messages = await MessageService.GetItemsLast2MonthAsync();
+        foreach (var mes in messages)
+        {
+            mes.IsCurrentUser = mes.UserName == CurrentPerson.UserName;
+        }
+        userMessages = messages;
+        StateHasChanged();
     }
 }

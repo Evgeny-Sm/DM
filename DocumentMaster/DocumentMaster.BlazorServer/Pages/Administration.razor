@@ -1,5 +1,6 @@
 ﻿@page "/Admin"
 
+@using DM.BLL.Authorization
 @using DM.BLL.Services
 @using Models
 
@@ -9,6 +10,8 @@
 @inject SectionService SectionsService
 @inject PositionService PositionService
 @inject PersonService PersonService
+@inject DialogService DialogService
+@inject AccountService AccountService
 
 
 <h1>Администрирование</h1>
@@ -33,6 +36,8 @@
         </div>
         <br/>
         <RadzenFieldset style="width:100%" Text="Сотрудники">
+            <RadzenButton Icon="add_circle_outline" ButtonStyle="ButtonStyle.Secondary" Text="Добавить"
+                          Click="@OpenAddUserDialog" />
             <div class="row">
                 <div class="col-md-8">
                     <Employees PersonsGetCallBack="@SetSelectedPersons" />
@@ -50,7 +55,7 @@
 
 
 @code {
-    
+
     private PersonDTO SelectedPerson { get; set; }
 
     private IList<DepartmentDTO> DepartmentsList { get; set; }
@@ -92,9 +97,35 @@
         if (persons != null)
         {
             SelectedPerson = persons.First();
-            
+
         }
-        
+
+    }
+    private async Task OpenAddUserDialog()
+    { 
+        var user = await DialogService.OpenAsync<AddUserDialog>($"Добавление пользователя",
+              new Dictionary<string, object>());
+        if (user is not null)
+        {
+            var person = await PersonService.AddPersonAsync(new PersonDTO
+                {
+                    FirstName = "New User",
+                    LastName = "New user",
+                    DepartmentId = DepartmentsList.First().Id,
+                    PositionId = PositionsList.First().Id,
+                    IsDeleted = false,
+                    IsConfirmed=false,
+            });
+            var acc = await AccountService.AddAccount(new AccountDTO
+                {
+                    UserName = user,
+                    Role = "user",
+                    Password = Authentication.SecureData.GetHashData("1111"),
+                    PersonId=person.Id
+                }
+            );
+        }
+
     }
 
 }

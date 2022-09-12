@@ -26,12 +26,10 @@
 
             @foreach (var p in ChoosenPersons)
             {
-                <row>
-                    <div class="d-inline-block">
-                        <span style="color:cornflowerblue"> @p.LastName @p.FirstName </span>
-                        <button type="button" @onclick=@(args=>RemoveFromChallenge(p)) class="btn-close"></button>
-                    </div>
-                </row>
+                <div>
+                    <span style="color:cornflowerblue"> @p.LastName @p.FirstName </span>
+                    <button type="button" @onclick=@(args=>RemoveFromChallenge(p)) class="btn-close"></button>
+                </div>
             }
 
         </div>

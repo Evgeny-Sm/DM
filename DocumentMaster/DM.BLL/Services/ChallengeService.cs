@@ -30,7 +30,7 @@ namespace DM.BLL.Services
         public async Task<IEnumerable<ChallengeDTO>> GetAllFofUserAsync(int userId)
         {
             using var context = _contextFactory.CreateDbContext();
-            var challenges = await context.Challenges.Where(p => p.IsDeleted == false).Include(p => p.Persons).Where(p=>p.Persons.Select(s=>s.Id).Contains(userId)).ToListAsync();
+            var challenges = await context.Challenges.Where(p => p.IsDeleted == false).Include(p => p.Persons).Where(p=>p.Persons.Select(s=>s.Id).Contains(userId) || p.PersonCreatorId==userId).ToListAsync();
             var result = _mapper.Map<IEnumerable<ChallengeDTO>>(challenges);
             return result;
         }
@@ -53,6 +53,7 @@ namespace DM.BLL.Services
             {
                 Name = challengeDTO.Name,
                 Description = challengeDTO.Description,
+                PersonCreatorId = challengeDTO.PersonCreatorId,
                 Start = challengeDTO.Start,
                 End = challengeDTO.End,
                 IsDeleted = challengeDTO.IsDeleted,
@@ -62,6 +63,7 @@ namespace DM.BLL.Services
             await context.SaveChangesAsync();
             return await GetItemByIdAsync(chlg.Id);
         }
+         
         public async Task UpdateItemAsync(ChallengeDTO challengeDTO)
         {
             using var context = _contextFactory.CreateDbContext();
@@ -77,6 +79,7 @@ namespace DM.BLL.Services
             element.Start = challengeDTO.Start;
             element.End = challengeDTO.End;
             element.IsDeleted = challengeDTO.IsDeleted;
+            element.PersonCreatorId= challengeDTO.PersonCreatorId;
             element.Persons = await context.Persons.Where(p => challengeDTO.PersonIds.Contains(p.Id)).ToListAsync();
 
             context.Challenges.Update(element);       

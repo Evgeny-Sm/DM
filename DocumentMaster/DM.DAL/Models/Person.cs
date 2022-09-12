@@ -27,7 +27,6 @@ namespace DM.DAL.Models
         public Person()
         { 
             Challenges= new List<Challenge>();
-            Account= new Account();
         }
     }
 }

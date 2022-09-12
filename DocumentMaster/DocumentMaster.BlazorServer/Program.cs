@@ -47,6 +47,7 @@ builder.Services.AddScoped<SectionService>();
 builder.Services.AddScoped<ProjectService>();
 builder.Services.AddScoped<ControlService>();
 builder.Services.AddScoped<ChallengeService>();
+builder.Services.AddScoped<MessageService>();
 
 builder.Services.AddResponseCompression(opts=>{
     opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(

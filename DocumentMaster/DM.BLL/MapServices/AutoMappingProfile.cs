@@ -25,6 +25,7 @@ namespace DM.BLL.MapServices
             CreateMap<Control, ControlDTO>().ForMember("PersonName", 
                 p => p.MapFrom(a => $"{a.Person.FirstName} {a.Person.LastName}"));
             CreateMap<Challenge, ChallengeDTO>().ForMember("PersonIds", c => c.MapFrom(p => p.Persons.Select(s => s.Id).ToList()));
+            CreateMap<SendedMessage, UserMessage>();
         }
     }
 }
