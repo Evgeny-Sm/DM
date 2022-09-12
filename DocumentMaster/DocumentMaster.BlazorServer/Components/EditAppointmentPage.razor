@@ -3,6 +3,38 @@
 @inject DialogService DialogService
 @inject PersonService PersonService
 
+<AuthorizeView Roles="admin,head">
+    <Authorized>
+        <div class="container">
+            <div class="row justify-content-start g-1">
+                <div class="col-md-8">
+                    <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                            Data=@(Persons) Style="width: 100%" AllowColumnResize="true"
+                                            TextProperty="LastName" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
+                                            Change=@(args => OnChangePerson(args))>
+                        <Columns>
+                            <RadzenDropDownDataGridColumn Property="FirstName" Title="FirstName" Width="80px" />
+                            <RadzenDropDownDataGridColumn Property="LastName" Title="LastName" Width="80px" />
+                        </Columns>
+                    </RadzenDropDownDataGrid>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" @onclick="AddPersonToTask" class="btn btn-primary">add</button>
+                </div>
+            </div>
+            @foreach (var p in ChoosenPersons)
+            {
+                <row>
+                    <div class="d-inline-block">
+                        <span style="color:cornflowerblue"> @p.LastName @p.FirstName </span>
+                        <button type="button" @onclick=@(args=>RemoveFromChallenge(p)) class="btn-close"></button>
+                    </div>
+                </row>
+            }
+        </div>
+        <br />
+    </Authorized>
+</AuthorizeView>
 
 <RadzenTemplateForm TItem="ChallengeDTO" Data="@model" Submit=@OnSubmit>
 <div class="row" style="margin-bottom: 16px">
@@ -34,7 +66,7 @@
 </div>
 <div class="row">
     <div class="col-md-3">
-         <RadzenButton Click="@(args=>Remove())" Icon="report" Text="Save" />
+         <RadzenButton Click="@(args=>Remove())" Icon="report" ButtonStyle="ButtonStyle.Info"  Text="del" />
     </div>
     <div class="col">
         <RadzenButton ButtonType="ButtonType.Submit" Text="Save" />
@@ -50,26 +82,74 @@
     [Parameter]
     public ChallengeDTO Appointment { get; set; }
 
-    ChallengeDTO model = new ChallengeDTO();
+    private ChallengeDTO model = new ChallengeDTO();
+
+    private IEnumerable<PersonDTO> Persons = new List<PersonDTO>();
+
+    private IList<PersonDTO> ChoosenPersons = new List<PersonDTO>();
+
+    private int ChoosenPersonId { get; set; }
+
+    private bool choose = false;
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await authenticationState;
         CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+        Persons = await PersonService.GetPersonsAsync();
+
+        StateHasChanged();
     }
 
     protected override void OnParametersSet()
     {
         model = Appointment;
+        ChoosenPersons = Persons.Where(p => model.PersonIds.Contains(p.Id)).ToList();
     }
 
     private void OnSubmit(ChallengeDTO model)
     {
-        DialogService.Close(model);
+        if (model.PersonIds.First() == CurrentPerson.Id)
+        {
+            DialogService.Close(model);
+        }
+        else
+        { 
+            DialogService.Close();
+        }
     }
+
+    private void OnChangePerson(object value)
+    {
+        ChoosenPersonId = (int)value;
+        choose = true;
+    }
+    private void AddPersonToTask()
+    {
+        if (choose)
+        {
+            model.PersonIds.Add(ChoosenPersonId);
+            ChoosenPersons.Add(Persons.Where(p => p.Id == ChoosenPersonId).Single());
+            
+        }
+    }
+    private void RemoveFromChallenge(PersonDTO person)
+    {
+        ChoosenPersons.Remove(person);
+        model.PersonIds.Remove(person.Id);
+    }
+
     private void Remove()
     {
-        model.IsDeleted = true;
+        if (model.PersonIds.First() == CurrentPerson.Id)
+        {
+            model.IsDeleted = true;
+        }
+        else
+        {
+           
+        }
+        
         DialogService.Close(model);
     }
 }

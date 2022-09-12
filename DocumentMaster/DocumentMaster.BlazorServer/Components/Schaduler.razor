@@ -6,6 +6,7 @@
 @inject DialogService DialogService
 @inject ChallengeService ChallengeService
 @inject PersonService PersonService
+@inject NavigationManager navManager
 
 <RadzenScheduler @ref=@scheduler SlotRender=@OnSlotRender style="height: 768px;" TItem="ChallengeDTO" Data=@Challenges StartProperty="Start" EndProperty="End"
                  TextProperty="Name" SelectedIndex="2"
@@ -64,11 +65,14 @@
 
         if (data != null)
         {
-            data.PersonIds.Add(CurrentPerson.Id);
+            IList<int> mainPerson = new List<int> { CurrentPerson.Id };
+            data.PersonIds =mainPerson.Concat(data.PersonIds).ToList();
             data.PersonIds = data.PersonIds.Distinct().ToList();
-            await ChallengeService.AddChallengeAsync(data);
+            var res=await ChallengeService.AddChallengeAsync(data);
+            Challenges=Challenges.Append(res);
             // Either call the Reload method or reassign the Data property of the Scheduler
             await scheduler.Reload();
+
         }
     }
 
@@ -78,8 +82,19 @@
         ChallengeDTO data = await DialogService.OpenAsync<EditAppointmentPage>("Edit Task", new Dictionary<string, object> { { "Appointment", args.Data } });
         if (data != null)
         {
+            data.PersonIds = data.PersonIds.Distinct().ToList();
             await ChallengeService.UpdateItemAsync(data);
+            if (data.IsDeleted)
+            {
+                Challenges = Challenges.Where(c => c.Id != data.Id);
+            }
+            if (!data.PersonIds.Contains(CurrentPerson.Id))
+            { 
+                Challenges = Challenges.Where(c => c.Id != data.Id);
+            }
+
             await scheduler.Reload();
+
         }
     }
 
@@ -91,6 +106,16 @@
         {
             args.Attributes["style"] = "background: red";
         }
+        if (args.Data.PersonIds.First() == CurrentPerson.Id)
+        { 
+            args.Attributes["style"] = "background: rgba(38,174,212,1)";
+        }
+    }
+
+    private void RedirectToIndex()
+    {
+
+        navManager.NavigateTo("/");
     }
 
 }

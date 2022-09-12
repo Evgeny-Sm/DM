@@ -178,7 +178,7 @@
             return;
         }
         arg.DepartmentId = CurrentPerson.DepartmentId;
-        arg.Name = GetPrefix(arg.Id) + "_" + arg.Name;
+
         if (int.TryParse(NumbersDrawings, out int num))
         {
             arg.NumbersDrawings = num;
@@ -204,6 +204,9 @@
             await JS.InvokeVoidAsync("alert", "Ошибка в базе данных");
             DialogService.Close();
         }
+        result.Name =  GetPrefix(result.Id) + "_" + result.Name;
+
+        var n = await fileService.UpdateFileAsync(result);
 
         string path = Configuration.GetConnectionString("ProjectRootDir") + $"\\{result.ProjectId}\\";
         var uploadPath = WebHostEnvironment.WebRootPath + path;
