@@ -149,14 +149,17 @@
         {
             RememberedString = filteringString.Substring(0, 2);
             using var context = contextFactory.CreateDbContext();
-            files =await context.FileUnits.Where(f => f.Name.Contains(filteringString)).
-            Include(d => d.Department).Include(p => p.Person).Include(p => p.Project).
+            files = await context.FileUnits.Include(p => p.Person).Include(p => p.Project).
+            Where(f => f.Name.Contains(filteringString) || f.Description.Contains(filteringString) 
+            || f.Project.Name.Contains(filteringString)).
+            Include(d => d.Department).Include(p => p.Project).
             Include(s => s.Section).OrderByDescending(f => f.Id).ToArrayAsync();
 
         }
-        if (filteringString.Length > 3 && filteringString.Substring(0, 2) == RememberedString)
+        if (filteringString.Length > 2 && filteringString.Substring(0, 2) == RememberedString)
         {
-            files = files.Where(f => f.Name.Contains(filteringString)).ToArray();
+            files = files.Where(f => f.Name.Contains(filteringString) || f.Description.Contains(filteringString)
+            || f.Project.Name.Contains(filteringString)).ToArray();
         }
     }
     private async Task SetAllFileList()

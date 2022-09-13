@@ -87,32 +87,33 @@
 
     protected override async void OnInitialized()
     {
+
         var authState = await authenticationState;
         CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
     }
 
     protected override async Task OnParametersSetAsync()
     {
+        Controls  = new List<ControlDTO>();
         Unit = SelectedFiles.FirstOrDefault();        
         Controls = await ControlService.GetControlsByFileIdAsync(Unit.Id);
-        await GetData();
-        StateHasChanged();
-    }
 
-    private async Task GetData()
-    {
         if (SelectedFiles.Count == 0)
         {
-            return ;
-        }     
+            return;
+        }
 
-        var ctrl = Controls.Where(c=>c.IsConfirmed==true).FirstOrDefault();
+        var ctrl = Controls.Where(c => c.IsConfirmed == true).FirstOrDefault();
         if (ctrl != null)
         {
             Controller = ctrl.PersonName;
             DateToArhive = ctrl.DateTime.ToString("HH:mm| MMM:dd:yy");
             IsController = ctrl.PersonId == CurrentPerson.Id;
-
+        }
+        else 
+        {
+            Controller = string.Empty;
+            IsController = false;
         }
 
         TimeToControl = Controls.Sum(c => c.TimeForChecking).ToString();
@@ -128,10 +129,11 @@
         NumbersDrawing = Unit.NumbersDrawings.ToString();
 
         TimeToDev = Unit.TimeToCreate.ToString();
-        Descriptoin = Unit.Description;
-        
 
+        Descriptoin = Unit.Description;
+        StateHasChanged();
 
     }
+
 
 }
