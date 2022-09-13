@@ -119,14 +119,18 @@
 
     private void OnChange(bool value)
     {
-        using var context = contextFactory.CreateDbContext();
-        if (CheckBoxUser)
+        if (files is not null)
         {
-            files = context.FileUnits.Include(p => p.Person).Where(t => t.Person.Id == CurrentPerson.Id).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).OrderByDescending(f => f.Id).ToArray();
-        }
-        else
-        {
-            files = context.FileUnits.Include(d => d.Department).Include(p => p.Person).Include(p => p.Project).Include(s => s.Section).OrderByDescending(f => f.Id).ToArray();
+            
+            if (CheckBoxUser)
+            {
+                files = files.Where(t => t.Person.Id == CurrentPerson.Id).OrderByDescending(f => f.Id).ToArray();
+            }
+            else
+            {
+                using var context = contextFactory.CreateDbContext();
+                files = context.FileUnits.Include(d => d.Department).Include(p => p.Person).Include(p => p.Project).Include(s => s.Section).OrderByDescending(f => f.Id).ToArray();
+            }
         }
 
     }

@@ -95,13 +95,14 @@
     protected override async Task OnParametersSetAsync()
     {
         Controls  = new List<ControlDTO>();
-        Unit = SelectedFiles.FirstOrDefault();        
-        Controls = await ControlService.GetControlsByFileIdAsync(Unit.Id);
+
 
         if (SelectedFiles.Count == 0)
         {
             return;
         }
+        Unit = SelectedFiles.FirstOrDefault();
+        Controls = await ControlService.GetControlsByFileIdAsync(Unit.Id);
 
         var ctrl = Controls.Where(c => c.IsConfirmed == true).FirstOrDefault();
         if (ctrl != null)

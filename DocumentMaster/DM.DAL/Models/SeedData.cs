@@ -13,7 +13,7 @@ namespace DM.DAL.Models
         
         public static void Initialize(IServiceProvider serviceProvider)
         {
-            /*
+            
             using (var context1 = new DMContext(serviceProvider.GetRequiredService<DbContextOptions<DMContext>>()))
             {
                 if (context1.Persons.Any())
@@ -24,22 +24,21 @@ namespace DM.DAL.Models
                 context1.Departments.AddRange(
                     new Department
                     {
-                        Name = "A",
-                        Description = "Управление"
+                        Name = "СО",
+                        Description = "Строительный отдел"
                     });
                 context1.SaveChanges();
 
                 context1.Positions.AddRange(
                     new Position
                     {
-                        Name = "Администратор",
+                        Name = "Начальник отдела",
                         
                     });
                 context1.SaveChanges();
                 context1.Persons.AddRange(
                     new Person
                     {
-
                         FirstName = "Евгений",
                         LastName = "Смирнов",
                         DepartmentId = 1,
@@ -51,7 +50,7 @@ namespace DM.DAL.Models
                 context1.Accounts.AddRange(
                    new Account
                    {
-                       UserName = "user@user.com",
+                       UserName = "smirnov@eska.pro",
                        Password = "1111",
                        Role = "admin",
                        PersonId = 1
@@ -60,7 +59,7 @@ namespace DM.DAL.Models
                 context1.Dispose();
                 
             }
-            */
+            
         }
         
     }
