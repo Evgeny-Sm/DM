@@ -22,7 +22,20 @@
 <h3>Files </h3>
 <AuthorizeView>
     <Authorized>
-        <AddFileButton FileCreated="HandReload" />
+        <div class="row">
+            <div class="col-1">
+                <AddFileButton FileCreated="HandReload" />
+            </div>
+            <div class="col-md-4">
+                <input type="text" value="@InputString"  @onchange="@((args)=>Find(args))" class="form-control" placeholder="поиск..." />
+            </div>
+            @if (!string.IsNullOrEmpty(InputString))
+            {
+                <div class="col-1">
+                    <button type="button" @onclick=@(args=>SetAllFileList()) class="btn-close"></button>
+                </div>
+            }
+        </div>
         <div class="row" >
             <div class="col-md-8">
                 <RadzenCard>
@@ -38,14 +51,13 @@
                 {
                     <div class="d-inline-block">
                         <DownloadFile SelectedFiles="@SelectedFiles" />
-                    @if (IsReadyToCheck)
-                    {
-                        <SendToCheckButton SendedToCheck="@SetSendedStatus" SelectedFiles="@SelectedFiles"/>
-                        <ReloadFileButton SelectedFiles="@SelectedFiles"/>
-                    }
+                        @if (IsReadyToCheck)
+                        {
+                            <SendToCheckButton SendedToCheck="@SetSendedStatus" SelectedFiles="@SelectedFiles"/>
+                            <ReloadFileButton SelectedFiles="@SelectedFiles"/>
+                        }
                     </div>
-                    <InfoFile SelectedFiles="@SelectedFiles"/> 
-                    
+                    <InfoFile SelectedFiles="@SelectedFiles"/>
                 }
             </div>
         </div>
@@ -58,7 +70,7 @@
 
     private IList<FileUnit> SelectedFiles { get; set; }
 
-    private IEnumerable<FileUnit>? files{ get; set; }
+    private IEnumerable<FileUnit>? files { get; set; }
 
     private bool CheckBoxUser = false;
 
@@ -66,8 +78,11 @@
 
     private bool IsReadyToCheck { get; set; } = true;
 
+    private string RememberedString { get; set; } = string.Empty;
+    private string InputString { get; set; } = string.Empty;
 
-    protected override async  void OnInitialized()
+
+    protected override async void OnInitialized()
     {
 
         using var context = contextFactory.CreateDbContext();
@@ -81,7 +96,7 @@
 
     private void HandReload(bool b)
     {
-       this.OnInitialized();
+        this.OnInitialized();
     }
 
     private void SetSelectedFiles(IList<FileUnit> fileUnit)
@@ -89,8 +104,8 @@
         if (fileUnit != null)
         {
             SelectedFiles = fileUnit;
-            if (SelectedFiles.FirstOrDefault().PersonId != CurrentPerson.Id 
-                || SelectedFiles.FirstOrDefault().Status != StatusFile.Work) 
+            if (SelectedFiles.FirstOrDefault().PersonId != CurrentPerson.Id
+                || SelectedFiles.FirstOrDefault().Status != StatusFile.Work)
 
             {
                 IsReadyToCheck = false;
@@ -107,7 +122,7 @@
         using var context = contextFactory.CreateDbContext();
         if (CheckBoxUser)
         {
-            files = context.FileUnits.Include(p=>p.Person).Where(t => t.Person.Id == CurrentPerson.Id).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).OrderByDescending(f=>f.Id).ToArray();
+            files = context.FileUnits.Include(p => p.Person).Where(t => t.Person.Id == CurrentPerson.Id).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).OrderByDescending(f => f.Id).ToArray();
         }
         else
         {
@@ -125,6 +140,31 @@
             SelectedFiles = new List<FileUnit>();
         }
     }
+    private async Task Find(ChangeEventArgs args)
+    {
+        InputString = args.Value.ToString();
+        string filteringString = args.Value.ToString();
 
+        if (filteringString.Length >= 2 && filteringString.Substring(0, 2) != RememberedString)
+        {
+            RememberedString = filteringString.Substring(0, 2);
+            using var context = contextFactory.CreateDbContext();
+            files =await context.FileUnits.Where(f => f.Name.Contains(filteringString)).
+            Include(d => d.Department).Include(p => p.Person).Include(p => p.Project).
+            Include(s => s.Section).OrderByDescending(f => f.Id).ToArrayAsync();
+
+        }
+        if (filteringString.Length > 3 && filteringString.Substring(0, 2) == RememberedString)
+        {
+            files = files.Where(f => f.Name.Contains(filteringString)).ToArray();
+        }
+    }
+    private async Task SetAllFileList()
+    { 
+        using var context = contextFactory.CreateDbContext();
+        files =await context.FileUnits.Include(d => d.Department).Include(p => p.Person).
+        Include(p => p.Project).Include(s => s.Section).OrderByDescending(f => f.Id).ToArrayAsync();
+        InputString = string.Empty;
+    }
 
 }
