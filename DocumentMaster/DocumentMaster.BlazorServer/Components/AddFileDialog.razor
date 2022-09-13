@@ -214,7 +214,7 @@
         {
             Directory.CreateDirectory(uploadPath);
         }
-        var fullPath = Path.Combine(uploadPath, FileToCreate.Name);
+        var fullPath = Path.Combine(uploadPath, result.Name);
 
         await using FileStream fs = new(fullPath, FileMode.Create);
 
