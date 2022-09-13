@@ -95,7 +95,7 @@
             CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
             CompareMes();
             hubConnection = new HubConnectionBuilder().WithUrl(Navigation.ToAbsoluteUri("/chathub"))
-            .Build();
+            .Build();          
             hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
             {
                 userMessages.Add(new UserMessage
