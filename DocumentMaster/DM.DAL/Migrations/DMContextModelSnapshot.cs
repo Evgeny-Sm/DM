@@ -372,41 +372,6 @@ namespace DM.DAL.Migrations
                     b.ToTable("Messages");
                 });
 
-            modelBuilder.Entity("DM.DAL.Models.UserAction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("ActionNumber")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("FileUnitId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("PersonId")
-                        .HasColumnType("int");
-
-                    b.Property<double>("TimeForAction")
-                        .HasColumnType("float");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FileUnitId");
-
-                    b.HasIndex("PersonId");
-
-                    b.ToTable("UserActions");
-                });
-
             modelBuilder.Entity("ChallengePerson", b =>
                 {
                     b.HasOne("DM.DAL.Models.Challenge", null)
@@ -515,25 +480,6 @@ namespace DM.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("MainIng");
-                });
-
-            modelBuilder.Entity("DM.DAL.Models.UserAction", b =>
-                {
-                    b.HasOne("DM.DAL.Models.FileUnit", "FileUnit")
-                        .WithMany()
-                        .HasForeignKey("FileUnitId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DM.DAL.Models.Person", "Person")
-                        .WithMany()
-                        .HasForeignKey("PersonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("FileUnit");
-
-                    b.Navigation("Person");
                 });
 
             modelBuilder.Entity("DM.DAL.Models.Department", b =>

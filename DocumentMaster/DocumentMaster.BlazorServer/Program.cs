@@ -33,13 +33,11 @@ builder.Services.AddScoped<TooltipService>();
 builder.Services.AddScoped<ContextMenuService>();
 
 
-
 builder.Services.AddDbContextFactory<DMContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DMContext")));
 
 builder.Services.AddScoped<PersonService>();
 builder.Services.AddScoped<DepartmentService>();
 
-builder.Services.AddScoped<ActionService>();
 builder.Services.AddScoped<FileService>();
 builder.Services.AddScoped<PositionService>();
 builder.Services.AddScoped<AccountService>();
@@ -72,8 +70,8 @@ builder.Services.AddAuthenticationCore();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor().AddHubOptions(options =>
 {
-    // maximum message size of 300MB
-    options.MaximumReceiveMessageSize = 300000000;
+    // maximum message size of 100MB
+    options.MaximumReceiveMessageSize = 100000000;
 }); ;
 builder.Services.AddScoped<ProtectedSessionStorage>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();

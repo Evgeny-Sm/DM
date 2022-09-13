@@ -5,10 +5,28 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DM.DAL.Migrations
 {
-    public partial class InitalCreate1 : Migration
+    public partial class InitalCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Challenges",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PersonCreatorId = table.Column<int>(type: "int", nullable: false),
+                    Start = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    End = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Challenges", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Departments",
                 columns: table => new
@@ -25,6 +43,22 @@ namespace DM.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Messages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DateSend = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Messages", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Positions",
                 columns: table => new
                 {
@@ -38,6 +72,20 @@ namespace DM.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Sections",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Sections", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Persons",
                 columns: table => new
                 {
@@ -47,7 +95,10 @@ namespace DM.DAL.Migrations
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DepartmentId = table.Column<int>(type: "int", nullable: false),
                     PositionId = table.Column<int>(type: "int", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                    TelegramContact = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SalaryPerH = table.Column<double>(type: "float", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsConfirmed = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -73,7 +124,7 @@ namespace DM.DAL.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PersonId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -83,6 +134,30 @@ namespace DM.DAL.Migrations
                     table.ForeignKey(
                         name: "FK_Accounts_Persons_PersonId",
                         column: x => x.PersonId,
+                        principalTable: "Persons",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ChallengePerson",
+                columns: table => new
+                {
+                    ChallengesId = table.Column<int>(type: "int", nullable: false),
+                    PersonsId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChallengePerson", x => new { x.ChallengesId, x.PersonsId });
+                    table.ForeignKey(
+                        name: "FK_ChallengePerson_Challenges_ChallengesId",
+                        column: x => x.ChallengesId,
+                        principalTable: "Challenges",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ChallengePerson_Persons_PersonsId",
+                        column: x => x.PersonsId,
                         principalTable: "Persons",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -122,7 +197,13 @@ namespace DM.DAL.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PathFile = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DepartmentId = table.Column<int>(type: "int", nullable: false),
-                    ProjectId = table.Column<int>(type: "int", nullable: true)
+                    ProjectId = table.Column<int>(type: "int", nullable: false),
+                    SectionId = table.Column<int>(type: "int", nullable: false),
+                    PersonId = table.Column<int>(type: "int", nullable: false),
+                    NumbersDrawings = table.Column<int>(type: "int", nullable: false),
+                    TimeToCreate = table.Column<double>(type: "float", nullable: false),
+                    CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -132,38 +213,52 @@ namespace DM.DAL.Migrations
                         column: x => x.DepartmentId,
                         principalTable: "Departments",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_FileUnits_Persons_PersonId",
+                        column: x => x.PersonId,
+                        principalTable: "Persons",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_FileUnits_Projects_ProjectId",
                         column: x => x.ProjectId,
                         principalTable: "Projects",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_FileUnits_Sections_SectionId",
+                        column: x => x.SectionId,
+                        principalTable: "Sections",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserActions",
+                name: "Controls",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FileUnitId = table.Column<int>(type: "int", nullable: false),
                     PersonId = table.Column<int>(type: "int", nullable: false),
-                    ActionNumber = table.Column<int>(type: "int", nullable: false),
                     IsConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    IsInAction = table.Column<bool>(type: "bit", nullable: false),
+                    DateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TimeForChecking = table.Column<double>(type: "float", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserActions", x => x.Id);
+                    table.PrimaryKey("PK_Controls", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserActions_FileUnits_FileUnitId",
+                        name: "FK_Controls_FileUnits_FileUnitId",
                         column: x => x.FileUnitId,
                         principalTable: "FileUnits",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserActions_Persons_PersonId",
+                        name: "FK_Controls_Persons_PersonId",
                         column: x => x.PersonId,
                         principalTable: "Persons",
                         principalColumn: "Id",
@@ -183,14 +278,39 @@ namespace DM.DAL.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_ChallengePerson_PersonsId",
+                table: "ChallengePerson",
+                column: "PersonsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Controls_FileUnitId",
+                table: "Controls",
+                column: "FileUnitId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Controls_PersonId",
+                table: "Controls",
+                column: "PersonId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_FileUnits_DepartmentId",
                 table: "FileUnits",
                 column: "DepartmentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_FileUnits_PersonId",
+                table: "FileUnits",
+                column: "PersonId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_FileUnits_ProjectId",
                 table: "FileUnits",
                 column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FileUnits_SectionId",
+                table: "FileUnits",
+                column: "SectionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Persons_DepartmentId",
@@ -206,16 +326,6 @@ namespace DM.DAL.Migrations
                 name: "IX_Projects_PersonId",
                 table: "Projects",
                 column: "PersonId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserActions_FileUnitId",
-                table: "UserActions",
-                column: "FileUnitId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserActions_PersonId",
-                table: "UserActions",
-                column: "PersonId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -224,13 +334,25 @@ namespace DM.DAL.Migrations
                 name: "Accounts");
 
             migrationBuilder.DropTable(
-                name: "UserActions");
+                name: "ChallengePerson");
+
+            migrationBuilder.DropTable(
+                name: "Controls");
+
+            migrationBuilder.DropTable(
+                name: "Messages");
+
+            migrationBuilder.DropTable(
+                name: "Challenges");
 
             migrationBuilder.DropTable(
                 name: "FileUnits");
 
             migrationBuilder.DropTable(
                 name: "Projects");
+
+            migrationBuilder.DropTable(
+                name: "Sections");
 
             migrationBuilder.DropTable(
                 name: "Persons");
