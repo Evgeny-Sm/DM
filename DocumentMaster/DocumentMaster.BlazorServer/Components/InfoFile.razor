@@ -11,25 +11,52 @@
 @inject ControlService ControlService
 
 
-<AuthorizeView>
+<AuthorizeView Roles="user">
     <Authorized>
         <RadzenCard Style="margin-bottom:20px">
             <b>Разработал: @Developer   </b>
             <b>Проверил: @Controller   </b>
+            <div>Дата утверждения: @DateToArhive</div>
             <div>Отдел: @Department </div>
             <div>Проект: @ProjectName </div>
             <div>Раздел проекта: @SectionProject </div>
             <div>Количество листов в файле: @NumbersDrawing </div>
-
+            <div>Описание: @Descriptoin </div>
+            <br />
+            @if (Unit.PersonId==CurrentPerson.Id || IsController)
+            {
+                @foreach (var c in Controls)
+                {
+                    <div>
+                        <span style="color:cadetblue">@c.PersonName (@c.DateTime.ToString("HH:mm| MMM:dd:yy")): @c.Description</span>
+                    </div>
+                }
+            }
         </RadzenCard>
     </Authorized>
 </AuthorizeView>
 <AuthorizeView Roles="admin,head">
     <Authorized>
         <RadzenCard Style="margin-bottom:20px">
+            <b>Разработал: @Developer   </b>
+            <b>Проверил: @Controller   </b>
+            <div>Дата утверждения: @DateToArhive</div>
+            <div>Отдел: @Department </div>
+            <div>Проект: @ProjectName </div>
+            <div>Раздел проекта: @SectionProject </div>
+            <div>Количество листов в файле: @NumbersDrawing </div>
+            <div>Описание: @Descriptoin </div>
             <div>Затраты на разработку: @TimeToDev </div>
             <div>Затраты на проверку: @TimeToControl </div>
+            <br />
+            @foreach (var c in Controls)
+            {
+                <div>
+                    <span style="color:cadetblue">@c.PersonName (@c.DateTime.ToString("HH:mm| MMM:dd:yy")): @c.Description</span>
+                </div>
+            }
         </RadzenCard>
+
     </Authorized>
 </AuthorizeView>
 
@@ -37,27 +64,39 @@
     [Parameter]
     public IList<FileUnit>? SelectedFiles { get; set; }
 
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
     private string Developer { get; set; } = string.Empty;
     private string Controller { get; set; } = string.Empty;
+    private string DateToArhive { get; set; } = string.Empty;
     private string Department { get; set; } = string.Empty;
     private string ProjectName { get; set; } = string.Empty;
     private string SectionProject { get; set; } = string.Empty;
     private string NumbersDrawing { get; set; } = string.Empty;
     private string TimeToDev { get; set; } = string.Empty;
     private string TimeToControl { get; set; } = string.Empty;
+    private string Descriptoin { get; set; } = string.Empty;
     private FileUnit? Unit { get; set; }
 
+    private bool IsController { get; set; } = false;
 
+    private IEnumerable<ControlDTO> Controls { get; set; } = new List<ControlDTO>();
+
+    private PersonDTO CurrentPerson { get; set; } = new();
 
     protected override async void OnInitialized()
     {
-
+        var authState = await authenticationState;
+        CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        Unit = SelectedFiles.FirstOrDefault();
+        Unit = SelectedFiles.FirstOrDefault();        
+        Controls = await ControlService.GetControlsByFileIdAsync(Unit.Id);
         await GetData();
+        StateHasChanged();
     }
 
     private async Task GetData()
@@ -65,16 +104,18 @@
         if (SelectedFiles.Count == 0)
         {
             return ;
-        }
-        var controls = await ControlService.GetControlsByFileIdAsync(Unit.Id);
+        }     
 
-        var ctrl = controls.Where(c=>c.IsConfirmed==true).FirstOrDefault();
+        var ctrl = Controls.Where(c=>c.IsConfirmed==true).FirstOrDefault();
         if (ctrl != null)
         {
             Controller = ctrl.PersonName;
+            DateToArhive = ctrl.DateTime.ToString("HH:mm| MMM:dd:yy");
+            IsController = ctrl.PersonId == CurrentPerson.Id;
+
         }
 
-        TimeToControl = controls.Sum(c => c.TimeForChecking).ToString();
+        TimeToControl = Controls.Sum(c => c.TimeForChecking).ToString();
 
         Developer = $"{Unit.Person.FirstName} {Unit.Person.LastName}";
 
@@ -87,6 +128,7 @@
         NumbersDrawing = Unit.NumbersDrawings.ToString();
 
         TimeToDev = Unit.TimeToCreate.ToString();
+        Descriptoin = Unit.Description;
         
 
 

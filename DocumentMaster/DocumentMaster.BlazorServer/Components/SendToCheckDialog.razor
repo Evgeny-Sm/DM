@@ -64,7 +64,7 @@
         await FileService.UpdateFileAsync(f);
 
         Control.FileUnitId = SelectedFile.Id;
-
+        Control.DateTime = DateTime.Now;
         Control.IsConfirmed = false;
         Control.IsInAction = true;
 

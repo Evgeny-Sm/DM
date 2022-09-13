@@ -86,7 +86,8 @@ namespace DM.BLL.Services
                 IsConfirmed=controlDTO.IsConfirmed,
                 TimeForChecking=controlDTO.TimeForChecking,
                 IsInAction=controlDTO.IsInAction,
-                Description=controlDTO.Description
+                Description=controlDTO.Description,
+                DateTime=controlDTO.DateTime,
 
             };
             await context.Controls.AddAsync(control);
@@ -108,6 +109,7 @@ namespace DM.BLL.Services
             element.TimeForChecking = controlDTO.TimeForChecking;
             element.IsInAction = controlDTO.IsInAction;
             element.Description = controlDTO.Description;
+            element.DateTime = controlDTO.DateTime;
             context.Controls.Update(element);
             await context.SaveChangesAsync();
 

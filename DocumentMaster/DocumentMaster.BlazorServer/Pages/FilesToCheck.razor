@@ -102,6 +102,7 @@
         c.IsConfirmed = true;
         c.TimeForChecking += AddTime;
         c.Description = Descripton;
+        c.DateTime = DateTime.Now;
 
 
         await ControlService.UpdateControlAsync(c);
@@ -138,6 +139,7 @@
         c.IsInAction = false;
         c.TimeForChecking += AddTime;
         c.Description = Descripton;
+        c.DateTime = DateTime.Now;
 
         await ControlService.UpdateControlAsync(c);
 
