@@ -71,7 +71,8 @@ namespace DM.BLL.Services
                 Status=fileDTO.Status,
                 IsDeleted= fileDTO.IsDeleted,
                 PersonId=fileDTO.PersonId,
-                TimeToCreate= fileDTO.TimeToCreate
+                TimeToCreate= fileDTO.TimeToCreate,
+                CreateDate= fileDTO.CreateDate,
             };
             await context.FileUnits.AddAsync(element);
             await context.SaveChangesAsync();
@@ -97,6 +98,7 @@ namespace DM.BLL.Services
             element.SectionId = fileDTO.SectionId;
             element.Status= fileDTO.Status;
             element.TimeToCreate= fileDTO.TimeToCreate;
+            element.CreateDate = fileDTO.CreateDate;
             context.FileUnits.Update(element);
             
             return await context.SaveChangesAsync();

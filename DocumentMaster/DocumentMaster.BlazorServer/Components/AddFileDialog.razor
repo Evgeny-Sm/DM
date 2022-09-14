@@ -196,6 +196,7 @@
 
         arg.IsDeleted = false;
         arg.Status = StatusFile.Work;
+        arg.CreateDate = DateTime.Now;
 
         var result = await fileService.AddFileAsync(arg);
 

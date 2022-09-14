@@ -17,7 +17,6 @@ namespace DM.DAL.Models
         public DbSet<Person>? Persons { get; set; }
         public DbSet<Project>? Projects { get; set; }
         public DbSet<Account>? Accounts { get; set; }
-        public DbSet<UserAction>? UserActions { get; set; }
         public DbSet<Position>? Positions { get; set; }
         public DbSet<Section>? Sections { get; set; }
         public DbSet<Control>? Controls { get; set; }

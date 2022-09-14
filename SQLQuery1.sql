@@ -12,8 +12,17 @@ truncate table Projects
 truncate table Workers
 truncate table Departments
 
-delete Persons where id=15
+delete from FileUnits
+delete from Challenges
+delete from Projects
+delete from Messages
+
+delete from Controls
+
 delete Departments where Name='CO'
+
+
+
 truncate table FileUnits
 truncate table Projects
 truncate table Workers

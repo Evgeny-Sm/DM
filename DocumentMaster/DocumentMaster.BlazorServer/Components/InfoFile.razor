@@ -16,6 +16,7 @@
         <RadzenCard Style="margin-bottom:20px">
             <b>Разработал: @Developer   </b>
             <b>Проверил: @Controller   </b>
+            <div>Дата создания: @DateToCreate</div>
             <div>Дата утверждения: @DateToArhive</div>
             <div>Отдел: @Department </div>
             <div>Проект: @ProjectName </div>
@@ -40,6 +41,7 @@
         <RadzenCard Style="margin-bottom:20px">
             <b>Разработал: @Developer   </b>
             <b>Проверил: @Controller   </b>
+            <div>Дата создания: @DateToCreate</div>
             <div>Дата утверждения: @DateToArhive</div>
             <div>Отдел: @Department </div>
             <div>Проект: @ProjectName </div>
@@ -70,6 +72,7 @@
     private string Developer { get; set; } = string.Empty;
     private string Controller { get; set; } = string.Empty;
     private string DateToArhive { get; set; } = string.Empty;
+    private string DateToCreate { get; set; } = string.Empty;
     private string Department { get; set; } = string.Empty;
     private string ProjectName { get; set; } = string.Empty;
     private string SectionProject { get; set; } = string.Empty;
@@ -92,7 +95,7 @@
         CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
     }
 
-    protected override async Task OnParametersSetAsync()
+    protected override async void OnParametersSet()
     {
         Controls  = new List<ControlDTO>();
 
@@ -116,6 +119,7 @@
             Controller = string.Empty;
             IsController = false;
         }
+        DateToCreate = Unit.CreateDate.ToString("HH:mm|dd:MMM:yy");
 
         TimeToControl = Controls.Sum(c => c.TimeForChecking).ToString();
 
