@@ -15,24 +15,29 @@
 
 
 <h1>Администрирование</h1>
-
-<AuthorizeView>
+<AuthorizeView Roles="admin,head">
     <Authorized>
-        <div class="row">
-            <div class="col-md-6">
-                <RadzenFieldset style="width:100%" Text="Разделы">
-                    <Sections SectionsList="@SectionsList" />
-                </RadzenFieldset>
-            </div>
-            <div class="col-md-6">
-                <RadzenFieldset style="width:100%" Text="Отделы">
-                    <Departments DepartmentsList="@DepartmentsList" />
-                </RadzenFieldset>
-                <br />
-                <RadzenFieldset style="width:100%" Text="Должности">
-                    <Positions PositionsList="@PositionsList" />
-                </RadzenFieldset>
-            </div>
+        <div class="col-md-6">
+            <RadzenFieldset style="width:100%" Text="Разделы">
+                <Sections SectionsList="@SectionsList" />
+            </RadzenFieldset>
+        </div>
+        <br />
+    </Authorized>
+</AuthorizeView>
+
+<AuthorizeView Roles="admin">
+    <Authorized>
+        <div class="col-md-6">
+            <RadzenFieldset style="width:100%" Text="Отделы">
+                <Departments DepartmentsList="@DepartmentsList" />
+            </RadzenFieldset>           
+        </div>
+        <br />
+        <div class="col-md-6">
+            <RadzenFieldset style="width:100%" Text="Должности">
+                <Positions PositionsList="@PositionsList" />
+            </RadzenFieldset>
         </div>
         <br/>
         <RadzenFieldset style="width:100%" Text="Сотрудники">
