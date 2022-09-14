@@ -28,7 +28,7 @@
                 @foreach (var c in Controls)
                 {
                     <div>
-                        <span style="color:cadetblue">@c.PersonName (@c.DateTime.ToString("HH:mm| MMM:dd:yy")): @c.Description</span>
+                        <span style="color:cadetblue">@c.PersonName (@c.DateTime.ToString("HH:mm| dd:MMM:yy")): @c.Description</span>
                     </div>
                 }
             }
@@ -52,7 +52,7 @@
             @foreach (var c in Controls)
             {
                 <div>
-                    <span style="color:cadetblue">@c.PersonName (@c.DateTime.ToString("HH:mm| MMM:dd:yy")): @c.Description</span>
+                    <span style="color:cadetblue">@c.PersonName (@c.DateTime.ToString("HH:mm| dd:MMM:yy")): @c.Description</span>
                 </div>
             }
         </RadzenCard>
@@ -108,7 +108,7 @@
         if (ctrl != null)
         {
             Controller = ctrl.PersonName;
-            DateToArhive = ctrl.DateTime.ToString("HH:mm| MMM:dd:yy");
+            DateToArhive = ctrl.DateTime.ToString("HH:mm|dd:MMM:yy");
             IsController = ctrl.PersonId == CurrentPerson.Id;
         }
         else 

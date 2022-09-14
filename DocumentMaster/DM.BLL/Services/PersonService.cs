@@ -24,7 +24,14 @@ namespace DM.BLL.Services
         public async Task<IEnumerable<PersonDTO>> GetPersonsAsync()
         {
             using var context = _contextFactory.CreateDbContext();
-            var persons = await context.Persons.Include(p=>p.Account).ToListAsync();
+            var persons = await context.Persons.Where(p=>p.IsDeleted==false && p.IsConfirmed==true).Include(p=>p.Account).ToListAsync();
+            var result = _mapper.Map<IEnumerable<PersonDTO>>(persons);
+            return result;
+        }
+        public async Task<IEnumerable<PersonDTO>> GetAllPersonsAsync()
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var persons = await context.Persons.Include(p => p.Account).ToListAsync();
             var result = _mapper.Map<IEnumerable<PersonDTO>>(persons);
             return result;
         }

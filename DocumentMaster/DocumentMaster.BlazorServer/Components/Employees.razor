@@ -48,7 +48,7 @@
         if (Persons == null)
         {
 
-            var p = await PersonService.GetPersonsAsync();
+            var p = await PersonService.GetAllPersonsAsync();
             Persons =p.ToList();
         }
         

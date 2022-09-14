@@ -24,9 +24,13 @@
     <Authorized>
         <div class="row">
             <div class="col-9">
-               <Schaduler ></Schaduler>
+                <Schaduler></Schaduler>
             </div>
             <div class="col-3">
+                <div>
+                    <RemoveChatButton></RemoveChatButton>
+                </div>
+
                 <div class="container overflow-auto shadow-sm p-3 mb-5 bg-white rounded" style="height:500px">
                     @if (!userMessages.Any())
                     {
@@ -37,12 +41,12 @@
                         <div class="row mb-3 d-flex @(userMessage.IsCurrentUser? "justify-content-end":"")">
                             <div class="card shadow @(userMessage.IsCurrentUser? "color-green mr-5":"color-cornflowerblue mr-5")" style="width: 12rem;font-size:small">
                                 <div class="card-header">
-                                    @(userMessage.IsCurrentUser? "Я": @userMessage.UserName)
+                                    @(userMessage.IsCurrentUser ? "Я" : @userMessage.UserName)
                                 </div>
                                 <ul class="list-group">
                                     <li class="list-group-item @(userMessage.IsCurrentUser? "color-green":"color-cornflowerblue")">
                                         @userMessage.Message
-                                        </li>
+                                    </li>
                                 </ul>
                                 <div class="card-footer">
                                     <span class="small justify-content-end">@userMessage.DateSend.ToString("HH:mm| MMM:dd")</span>
@@ -51,7 +55,6 @@
                         </div>
                     }
                 </div>
-
                 <div class="container">
                     <div class="row">
                         <div class="col-9">
@@ -62,6 +65,7 @@
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
 
@@ -128,7 +132,7 @@
     }
     private async Task CompareMes()
     { 
-        var messages = await MessageService.GetItemsLast2MonthAsync();
+        var messages = await MessageService.GetFromLastDayAsync();
         foreach (var mes in messages)
         {
             mes.IsCurrentUser = mes.UserName == CurrentPerson.UserName;
@@ -136,4 +140,5 @@
         userMessages = messages;
         StateHasChanged();
     }
+
 }

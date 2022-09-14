@@ -27,9 +27,9 @@ namespace DM.BLL.Services
             return result;
         }
 
-        public async Task<List<UserMessage>> GetItemsLast2MonthAsync()
+        public async Task<List<UserMessage>> GetFromLastDayAsync()
         {
-            var dateFrom=DateTime.Now.AddDays(-60);
+            var dateFrom=DateTime.Now.AddDays(-1);
             using var context = _contextFactory.CreateDbContext();
             var messages = await context.Messages.Where(m=>m.DateSend>dateFrom).ToListAsync();
             var result = _mapper.Map<List<UserMessage>>(messages);
@@ -48,6 +48,19 @@ namespace DM.BLL.Services
             await context.SaveChangesAsync();
       
         }
+        public async Task RemoveMesOnDays(int d)
+        {
+            var dateFrom = DateTime.Now.AddDays(-d);
+            using var context = _contextFactory.CreateDbContext();
+
+            var messages = await context.Messages.Where(m => m.DateSend > dateFrom).ToListAsync();
+            if (messages != null)
+            {
+                context.Messages.RemoveRange(messages);
+                await context.SaveChangesAsync();
+            }
+        }
+
 
 
 

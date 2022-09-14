@@ -83,7 +83,7 @@
 
         PositionsList = pos.ToList();
 
-        var pers = await PersonService.GetPersonsAsync();
+        var pers = await PersonService.GetAllPersonsAsync();
 
         Persons = pers.ToList();
 
