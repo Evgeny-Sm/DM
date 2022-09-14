@@ -23,7 +23,7 @@ namespace DM.BLL.Authorization
         {
             using var context = _contextFactory.CreateDbContext();
             {
-                Account? account =await context.Accounts.Where(x => x.UserName == userName).Include(p => p.Person).SingleAsync();
+                Account? account =await context.Accounts.Where(x => x.UserName == userName).FirstOrDefaultAsync();
 
                 return _mapper.Map<AccountDTO>(account);
             }

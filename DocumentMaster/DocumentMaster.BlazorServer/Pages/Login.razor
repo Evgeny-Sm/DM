@@ -49,8 +49,10 @@
 
     private async Task Authenticate()
     {
+
         var userAccount =await accountService.GetByUserName(model.UserName);
         var h = SecureData.GetHashData(model.Password);
+
         if (userAccount == null || userAccount.Password != h)
         {
             await js.InvokeVoidAsync("alert", "Invalid User Name or Password");

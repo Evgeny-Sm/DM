@@ -15,7 +15,7 @@ namespace DM.DAL.Models
 
         public static void Initialize(IServiceProvider serviceProvider)
         {
-
+            /*
 
             var context = new DbContextFactory<DMContext>(serviceProvider, serviceProvider.GetRequiredService<DbContextOptions<DMContext>>(), new DbContextFactorySource<DMContext>());
             using var context1 = context.CreateDbContext();
@@ -63,9 +63,10 @@ namespace DM.DAL.Models
                    });
                 context1.SaveChanges();
 
-            }
+            }*/
 
         }
+            
 
     }
 }
