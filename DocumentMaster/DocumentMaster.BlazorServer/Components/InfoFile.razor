@@ -24,7 +24,7 @@
             <div>Количество листов в файле: @NumbersDrawing </div>
             <div>Описание: @Descriptoin </div>
             <br />
-            @if (Unit.PersonId==CurrentPerson.Id || IsController)
+            @if (Unit!=null && (Unit.PersonId==CurrentPerson.Id || IsController))
             {
                 @foreach (var c in Controls)
                 {
