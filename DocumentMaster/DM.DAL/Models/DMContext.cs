@@ -22,6 +22,8 @@ namespace DM.DAL.Models
         public DbSet<Control>? Controls { get; set; }
         public DbSet<Challenge>? Challenges { get; set; }
         public DbSet<SendedMessage>? Messages { get; set; }
+        public DbSet<Question>? Questions { get; set; }
+        public DbSet<Note>? Notes { get; set; }
 
     }
 }

@@ -1,0 +1,73 @@
+﻿@page "/Questions"
+@using DM.BLL.Services
+@using Models
+
+@inject PersonService PersonService
+@inject QuestionService QuestionService
+@inject DialogService DialogService
+
+<h3>Решения</h3>
+
+<AuthorizeView>
+    <Authorized>
+        <RadzenButton Text="Добавить" ButtonStyle="ButtonStyle.Secondary"
+                      Click=@OpenAddQuestDialog />
+        <RadzenDataGrid Data="@QuestionDTOs" TItem="QuestionDTO" ValueChanged="@(args=>ValueChanged(args))" AllowVirtualization="true" Style="height:600px"
+                        AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.Or"
+                        AllowSorting="true">
+            <Columns>
+                <RadzenDataGridColumn TItem="QuestionDTO" Property="Id" Title="Id" Width="50px" />
+                <RadzenDataGridColumn TItem="QuestionDTO" Property="Title" Title="Тема" Width="100px" />
+            </Columns>
+        </RadzenDataGrid>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+    public IEnumerable<QuestionDTO> QuestionDTOs { get; set; } = new List<QuestionDTO>();
+
+    private PersonDTO CurrentPerson { get; set; }
+
+    private QuestionDTO SelectedQuestion { get; set; }
+
+
+
+    protected override async void OnInitialized()
+    {
+        QuestionDTOs = await QuestionService.GetAllAsync();
+
+        var authState = await authenticationState;
+
+        CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+        StateHasChanged();
+    }
+
+    private async void ValueChanged(IList<QuestionDTO> args)
+    {
+        SelectedQuestion = args.FirstOrDefault();
+    }
+
+    private async Task OpenAddQuestDialog()
+    { 
+        QuestionDTO data = await DialogService.OpenAsync<AddQuestDialog>("Добавить тему");
+
+        if (data != null)
+        {
+            data.CreatorId = CurrentPerson.Id;
+
+            data.PersonIds = data.PersonIds.Distinct().ToList();
+
+            var res = await QuestionService.AddItemAsync(data);
+
+            QuestionDTOs = QuestionDTOs.Append(res);
+
+        }
+
+        
+    }
+
+
+}

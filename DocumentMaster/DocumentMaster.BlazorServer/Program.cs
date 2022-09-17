@@ -48,6 +48,8 @@ builder.Services.AddScoped<ProjectService>();
 builder.Services.AddScoped<ControlService>();
 builder.Services.AddScoped<ChallengeService>();
 builder.Services.AddScoped<MessageService>();
+builder.Services.AddScoped<QuestionService>();
+builder.Services.AddScoped<NoteService>();
 
 builder.Services.AddResponseCompression(opts=>{
     opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
@@ -120,6 +122,7 @@ app.UseRouting();
 app.MapControllers();
 app.MapBlazorHub();
 app.MapHub<ChatHub>("/chathub");
+app.MapHub<NoteHub>("/notehub");
 app.MapFallbackToPage("/_Host");
 
 app.Run();
