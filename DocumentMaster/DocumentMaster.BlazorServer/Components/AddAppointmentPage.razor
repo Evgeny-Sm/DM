@@ -1,0 +1,130 @@
+﻿@using DM.BLL.Services
+@using Models
+
+@inject DialogService DialogService
+@inject PersonService PersonService
+
+<AuthorizeView Roles="admin,head">
+    <Authorized>
+        <div class="container">
+            <div class="row justify-content-start g-1">
+                <div class="col-md-8">
+                    <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                            Data=@(Persons) Style="width: 100%" AllowColumnResize="true"
+                                            TextProperty="LastName" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
+                                            Change=@(args => OnChangePerson(args))>
+                        <Columns>
+                            <RadzenDropDownDataGridColumn Property="FirstName" Title="FirstName" Width="80px" />
+                            <RadzenDropDownDataGridColumn Property="LastName" Title="LastName" Width="80px" />
+                        </Columns>
+                    </RadzenDropDownDataGrid>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" @onclick="AddPersonToTask" class="btn btn-primary">add</button>
+                </div>
+            </div>
+
+            @foreach (var p in ChoosenPersons)
+            {
+                <div>
+                    <span style="color:cornflowerblue"> @p.LastName @p.FirstName </span>
+                    <button type="button" @onclick=@(args=>RemoveFromChallenge(p)) class="btn-close"></button>
+                </div>
+            }
+
+        </div>
+        <br />
+    </Authorized>
+</AuthorizeView>
+
+<RadzenTemplateForm TItem="ChallengeDTO" Data="@model" Submit=@OnSubmit>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Name" />
+        </div>
+        <div class="col">
+            <RadzenTextBox @bind-Value="@model.Name" Name="Text" />
+            <RadzenRequiredValidator Text="Title is required" Component="Text" />
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="Start" />
+        </div>
+        <div class="col">
+            <RadzenDatePicker @bind-Value="@model.Start" Name="Start" ShowTime="true" />
+            <RadzenRequiredValidator Text="Start is required" Component="Start" />
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 16px">
+        <div class="col-md-3">
+            <RadzenLabel Text="End" />
+        </div>
+        <div class="col">
+            <RadzenDatePicker Name="End" @bind-Value="@model.End" ShowTime="true" />
+            <RadzenRequiredValidator Component="End" Text="End is required" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col">
+            <RadzenButton ButtonType="ButtonType.Submit" Text="Save" />
+        </div>
+    </div>
+</RadzenTemplateForm>
+@code {
+    [Parameter]
+    public DateTime Start { get; set; }
+
+    [Parameter]
+    public DateTime End { get; set; }
+
+    private IEnumerable<PersonDTO> Persons = new List<PersonDTO>();
+
+    private IList<PersonDTO> ChoosenPersons = new List<PersonDTO>();
+
+    private int ChoosenPersonId { get; set; }
+
+    ChallengeDTO model = new ChallengeDTO();
+
+    private bool choose = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Persons = await PersonService.GetPersonsAsync();
+        StateHasChanged();
+    }
+
+    protected override void OnParametersSet()
+    {
+        model.Start = Start;
+        model.End = End;
+    }
+
+    private void OnSubmit(ChallengeDTO model)
+    {
+
+        DialogService.Close(model);
+    }
+
+    private void OnChangePerson(object value)
+    {
+        ChoosenPersonId = (int)value;
+        choose = true;
+    }
+    private void AddPersonToTask()
+    {
+        if (choose)
+        {
+            model.PersonIds.Add(ChoosenPersonId);
+            ChoosenPersons.Add(Persons.Where(p => p.Id == ChoosenPersonId).Single());
+
+        }
+    }
+    private void RemoveFromChallenge(PersonDTO person)
+    {
+        ChoosenPersons.Remove(person);
+        model.PersonIds.Remove(person.Id);
+    }
+
+}

@@ -1,0 +1,66 @@
+﻿@using DM.BLL.Services
+@using DM.DAL.Models
+@using DocumentMaster.BlazorServer.Pages
+@using Microsoft.EntityFrameworkCore
+@using Models
+@using System.Text.Json
+
+
+
+
+@inject PersonService personService
+@inject ProjectService projectService
+
+<AuthorizeView>
+    <Authorized>
+        <RadzenCard Style="margin-bottom:20px">
+            <b>ГИП: @Developer   </b>
+            <div> Файлов в проекте: @CountFiles </div>
+        </RadzenCard>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public IList<ProjectDTO> SelectedProjects { get; set; }
+
+    private string Developer { get; set; } = string.Empty;
+
+    private int CountFiles { get; set; }
+
+    protected override async void OnInitialized()
+    {
+
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        Developer =await GetDeveloper();
+
+        CountFiles = await GetCountFilesAsync();
+
+
+    }
+    private async Task<string> GetDeveloper()
+    {
+        if (SelectedProjects.Count == 0)
+        {
+            return null;
+        }
+        var perId = SelectedProjects.FirstOrDefault().MainIngId;
+
+        PersonDTO p =await personService.GetPersonByIdAsync(perId);
+        if (p != null)
+        {
+            return $"{p.FirstName} {p.LastName}";
+        }
+        return null;
+    }
+    private async Task<int> GetCountFilesAsync()
+    {
+        var model=await projectService.GetProjectByIdAsync(SelectedProjects.FirstOrDefault().Id);
+        return model.FilesCount;
+
+    }
+
+
+}

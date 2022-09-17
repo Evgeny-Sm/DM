@@ -1,0 +1,22 @@
+﻿@using DM.BLL.Services
+
+@inject MessageService MessageService
+
+
+<AuthorizeView Roles="admin">
+    <Authorized>
+        <div>
+            <button type="button" @onclick="RemoveMes" class="btn btn-primary"> Del</button>
+        </div>
+    </Authorized>
+</AuthorizeView>
+
+
+@code {
+
+    private async Task RemoveMes()
+    {
+        await MessageService.RemoveMesOnDays(1);
+    }
+
+}

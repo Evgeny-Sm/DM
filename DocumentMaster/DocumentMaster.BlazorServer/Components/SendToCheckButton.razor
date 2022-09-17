@@ -1,0 +1,68 @@
+﻿@using DM.DAL.Models
+@using Models
+@using DM.BLL.Services
+
+
+@implements IDisposable
+
+
+@inject DialogService DialogService
+
+
+
+    <RadzenButton Text="На проверку" ButtonStyle="ButtonStyle.Secondary" 
+Click=@OpenSendToCheckDialog />
+
+
+@code {
+
+    [Parameter]
+    public IList<FileUnit> SelectedFiles { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> SendedToCheck { get; set; }
+
+
+
+
+
+
+    protected override async void OnInitialized()
+    {
+        DialogService.OnOpen += Open;
+        DialogService.OnClose += Close;
+
+
+    }
+
+    private async Task OpenSendToCheckDialog()
+    {
+
+        await DialogService.OpenAsync<SendToCheckDialog>($"На проверку",
+              new Dictionary<string, object>() { { "SelectedFile", SelectedFiles.First() } },
+              new DialogOptions() { Width = "700px", Height = "470px", Resizable = true, Draggable = false, CloseDialogOnOverlayClick = true });
+    }
+    protected override void OnParametersSet()
+    {
+
+    }
+
+    void Open(string title, Type type, Dictionary<string, object> parameters, DialogOptions options)
+    {
+
+    }
+
+    void Close(dynamic result)
+    {
+        SendedToCheck.InvokeAsync(true);
+        Dispose();
+    }
+
+    public void Dispose()
+    {
+        // The DialogService is a singleton so it is advisable to unsubscribe.
+        DialogService.OnOpen -= Open;
+        DialogService.OnClose -= Close;
+    }
+
+}

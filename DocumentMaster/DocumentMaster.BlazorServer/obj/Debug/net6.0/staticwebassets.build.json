@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "4We9nGa183idwXphfK76AeAqE0Liv2MO12v3NmV6bF4=",
+  "Hash": "nIP07urSOaE6DRfQKdPJ4hr6CRBahVnkiCZLP+QIw40=",
   "Source": "DocumentMaster.BlazorServer",
   "BasePath": "_content/DocumentMaster.BlazorServer",
   "Mode": "Default",
@@ -83,23 +83,6 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\css\\bootstrap\\bootstrap.min.css.map"
-    },
-    {
-      "Identity": "C:\\Tasks\\work\\DM\\DocumentMaster\\DocumentMaster.BlazorServer\\wwwroot\\css\\open-iconic\\FONT-LICENSE",
-      "SourceId": "DocumentMaster.BlazorServer",
-      "SourceType": "Discovered",
-      "ContentRoot": "C:\\Tasks\\work\\DM\\DocumentMaster\\DocumentMaster.BlazorServer\\wwwroot\\",
-      "BasePath": "_content/DocumentMaster.BlazorServer",
-      "RelativePath": "css/open-iconic/FONT-LICENSE",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\css\\open-iconic\\FONT-LICENSE"
     },
     {
       "Identity": "C:\\Tasks\\work\\DM\\DocumentMaster\\DocumentMaster.BlazorServer\\wwwroot\\css\\open-iconic\\font\\css\\open-iconic-bootstrap.min.css",
@@ -202,6 +185,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.woff"
+    },
+    {
+      "Identity": "C:\\Tasks\\work\\DM\\DocumentMaster\\DocumentMaster.BlazorServer\\wwwroot\\css\\open-iconic\\FONT-LICENSE",
+      "SourceId": "DocumentMaster.BlazorServer",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Tasks\\work\\DM\\DocumentMaster\\DocumentMaster.BlazorServer\\wwwroot\\",
+      "BasePath": "_content/DocumentMaster.BlazorServer",
+      "RelativePath": "css/open-iconic/FONT-LICENSE",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\open-iconic\\FONT-LICENSE"
     },
     {
       "Identity": "C:\\Tasks\\work\\DM\\DocumentMaster\\DocumentMaster.BlazorServer\\wwwroot\\css\\open-iconic\\ICON-LICENSE",
@@ -901,23 +901,6 @@
       "OriginalItemSpec": "wwwroot\\Upload\\5\\000053_1.dwg"
     },
     {
-      "Identity": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\dark-base.css",
-      "SourceId": "Radzen.Blazor",
-      "SourceType": "Package",
-      "ContentRoot": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\",
-      "BasePath": "_content/Radzen.Blazor",
-      "RelativePath": "css/dark-base.css",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\dark-base.css"
-    },
-    {
       "Identity": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\dark.css",
       "SourceId": "Radzen.Blazor",
       "SourceType": "Package",
@@ -935,12 +918,12 @@
       "OriginalItemSpec": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\dark.css"
     },
     {
-      "Identity": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\default-base.css",
+      "Identity": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\dark-base.css",
       "SourceId": "Radzen.Blazor",
       "SourceType": "Package",
       "ContentRoot": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\",
       "BasePath": "_content/Radzen.Blazor",
-      "RelativePath": "css/default-base.css",
+      "RelativePath": "css/dark-base.css",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -949,7 +932,7 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\default-base.css"
+      "OriginalItemSpec": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\dark-base.css"
     },
     {
       "Identity": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\default.css",
@@ -969,12 +952,12 @@
       "OriginalItemSpec": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\default.css"
     },
     {
-      "Identity": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\humanistic-base.css",
+      "Identity": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\default-base.css",
       "SourceId": "Radzen.Blazor",
       "SourceType": "Package",
       "ContentRoot": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\",
       "BasePath": "_content/Radzen.Blazor",
-      "RelativePath": "css/humanistic-base.css",
+      "RelativePath": "css/default-base.css",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -983,7 +966,7 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\humanistic-base.css"
+      "OriginalItemSpec": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\default-base.css"
     },
     {
       "Identity": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\humanistic.css",
@@ -1003,12 +986,12 @@
       "OriginalItemSpec": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\humanistic.css"
     },
     {
-      "Identity": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\software-base.css",
+      "Identity": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\humanistic-base.css",
       "SourceId": "Radzen.Blazor",
       "SourceType": "Package",
       "ContentRoot": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\",
       "BasePath": "_content/Radzen.Blazor",
-      "RelativePath": "css/software-base.css",
+      "RelativePath": "css/humanistic-base.css",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -1017,7 +1000,7 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\software-base.css"
+      "OriginalItemSpec": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\humanistic-base.css"
     },
     {
       "Identity": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\software.css",
@@ -1037,12 +1020,12 @@
       "OriginalItemSpec": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\software.css"
     },
     {
-      "Identity": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\standard-base.css",
+      "Identity": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\software-base.css",
       "SourceId": "Radzen.Blazor",
       "SourceType": "Package",
       "ContentRoot": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\",
       "BasePath": "_content/Radzen.Blazor",
-      "RelativePath": "css/standard-base.css",
+      "RelativePath": "css/software-base.css",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -1051,7 +1034,7 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\standard-base.css"
+      "OriginalItemSpec": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\software-base.css"
     },
     {
       "Identity": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\standard.css",
@@ -1069,6 +1052,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\standard.css"
+    },
+    {
+      "Identity": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\standard-base.css",
+      "SourceId": "Radzen.Blazor",
+      "SourceType": "Package",
+      "ContentRoot": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\",
+      "BasePath": "_content/Radzen.Blazor",
+      "RelativePath": "css/standard-base.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\css\\standard-base.css"
     },
     {
       "Identity": "C:\\Users\\evgas\\.nuget\\packages\\radzen.blazor\\3.19.11\\staticwebassets\\fonts\\MaterialIcons-Regular.woff",

@@ -1,0 +1,58 @@
+﻿@using DM.DAL.Models
+@using Models
+@using DM.BLL.Services
+
+@implements IDisposable
+
+@inject DialogService DialogService
+
+
+
+<RadzenButton Text="Заменить" ButtonStyle="ButtonStyle.Secondary"
+              Click=@OpenReloadDialog />
+
+
+@code {
+
+    [Parameter]
+    public IList<FileUnit> SelectedFiles { get; set; }
+
+    protected override async void OnInitialized()
+    {
+
+        DialogService.OnOpen += Open;
+        DialogService.OnClose += Close;
+
+    }
+
+    private async Task OpenReloadDialog()
+    {
+        await DialogService.OpenAsync<ReloadFileDialog>($"На проверку",
+              new Dictionary<string, object>() { { "SelectedFiles", SelectedFiles } },
+              new DialogOptions() { Width = "500px", Height = "300px", Resizable = true,
+              Draggable = false, CloseDialogOnOverlayClick = true });
+    }
+    protected override void OnParametersSet()
+    {
+
+    }
+
+    void Open(string title, Type type, Dictionary<string, object> parameters, DialogOptions options)
+    {
+
+    }
+
+    void Close(dynamic result)
+    {
+
+        Dispose();
+    }
+
+    public void Dispose()
+    {
+        // The DialogService is a singleton so it is advisable to unsubscribe.
+        DialogService.OnOpen -= Open;
+        DialogService.OnClose -= Close;
+    }
+
+}

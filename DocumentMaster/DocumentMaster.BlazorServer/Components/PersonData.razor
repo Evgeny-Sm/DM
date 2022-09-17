@@ -1,0 +1,240 @@
+﻿
+@using DM.BLL.Authorization
+@using DM.BLL.Services
+@using DocumentMaster.BlazorServer.Authentication
+@using DocumentMaster.BlazorServer.Pages
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Models
+
+@inject PersonService PersonService
+@inject AccountService AccountService
+@inject DepartmentService DepartmentServices
+@inject PositionService PositionService
+@inject NavigationManager Navigation
+
+
+
+<AuthorizeView Roles="user,head">
+    <Authorized>
+        <RadzenTemplateForm Context="Cont" Data="@Person" Submit="@((PersonDTO args) => { Submit(args);})">
+            <div class="row">
+                <div class="col-md-10">
+                    <RadzenFieldset Text="Личные данные">
+                        <div class="row">
+                            <div class="col-md-4 align-items-center d-flex">
+                                <RadzenLabel Text="Имя"/>
+                            </div>
+                            
+                            <div class="col-md-8">
+                                <RadzenTextBox style="width: 50%;" @bind-Value="Person.FirstName" Name="FileName" />
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-4 align-items-center d-flex">
+                                <RadzenLabel Text="Фамилия" />
+                            </div>
+                            <div class="col-md-8">
+                                <RadzenTextBox style="width: 50%;" @bind-Value="Person.LastName" Name="LastName" />
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-4 align-items-center d-flex">
+                                <RadzenLabel Text="Телеграм" />
+                            </div>
+                            <div class="col-md-8">
+                                <RadzenTextBox style="width: 50%;" @bind-Value="Person.TelegramContact" Name="TG" />
+                            </div>
+                        </div>
+                        
+                    </RadzenFieldset>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-12 d-flex align-items-end justify-content-center" style="margin-top: 16px;">
+                    <RadzenButton ButtonType="ButtonType.Submit" Icon="save" style="display: inline-block; margin-left: 10px;" Text="Save" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="cancel" style="display: inline-block; margin-left: 10px;" Text="Cancel" Click="@Cancel" />
+                </div>
+            </div>
+        </RadzenTemplateForm>
+    </Authorized>
+</AuthorizeView>
+
+<AuthorizeView Roles="admin">
+    <Authorized>
+        <RadzenTemplateForm Context="Cont" Data="@Person" Submit="@((PersonDTO args) => { Submit(args);})">
+            <div class="row">
+                <div class="col-md-10">
+                    <RadzenFieldset style="width:100%" Text="Личные данные">
+                        <div class="row">
+                            <div class="col-md-4 align-items-lg-stretch d-flex">
+                                <RadzenLabel Text="Имя" />
+                            </div>
+
+                            <div class="col-md-8">
+                                <RadzenTextBox style="width: 70%;" @bind-Value="Person.FirstName" Name="FileName" />
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-4 align-items-lg-stretch d-flex">
+                                <RadzenLabel Text="Фамилия" />
+                            </div>
+                            <div class="col-md-8">
+                                <RadzenTextBox style="width: 70%;" @bind-Value="Person.LastName" Name="LastName" />
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-4 align-items-lg-stretch d-flex">
+                                <RadzenLabel Text="Телеграм" />
+                            </div>
+                            <div class="col-md-8">
+                                <RadzenTextBox style="width: 70%;" @bind-Value="Person.TelegramContact" Name="TG" />
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-4 align-items-lg-stretch d-flex">
+                                <RadzenLabel Text="Отдел" />
+                            </div>
+                            <div class="col-md-8">
+                                <RadzenDropDown @bind-Value="Person.DepartmentId" Data="@Departments" style="width: 70%;"
+                                                TextProperty="Name" ValueProperty="Id" Name="Department" />
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-4 align-items-lg-stretch d-flex">
+                                <RadzenLabel Text="Должность" />
+                            </div>
+                            <div class="col-md-8">
+                                <RadzenDropDown @bind-Value="Person.PositionId" Data="@Positions" style="width: 70%;"
+                                                TextProperty="Name" ValueProperty="Id" Name="Pos" />
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-4 align-items-lg-stretch d-flex">
+                                <RadzenLabel Text="Средняя оплата в час" />
+                            </div>
+                            <div class="col-md-8">
+                                <RadzenTextBox style="width: 70%;" @bind-Value="Salary" Name="Salary" />
+                                <RadzenRegexValidator Text="Salary not corrected" Component="Salary" Pattern="[0-9]{0,8}" Popup="true" />
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-4 align-items-lg-stretch d-flex">
+                                <RadzenLabel Text="Role" />
+                            </div>
+                            <div class="col-md-8">
+                                <RadzenDropDown @bind-Value="Person.Role" Data="@Roles" style="width: 70%;"
+                                                Name="Role" />
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-4 align-items-lg-stretch d-flex">
+                                <RadzenLabel Text="Подтверждён" />
+                            </div>
+                            <div class="col-md-8">
+                                <RadzenDropDown @bind-Value="Person.IsConfirmed" Data="@Bools" style="width: 70%;"
+                                                 Name="IsConfirmed" />
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-4 align-items-lg-stretch d-flex">
+                                <RadzenLabel Text="Удалён" />
+                            </div>
+                            <div class="col-md-8">
+                                <RadzenDropDown @bind-Value="Person.IsDeleted" Data="@Bools" style="width: 70%;"
+                                                Name="IsDeleted" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <br />
+                            <div class="col-md-12 d-flex align-items-start justify-content-center" style="margin-top: 16px;">
+                                <RadzenButton ButtonType="ButtonType.Submit" Icon="save" style="display: inline-block; margin-left: 10px;" Text="Save" />
+                                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="cancel" style="display: inline-block; margin-left: 10px;" Text="Cancel" Click="@Cancel" />
+                            </div>
+                        </div>
+                    </RadzenFieldset>
+
+                </div>
+            </div>
+
+        </RadzenTemplateForm>
+    </Authorized>
+</AuthorizeView>
+
+
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+
+    [Parameter]
+    public PersonDTO Person { get; set; }  
+
+    private IList<DepartmentDTO> Departments { get; set; }
+
+    private IList<PositionDTO> Positions { get; set; }
+
+    private string Salary { get; set; }
+
+    private List<bool> Bools = new List<bool> { true, false };
+
+    private List<string> Roles = new List<string> { "admin", "head", "user" };
+
+    protected override async void OnInitialized()
+    {
+
+
+        if (Departments is null)
+        {          
+            var d = await DepartmentServices.GetDepartmentsListAsync();
+            Departments = d.ToList();
+        }
+        if (Positions is null)
+        {
+            var p = await PositionService.GetAllAsync();
+            Positions = p.ToList();
+        }
+        Salary = Person.SalaryPerH.ToString();
+
+
+
+        StateHasChanged();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Person is null)
+        {
+            var authState = await authenticationState;
+
+            Person = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+        }
+
+    }
+
+    async void Submit(PersonDTO arg)
+    {
+        if (double.TryParse(Salary, out double s))
+        {
+            arg.SalaryPerH = s;
+        }
+        await PersonService.UpdatePersonAsync(arg);
+
+        Navigation.NavigateTo("/");
+    }
+
+    async void Cancel()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

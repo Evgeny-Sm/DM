@@ -1,0 +1,70 @@
+﻿@using DM.DAL.Models
+@using Models
+@using DM.BLL.Services
+
+@implements IDisposable
+
+@inject DialogService DialogService
+
+
+
+<AuthorizeView Roles="admin,head">
+    <Authorized>
+        <RadzenButton Text="Добавить" ButtonStyle="ButtonStyle.Secondary"
+                      Click=@OpenAddFileDialog />
+    </Authorized>
+</AuthorizeView>
+
+@code {
+
+
+
+    protected override void OnInitialized()
+    {
+        DialogService.OnOpen += Open;
+        DialogService.OnClose += Close;
+
+
+    }
+
+    private async Task OpenAddFileDialog()
+    {
+
+        await DialogService.OpenAsync<AddProjectDialog>($"Новый проект",
+              new Dictionary<string, object>(),
+              new DialogOptions()
+                  {
+                      Width = "800px",
+                      Height = "800px",
+                      Resizable = true,
+                      Draggable = false,
+                      CloseDialogOnOverlayClick = true
+                  });
+    }
+    protected override void OnParametersSet()
+    {
+
+    }
+
+
+
+    void Open(string title, Type type, Dictionary<string, object> parameters, DialogOptions options)
+    {
+
+    }
+
+    void Close(dynamic result)
+    {
+
+        Dispose();
+    }
+
+    public void Dispose()
+    {
+        // The DialogService is a singleton so it is advisable to unsubscribe.
+        DialogService.OnOpen -= Open;
+        DialogService.OnClose -= Close;
+    }
+
+}
+

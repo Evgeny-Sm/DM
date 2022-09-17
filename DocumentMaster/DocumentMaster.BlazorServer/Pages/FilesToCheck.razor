@@ -1,0 +1,185 @@
+﻿@page "/FilesToCheck"
+
+@attribute [Authorize]
+
+@using DM.BLL.Services
+@using DM.DAL.Models
+@using DocumentMaster.BlazorServer.Pages
+@using Microsoft.EntityFrameworkCore
+@using Models
+
+
+@inject IDbContextFactory<DMContext> contextFactory
+@inject DMContext db
+@inject PersonService PersonService
+@inject FileService FileService
+@inject ControlService ControlService
+@inject DialogService DialogService
+@inject NavigationManager Navigation
+
+<h3>FilesToCheck</h3>
+
+<AuthorizeView>
+    <Authorized>
+        <div class="row">
+            <div class="col-md-8">
+                <FileList files="@files" FilesGetCallBack="@SetSelectedFiles" />
+            </div>
+            <div class="col-md-4">
+                @if (SelectedFiles.Count != 0)
+                {
+                    <div class="d-inline-block">
+                        <DownloadFile SelectedFiles="@SelectedFiles" />
+                        <RadzenButton Click=@(args => CheckingComplete()) ButtonStyle="ButtonStyle.Success" Text="Подтвердить" />
+                        <RadzenButton Click=@(args => CheckingDenied()) ButtonStyle="ButtonStyle.Danger" Text="Вернуть" />
+                    </div>
+                    <InfoFile SelectedFiles="@SelectedFiles" />
+                }
+            </div>
+        </div>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+    private IList<FileUnit> SelectedFiles { get; set; }=new List<FileUnit>();
+
+    public IList<FileUnit>? files { get; set; }
+
+    private double AddTime { get; set; }
+
+    private string Descripton { get; set; } = string.Empty;
+
+    private PersonDTO CurrentPerson { get; set; }
+
+    protected override async void OnInitialized()
+    {
+        DialogService.OnOpen += Open;
+        DialogService.OnClose += Close;
+
+        var authState = await authenticationState;
+
+        CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+        SelectedFiles = new List<FileUnit>();
+
+        var controls =await ControlService.GetControlsToCheckAsync(CurrentPerson.Id);
+
+        var fileNumbers = controls.Select(a => a.FileUnitId);
+
+        using var context = contextFactory.CreateDbContext();
+        files = context.FileUnits.Where(f => f.Status == StatusFile.Checking && fileNumbers.Contains(f.Id)).Include(p => p.Person).Include(d => d.Department).
+        Include(p => p.Project).Include(s => s.Section).Include(c=>c.Controls)
+        .ToList();
+
+        StateHasChanged();
+
+    }
+
+    private void SetSelectedFiles(IList<FileUnit> fileUnit)
+    {
+        if (fileUnit != null)
+        {
+            SelectedFiles = fileUnit;
+        }
+    }
+
+    private async void CheckingComplete()
+    {
+        await DialogService.OpenAsync<ResultCheckDialog>($"Затраченное время",
+      new Dictionary<string, object>(),
+      new DialogOptions()
+          {
+              Width = "500px",
+              Height = "400px",
+              Resizable = true,
+              Draggable = false,
+              CloseDialogOnOverlayClick = true
+          });
+
+        var c = await ControlService.GetActualControlForPersonAsync(SelectedFiles.FirstOrDefault().Id,CurrentPerson.Id);
+        c.IsConfirmed = true;
+        c.TimeForChecking += AddTime;
+        c.Description = Descripton;
+        c.DateTime = DateTime.Now;
+
+
+        await ControlService.UpdateControlAsync(c);
+
+        var f = await FileService.GetItemByIdAsync(SelectedFiles.FirstOrDefault().Id);
+        f.Status = StatusFile.Archive;
+        await FileService.UpdateFileAsync(f);
+
+        files.Remove(SelectedFiles.First());
+
+        SelectedFiles = new List<FileUnit>();
+
+        if (files.Count == 0)
+        {
+            NavigatetoToFiles();
+        }
+
+        StateHasChanged();
+
+    }
+    private async void CheckingDenied()
+    {
+        await DialogService.OpenAsync<ResultCheckDialog>($"Затраченное время",
+      new Dictionary<string, object>(),
+      new DialogOptions()
+          {
+              Width = "500px",
+              Height = "400px",
+              Resizable = true,
+              Draggable = false,
+              CloseDialogOnOverlayClick = true
+          });
+        var c = await ControlService.GetActualControlForPersonAsync(SelectedFiles.FirstOrDefault().Id, CurrentPerson.Id);
+        c.IsInAction = false;
+        c.TimeForChecking += AddTime;
+        c.Description = Descripton;
+        c.DateTime = DateTime.Now;
+
+        await ControlService.UpdateControlAsync(c);
+
+        var f = await FileService.GetItemByIdAsync(SelectedFiles.FirstOrDefault().Id);
+        f.Status = StatusFile.Work;
+        await FileService.UpdateFileAsync(f);
+        files.Remove(SelectedFiles.First());
+        SelectedFiles = new List<FileUnit>();
+
+        if (files.Count == 0)
+        {
+            NavigatetoToFiles();
+        }
+
+        StateHasChanged();
+
+    }
+    void Open(string title, Type type, Dictionary<string, object> parameters, DialogOptions options)
+    {
+
+    }
+
+    void Close(dynamic result)
+    {
+        if (result != null)
+        {
+            AddTime = double.Parse(result["time"]);
+            Descripton = result["description"];
+        }
+        Dispose();
+    }
+
+    public void Dispose()
+    {
+        // The DialogService is a singleton so it is advisable to unsubscribe.
+        DialogService.OnOpen -= Open;
+        DialogService.OnClose -= Close;
+    }
+    private void NavigatetoToFiles()
+    {
+        Navigation.NavigateTo("/Files");
+    }
+}

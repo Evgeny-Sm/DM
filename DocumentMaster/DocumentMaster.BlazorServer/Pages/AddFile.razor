@@ -1,0 +1,236 @@
+﻿@page "/AddFile"
+
+@attribute [Authorize]
+
+@using DM.BLL.Services
+@using DocumentMaster.BlazorServer.Authentication
+@using DocumentMaster.BlazorServer.Pages
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Models
+
+
+@inject FileService fileService
+@inject PersonService personService
+@inject ProjectService projectService
+@inject SectionService sectionService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@inject IWebHostEnvironment WebHostEnvironment
+@inject IConfiguration Configuration
+
+
+
+@if (Projects == null)
+{
+    <div>Loading...</div>
+}
+else
+{
+    <AuthorizeView>
+        <Authorized>
+            <h3>Добавление файла</h3>
+            <RadzenTemplateForm Context="Context1" Data="@_file" Submit="@((FileDTO args) => { Submit(args);})">
+                <div class="row">
+                    <RadzenFieldset Text="Выберите проект">
+                        <div class="row">
+                            <div class="col-md-6 ">
+                                <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                                    Data=@(Projects) Style="width: 100%" AllowColumnResize="true"
+                                                    TextProperty="Name" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
+                                                    Change=@(args => OnChange(args, "DropDownDataGrid with filtering by all string columns"))>
+                                    <Columns>
+                                        <RadzenDropDownDataGridColumn Property="Id" Title="ID" Width="100px" />
+                                        <RadzenDropDownDataGridColumn Property="Name" Title="Name" Width="200px" />
+                                    </Columns>
+                                </RadzenDropDownDataGrid>
+                            </div>
+                        </div>
+                    </RadzenFieldset>
+
+                    <RadzenFieldset Text="Выберите раздел проекта">
+                        <div class="row">
+                            <div class="col-md-6 ">
+                                <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                                    Data=@(SectionsList) Style="width: 100%" AllowColumnResize="true"
+                                                    TextProperty="Name" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
+                                                    Change=@(args => OnChangeSection(args, "DropDownDataGrid with filtering by all string columns"))>
+                                    <Columns>
+                                        <RadzenDropDownDataGridColumn Property="Name" Title="Name" Width="50px" />
+                                        <RadzenDropDownDataGridColumn Property="Description" Title="FullName" Width="200px" />
+                                    </Columns>
+                                </RadzenDropDownDataGrid>
+                            </div>
+                        </div>
+                    </RadzenFieldset>
+                    <RadzenFieldset Text="Название файла">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <RadzenTextBox style="width: 100%;" @bind-Value="_file.Name" Name="FileName" />
+                            </div>
+                            <div class="col-md-6">
+                                <InputFile OnChange="@LoadFiles" multiple />
+                            </div>
+                        </div>
+                    </RadzenFieldset>
+
+                    <RadzenFieldset Text="Количество листов в файле">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <RadzenTextBox style="width: 100%;" @bind-Value="NumbersDrawings" Name="NumbDr" />
+                            </div>
+                        </div>
+                    </RadzenFieldset>
+
+                    <RadzenFieldset Text="Время на разработку(часов)">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <RadzenTextBox style="width: 100%;" @bind-Value="TimeToDevelop" Name="TimeToDev" />
+                            </div>
+                        </div>
+                    </RadzenFieldset>
+
+
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-md-12 d-flex align-items-end justify-content-center" style="margin-top: 16px;">
+                        <RadzenButton ButtonType="ButtonType.Submit" Icon="save" style="display: inline-block; margin-left: 10px;" Text="Save" />
+                        <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="cancel" style="display: inline-block; margin-left: 10px;" Text="Cancel" Click="@Cancel" />
+                    </div>
+                </div>
+            </RadzenTemplateForm>
+        </Authorized>
+    </AuthorizeView>
+}
+
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+    private FileDTO _file = new FileDTO();
+    private bool FileReadyToUpload { get; set; }
+    private PersonDTO CurrentPerson { get; set; }
+    private IList<ProjectDTO> Projects { get; set; }
+    private IList<SectionDTO> SectionsList { get; set; }
+
+    private IBrowserFile? BrowserFile { get; set; }
+
+    private string TimeToDevelop { get; set; } = string.Empty;
+    private string NumbersDrawings { get; set; } = string.Empty;
+
+    protected override async void OnInitialized()
+    {
+        var authState = await authenticationState;
+        CurrentPerson = await personService.GetPersonByNameAsync(authState.User.Identity.Name);
+
+        var s = await sectionService.GetAllAsync();
+
+        SectionsList = s.ToList();
+
+        var p = await projectService.GetProjectsListAsync();
+
+        Projects = p.ToList();
+
+        _file = await fileService.AddFileAsync(new FileDTO
+            {
+                Name = "",
+                DepartmentId = CurrentPerson.DepartmentId,
+                ProjectId = Projects.First().Id,
+                SectionId = SectionsList.First().Id,
+                IsDeleted = true,
+                PersonId = CurrentPerson.Id,
+                Status = StatusFile.Work
+            });
+        StateHasChanged();
+
+    }
+
+    async void Submit(FileDTO arg)
+    {
+        if (!FileReadyToUpload)
+        {
+            await JS.InvokeVoidAsync("alert", "Выберите файл");
+            return;
+        } 
+        arg.DepartmentId = CurrentPerson.DepartmentId;
+        arg.Name = GetPrefix(arg.Id) + "_" + arg.Name;
+        if (int.TryParse(NumbersDrawings, out int num))
+        {
+            arg.NumbersDrawings = num;
+        }
+        else
+        { 
+            arg.NumbersDrawings = 1;
+        }
+        if (double.TryParse(TimeToDevelop, out double t))
+        {
+            arg.TimeToCreate = t;
+        }
+
+        arg.PersonId = CurrentPerson.Id;
+
+        arg.IsDeleted = false;
+
+        var result= await fileService.UpdateFileAsync(arg);
+
+
+
+        string path = Configuration.GetConnectionString("ProjectRootDir") + $"\\{arg.ProjectId}\\";
+        var uploadPath = WebHostEnvironment.WebRootPath + path;
+        if (!Directory.Exists(uploadPath))
+        {
+            Directory.CreateDirectory(uploadPath);
+        }
+        var fullPath = Path.Combine(uploadPath, _file.Name);
+
+        await using FileStream fs = new(fullPath, FileMode.Create);
+
+        await BrowserFile.OpenReadStream(maxAllowedSize: 100000000).CopyToAsync(fs);
+
+        if (result != 0)
+        {
+            Navigation.NavigateTo("/Files");
+        }
+
+    }
+
+
+    void OnChange(object value, string s)
+    {
+        _file.ProjectId = (int)value;
+    }
+
+    void OnChangeSection(object value, string s)
+    {
+        _file.SectionId = (int)value;
+    }
+
+    private string GetPrefix(int id)
+    {
+        var s = "000000" + id;
+        s = s.Substring(id.ToString().Length);
+        return s;
+    }
+
+    async void Cancel()
+    {
+        await fileService.RemoveFile(_file.Id);
+        Navigation.NavigateTo("/Files");
+    }
+
+    private void LoadFiles(InputFileChangeEventArgs e)
+    {
+        if (e.File is null)
+        {
+            FileReadyToUpload = false;
+            return;
+        }
+
+        FileReadyToUpload = true;
+        BrowserFile = e.File;
+        _file.Name = BrowserFile.Name;
+    }
+
+
+
+}

@@ -1,0 +1,116 @@
+﻿@using DM.BLL.Services
+@using DM.DAL.Models
+@using Models
+@using Microsoft.EntityFrameworkCore;
+
+@inject DialogService DialogService
+@inject FileService FileService
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+@inject IWebHostEnvironment WebHostEnvironment
+@inject IConfiguration Configuration
+
+
+
+<RadzenCard Style="width: 100%; overflow: hidden;">
+    <InputFile OnChange="@LoadFiles" multiple />
+                  <br />
+                  <br />
+    <div class="row">
+        <div class="col-md-4 align-items-center d-flex">
+            <RadzenLabel Text="Время на доработку(часов)" />
+        </div>
+
+        <div class="col-md-8">
+            <RadzenTextBox style="width: 100%;" @bind-Value="AdditionalTime" Name="AddTime" />
+        </div>
+    </div>
+    <div>
+        <RadzenButton Size="Radzen.ButtonSize.Small" ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Ok" Click=@(args => UploadFile()) />
+    </div>
+</RadzenCard>
+
+@code {
+
+    [Parameter]
+    public IList<FileUnit> SelectedFiles { get; set; }
+
+    private string FileName = string.Empty;
+
+    private bool FileReadyToUpload { get; set; }
+
+    private string Path { get; set; } = string.Empty;
+
+    private string AdditionalTime { get; set; } = "0";
+
+    private FileDTO CurrentFile { get; set; } = new FileDTO();
+
+    private IBrowserFile? BrowserFile { get; set; }
+
+    protected override  void OnInitialized()
+    {
+
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (SelectedFiles != null)
+        {
+            FileName = SelectedFiles.FirstOrDefault().Name;
+            Path = SelectedFiles.FirstOrDefault().PathFile;
+            CurrentFile = await FileService.GetItemByIdAsync(SelectedFiles.FirstOrDefault().Id);
+        }
+    }
+    void OnChangeUpload(UploadChangeEventArgs args)
+    {
+        if (args.Files.Count() == 0)
+        {
+            FileReadyToUpload = false;
+            return;
+        }
+
+        FileReadyToUpload = true;
+
+
+
+    }
+    private async Task UploadFile()
+    { 
+        if (!FileReadyToUpload)
+        {
+            await JS.InvokeVoidAsync("alert", "Выберите файл");
+            return;
+        }
+        if (double.TryParse(AdditionalTime, out double t))
+        {
+            CurrentFile.TimeToCreate += t;
+        }
+        else
+        { 
+            await JS.InvokeVoidAsync("alert", "Введите время на доработку в часах или 0");
+            return;
+        }
+        var fullPath = $"{WebHostEnvironment.WebRootPath}\\{Configuration.GetConnectionString("ProjectRootDir")}\\{Path}";
+
+        await using FileStream fs = new(fullPath, FileMode.Create);
+
+        await BrowserFile.OpenReadStream(maxAllowedSize: 100000000).CopyToAsync(fs);
+
+        await FileService.UpdateFileAsync(CurrentFile);
+
+        DialogService.Close();
+
+    }
+
+    private void LoadFiles(InputFileChangeEventArgs e)
+    {
+        if (e.File is null)
+        {
+            FileReadyToUpload = false;
+            return;
+        }
+
+        FileReadyToUpload = true;
+        BrowserFile = e.File;
+    }
+}

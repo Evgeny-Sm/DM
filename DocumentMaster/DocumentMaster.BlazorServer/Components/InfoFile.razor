@@ -1,0 +1,144 @@
+﻿@using DM.BLL.Services
+@using DM.DAL.Models
+@using DocumentMaster.BlazorServer.Pages
+@using Microsoft.EntityFrameworkCore
+@using Models
+@using System.Text.Json
+
+
+
+@inject PersonService PersonService
+@inject ControlService ControlService
+
+
+<AuthorizeView Roles="user">
+    <Authorized>
+        <RadzenCard Style="margin-bottom:20px">
+            <b>Разработал: @Developer   </b>
+            <b>Проверил: @Controller   </b>
+            <div>Дата создания: @DateToCreate</div>
+            <div>Дата утверждения: @DateToArhive</div>
+            <div>Отдел: @Department </div>
+            <div>Проект: @ProjectName </div>
+            <div>Раздел проекта: @SectionProject </div>
+            <div>Количество листов в файле: @NumbersDrawing </div>
+            <div>Описание: @Descriptoin </div>
+            <br />
+            @if (Unit!=null && (Unit.PersonId==CurrentPerson.Id || IsController))
+            {
+                @foreach (var c in Controls)
+                {
+                    <div>
+                        <span style="color:cadetblue">@c.PersonName (@c.DateTime.ToString("HH:mm| dd:MMM:yy")): @c.Description</span>
+                    </div>
+                }
+            }
+        </RadzenCard>
+    </Authorized>
+</AuthorizeView>
+<AuthorizeView Roles="admin,head">
+    <Authorized>
+        <RadzenCard Style="margin-bottom:20px">
+            <b>Разработал: @Developer   </b>
+            <b>Проверил: @Controller   </b>
+            <div>Дата создания: @DateToCreate</div>
+            <div>Дата утверждения: @DateToArhive</div>
+            <div>Отдел: @Department </div>
+            <div>Проект: @ProjectName </div>
+            <div>Раздел проекта: @SectionProject </div>
+            <div>Количество листов в файле: @NumbersDrawing </div>
+            <div>Описание: @Descriptoin </div>
+            <div>Затраты на разработку: @TimeToDev </div>
+            <div>Затраты на проверку: @TimeToControl </div>
+            <br />
+            @foreach (var c in Controls)
+            {
+                <div>
+                    <span style="color:cadetblue">@c.PersonName (@c.DateTime.ToString("HH:mm| dd:MMM:yy")): @c.Description</span>
+                </div>
+            }
+        </RadzenCard>
+
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public IList<FileUnit>? SelectedFiles { get; set; }
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+    private string Developer { get; set; } = string.Empty;
+    private string Controller { get; set; } = string.Empty;
+    private string DateToArhive { get; set; } = string.Empty;
+    private string DateToCreate { get; set; } = string.Empty;
+    private string Department { get; set; } = string.Empty;
+    private string ProjectName { get; set; } = string.Empty;
+    private string SectionProject { get; set; } = string.Empty;
+    private string NumbersDrawing { get; set; } = string.Empty;
+    private string TimeToDev { get; set; } = string.Empty;
+    private string TimeToControl { get; set; } = string.Empty;
+    private string Descriptoin { get; set; } = string.Empty;
+    private FileUnit? Unit { get; set; }
+
+    private bool IsController { get; set; } = false;
+
+    private IEnumerable<ControlDTO> Controls { get; set; } = new List<ControlDTO>();
+
+    private PersonDTO CurrentPerson { get; set; } = new();
+
+    protected override async void OnInitialized()
+    {
+
+        var authState = await authenticationState;
+        CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+    }
+
+    protected override async void OnParametersSet()
+    {
+        Controls  = new List<ControlDTO>();
+
+
+        if (SelectedFiles.Count == 0)
+        {
+            return;
+        }
+        Unit = SelectedFiles.FirstOrDefault();
+        Controls = await ControlService.GetControlsByFileIdAsync(Unit.Id);
+
+        var ctrl = Controls.Where(c => c.IsConfirmed == true).FirstOrDefault();
+        if (ctrl != null)
+        {
+            Controller = ctrl.PersonName;
+            DateToArhive = ctrl.DateTime.ToString("HH:mm|dd:MMM:yy");
+            IsController = ctrl.PersonId == CurrentPerson.Id;
+        }
+        else 
+        {
+            Controller = string.Empty;
+            IsController = false;
+        }
+        DateToCreate = Unit.CreateDate.ToString("HH:mm|dd:MMM:yy");
+
+        TimeToControl = Controls.Sum(c => c.TimeForChecking).ToString();
+
+        Developer = $"{Unit.Person.FirstName} {Unit.Person.LastName}";
+
+        Department = Unit.Department.Name;
+
+        ProjectName = Unit.Project.Name;
+
+        SectionProject = Unit.Section.Name;
+
+        NumbersDrawing = Unit.NumbersDrawings.ToString();
+
+        TimeToDev = Unit.TimeToCreate.ToString();
+
+        Descriptoin = Unit.Description;
+        StateHasChanged();
+
+    }
+
+
+}

@@ -1,0 +1,65 @@
+﻿@using DM.BLL.Services
+@using DM.DAL.Models
+@using Models
+@using Microsoft.EntityFrameworkCore;
+
+@inject DialogService DialogService
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+
+
+
+
+<RadzenCard Style="width: 100%; overflow: hidden;">
+    <br />
+    <div class="row">
+        <div class="col-md-4 align-items-center d-flex">
+            <RadzenLabel Text="Описание" />
+        </div>
+        <div class="col">
+            <RadzenTextArea Style="width:inherit" @bind-Value="Description" Name="ProjectName" />
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-4 align-items-center d-flex">
+            <RadzenLabel Text="Время на проверку(часов)" />
+        </div>
+        <br />
+        <div class="col-md-4">
+            <RadzenTextBox style="width: 100%;" @bind-Value="AdditionalTime" Name="AddTime" />
+        </div>
+    </div>
+
+    <br />
+    <div>
+        <RadzenButton Size="Radzen.ButtonSize.Small" ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Ok" Click=@(args => Submit()) />
+    </div>
+</RadzenCard>
+
+@code {
+
+    private string AdditionalTime { get; set; } = "0";
+    private string Description { get; set; } = string.Empty;
+
+
+    private async Task Submit()
+    {
+
+        if (!double.TryParse(AdditionalTime, out double t))
+        {
+            await JS.InvokeVoidAsync("alert", "Введите время на доработку в часах или 0");
+            return;
+        }
+        Dictionary<string, string> result = new Dictionary<string, string>
+        { 
+            { "time", AdditionalTime},
+            { "description", Description}
+        };
+
+        DialogService.Close(result);
+
+    }
+
+
+}

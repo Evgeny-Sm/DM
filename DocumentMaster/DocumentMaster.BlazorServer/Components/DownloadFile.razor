@@ -1,0 +1,39 @@
+﻿@using DM.BLL.Services
+@using DM.DAL.Models
+@using DocumentMaster.BlazorServer.Pages
+@using Microsoft.EntityFrameworkCore
+@using Models
+@using System.Text.Json
+
+@inject IConfiguration Configuration
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@inject FileService fileService
+@inject PersonService personService
+@inject DMContext db
+@inject IWebHostEnvironment WebHostInvironment
+
+<RadzenButton Click=@(args => DownloadFileFromStream())  ButtonStyle="ButtonStyle.Secondary" Text="Скачать"  />
+
+@code {
+    [Parameter]
+    public IList<FileUnit> SelectedFiles { get; set; }
+
+
+
+    private async Task DownloadFileFromStream()
+    {
+        if (SelectedFiles != null)
+        {
+            var name = SelectedFiles.FirstOrDefault().Name;
+            var downloadPath = WebHostInvironment.WebRootPath + Configuration.GetConnectionString("ProjectRootDir")
+                                + $"\\{SelectedFiles.FirstOrDefault().ProjectId}" + $"\\{name}";
+
+            var fileStream = File.OpenRead(@$"{downloadPath}");
+
+            using var streamRef = new DotNetStreamReference(stream: fileStream);
+            await JS.InvokeVoidAsync("downloadFileFromStream", name, streamRef);
+        }
+    }
+
+}
