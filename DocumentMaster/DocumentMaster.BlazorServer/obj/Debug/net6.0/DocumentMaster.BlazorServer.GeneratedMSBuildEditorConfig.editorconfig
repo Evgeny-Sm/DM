@@ -1,0 +1,192 @@
+is_global = true
+build_property.TargetFramework = net6.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = DocumentMaster.BlazorServer
+build_property.RootNamespace = DocumentMaster.BlazorServer
+build_property.ProjectDir = C:\Tasks\work\DM\DocumentMaster\DocumentMaster.BlazorServer\
+build_property.RazorLangVersion = 6.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Tasks\work\DM\DocumentMaster\DocumentMaster.BlazorServer
+build_property._RazorSourceGeneratorDebug = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/App.razor]
+build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/AddAppointmentPage.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBZGRBcHBvaW50bWVudFBhZ2UucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/AddFileButton.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBZGRGaWxlQnV0dG9uLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/AddFileDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBZGRGaWxlRGlhbG9nLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/AddProjectButton.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBZGRQcm9qZWN0QnV0dG9uLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/AddProjectDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBZGRQcm9qZWN0RGlhbG9nLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/AddUserDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBZGRVc2VyRGlhbG9nLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/ChangePassButton.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xDaGFuZ2VQYXNzQnV0dG9uLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/Departments.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEZXBhcnRtZW50cy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/DialogPassReset.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEaWFsb2dQYXNzUmVzZXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/DownloadFile.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEb3dubG9hZEZpbGUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/EditAppointmentPage.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xFZGl0QXBwb2ludG1lbnRQYWdlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/Employees.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xFbXBsb3llZXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/FileList.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xGaWxlTGlzdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/InfoFile.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xJbmZvRmlsZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/InfoProject.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xJbmZvUHJvamVjdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/PersonData.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQZXJzb25EYXRhLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/Positions.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQb3NpdGlvbnMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/ProjectList.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQcm9qZWN0TGlzdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/ReloadFileButton.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSZWxvYWRGaWxlQnV0dG9uLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/ReloadFileDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSZWxvYWRGaWxlRGlhbG9nLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/RemoveChatButton.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSZW1vdmVDaGF0QnV0dG9uLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/ResultCheckDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSZXN1bHRDaGVja0RpYWxvZy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/Schaduler.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTY2hhZHVsZXIucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/Sections.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTZWN0aW9ucy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/SendToCheckButton.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTZW5kVG9DaGVja0J1dHRvbi5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/SendToCheckDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTZW5kVG9DaGVja0RpYWxvZy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Pages/AddFile.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRkRmlsZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Pages/AddProject.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRkUHJvamVjdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Pages/Administration.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5pc3RyYXRpb24ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Pages/Files.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRmlsZXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Pages/FilesToCheck.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRmlsZXNUb0NoZWNrLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Pages/Index.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXgucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Pages/Login.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9naW4ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Pages/Projects.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvamVjdHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Pages/UserInfo.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVXNlckluZm8ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Shared/LoginControl.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXExvZ2luQ29udHJvbC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Shared/SurveyPrompt.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXFN1cnZleVByb21wdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Shared/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE1haW5MYXlvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-d7skkhteq5
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Shared/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE5hdk1lbnUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-semk7a0d6m
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Pages/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXJyb3IuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Pages/_Host.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0hvc3QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Tasks/work/DM/DocumentMaster/DocumentMaster.BlazorServer/Pages/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0xheW91dC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 

@@ -1,0 +1,17 @@
+C:\Tasks\work\DM\DocumentMaster\DM.BLL\bin\Release\net6.0\DM.BLL.deps.json
+C:\Tasks\work\DM\DocumentMaster\DM.BLL\bin\Release\net6.0\DM.BLL.dll
+C:\Tasks\work\DM\DocumentMaster\DM.BLL\bin\Release\net6.0\DM.BLL.pdb
+C:\Tasks\work\DM\DocumentMaster\DM.BLL\bin\Release\net6.0\DM.DAL.dll
+C:\Tasks\work\DM\DocumentMaster\DM.BLL\bin\Release\net6.0\Models.dll
+C:\Tasks\work\DM\DocumentMaster\DM.BLL\bin\Release\net6.0\DM.DAL.pdb
+C:\Tasks\work\DM\DocumentMaster\DM.BLL\bin\Release\net6.0\Models.pdb
+C:\Tasks\work\DM\DocumentMaster\DM.BLL\obj\Release\net6.0\DM.BLL.csproj.AssemblyReference.cache
+C:\Tasks\work\DM\DocumentMaster\DM.BLL\obj\Release\net6.0\DM.BLL.GeneratedMSBuildEditorConfig.editorconfig
+C:\Tasks\work\DM\DocumentMaster\DM.BLL\obj\Release\net6.0\DM.BLL.AssemblyInfoInputs.cache
+C:\Tasks\work\DM\DocumentMaster\DM.BLL\obj\Release\net6.0\DM.BLL.AssemblyInfo.cs
+C:\Tasks\work\DM\DocumentMaster\DM.BLL\obj\Release\net6.0\DM.BLL.csproj.CoreCompileInputs.cache
+C:\Tasks\work\DM\DocumentMaster\DM.BLL\obj\Release\net6.0\DM.BLL.csproj.CopyComplete
+C:\Tasks\work\DM\DocumentMaster\DM.BLL\obj\Release\net6.0\DM.BLL.dll
+C:\Tasks\work\DM\DocumentMaster\DM.BLL\obj\Release\net6.0\refint\DM.BLL.dll
+C:\Tasks\work\DM\DocumentMaster\DM.BLL\obj\Release\net6.0\DM.BLL.pdb
+C:\Tasks\work\DM\DocumentMaster\DM.BLL\obj\Release\net6.0\ref\DM.BLL.dll
