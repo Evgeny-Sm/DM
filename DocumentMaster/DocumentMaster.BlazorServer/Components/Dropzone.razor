@@ -1,0 +1,67 @@
+﻿@using DM.BLL.Services
+@using Models
+
+@inject IJSRuntime JSRuntime
+@inject IWebHostEnvironment env
+@inject IConfiguration configuration
+
+<div @ref="@dropZoneElement" class="drop-zone">
+    <div @ref="@inputFileContainer">
+        <InputFile OnChange="OnChange" multiple />
+    </div>
+</div>
+@code {
+    [Parameter]
+    public int QuestionId { get; set; }
+
+    [Parameter]
+    public PersonDTO? CurrentPerson { get; set; }
+
+    ElementReference dropZoneElement;
+    ElementReference inputFileContainer;
+
+    IJSObjectReference _module;
+    IJSObjectReference _dropZoneInstance;
+
+    List<string> imageList = new List<string>();
+    string imgsrc;
+
+    private IBrowserFile? BrowserFile { get; set; }
+
+    [Parameter]
+    public EventCallback<string> PathLoadedCallBack { get; set; }
+
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./js/dropZone.js");
+
+            _dropZoneInstance = await _module.InvokeAsync<IJSObjectReference>("initializeFileDropZone", dropZoneElement, inputFileContainer);
+
+        }
+    }
+
+    private async void OnChange(InputFileChangeEventArgs e)
+    {
+        BrowserFile = e.File;
+
+        long maxFileSize = 1024 * 1024 * 15;
+
+        string fileName = RandomString.GetRandomString(8) + BrowserFile.Name;
+
+        var path = $"{env.WebRootPath}\\{configuration.GetRequiredSection("PathToQuestPictures").Value}\\{QuestionId.ToString()}";
+
+        var fullPath = Path.Combine(path, fileName);
+
+        await using FileStream fs = new(fullPath, FileMode.Create);
+
+        await BrowserFile.OpenReadStream(maxAllowedSize: 1000000).CopyToAsync(fs);
+
+        await PathLoadedCallBack.InvokeAsync(path);
+
+    }
+
+}

@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
 using DM.DAL.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace DM.BLL.Services
 {
@@ -14,10 +16,12 @@ namespace DM.BLL.Services
     {
         private readonly IMapper? _mapper;
         private readonly IDbContextFactory<DMContext>? _contextFactory;
-        public QuestionService(IMapper? mapper, IDbContextFactory<DMContext>? contextFactory)
+        private readonly IConfiguration _configuration;
+        public QuestionService(IMapper? mapper, IDbContextFactory<DMContext>? contextFactory, IConfiguration configuration)
         {
             _mapper = mapper;
             _contextFactory = contextFactory;
+            _configuration = configuration;
         }
 
         public async Task<IEnumerable<QuestionDTO>> GetAllAsync()
@@ -57,6 +61,17 @@ namespace DM.BLL.Services
             };
             await context.Questions.AddAsync(question);
             await context.SaveChangesAsync();
+            string path = $"wwwroot/{_configuration.GetRequiredSection("PathToQuestPictures").Value}";
+
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            string subPath = $"{question.Id}";
+            if (!Directory.Exists($"{path}/{subPath}"))
+            {
+                Directory.CreateDirectory($"{path}/{subPath}");
+            }
             return await GetItemByIdAsync(question.Id);
         }
 

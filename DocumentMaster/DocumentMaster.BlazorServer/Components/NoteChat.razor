@@ -34,8 +34,11 @@
                             <span class="small justify-content-end">@userMessage.DateTime.ToString("HH:mm| MMM:dd")</span>
                         </div>
                     </div>
-                </div>
+                </div>           
             }
+            <div style="vertical-align:bottom">
+                <Dropzone CurrentPerson="@CurrentPerson" QuestionId="@CurrentQuestion.Id" PathLoadedCallBack="@SetPath" />
+            </div>
         </div>
         <div class="container">
             <div class="row">
@@ -62,36 +65,37 @@
     private string messageInput;
     private string userNameInput { get; set; }
 
+    private string PicturePath { get; set; } = string.Empty;
+
     public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await authenticationState;
         CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+        hubConnection = new HubConnectionBuilder().WithUrl(Navigation.ToAbsoluteUri("/notehub"))
+       .Build();
+        hubConnection.On<int, string, string>("ReceiveNote", (questId, user, message) =>
+     {
+         if (questId == CurrentQuestion.Id)
+         {
+             userMessages.Add(new NoteDTO
+                 {
+                     UserName = user,
+                     Content = message,
+                     IsCurrentUser = user == CurrentPerson.UserName,
+                     DateTime = DateTime.Now
+                 });
+             InvokeAsync(StateHasChanged);
+         }
+
+     });
+        await hubConnection.StartAsync();
 
     }
     protected override async Task OnParametersSetAsync()
     {
         await CompareMes();            
-        hubConnection = new HubConnectionBuilder().WithUrl(Navigation.ToAbsoluteUri("/notehub"))
-        .Build();
-        hubConnection.On<int, string, string>("ReceiveNote", (questId, user, message) =>
-        {
-            if (questId == CurrentQuestion.Id)
-            {
-                userMessages.Add(new NoteDTO
-                    {
-                        UserName = user,
-                        Content = message,
-                        IsCurrentUser = user == CurrentPerson.UserName,
-                        DateTime = DateTime.Now
-                    });
-                InvokeAsync(StateHasChanged);
-            }
-
-        });
-        await hubConnection.StartAsync();
-
     }
 
     private async Task Send()
@@ -115,7 +119,14 @@
         foreach (var mes in messages)
         {
             mes.IsCurrentUser = mes.UserName == CurrentPerson.UserName;
+            mes.PersonIds.Add(CurrentPerson.Id);
+            mes.PersonIds = mes.PersonIds.Distinct().ToList();
         }
         userMessages = messages.ToList();
+    }
+    private void SetPath(string dropPath)
+    {
+        if(!String.IsNullOrEmpty(dropPath))
+        PicturePath = dropPath;
     }
 }
