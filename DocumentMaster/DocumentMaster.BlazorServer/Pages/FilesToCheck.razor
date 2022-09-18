@@ -17,6 +17,8 @@
 @inject DialogService DialogService
 @inject NavigationManager Navigation
 
+
+
 <h3>FilesToCheck</h3>
 
 <AuthorizeView>
@@ -30,8 +32,8 @@
                 {
                     <div class="d-inline-block">
                         <DownloadFile SelectedFiles="@SelectedFiles" />
-                        <RadzenButton Click=@(args => CheckingComplete()) ButtonStyle="ButtonStyle.Success" Text="Подтвердить" />
-                        <RadzenButton Click=@(args => CheckingDenied()) ButtonStyle="ButtonStyle.Danger" Text="Вернуть" />
+                        <RadzenButton Click=@(args => CheckingComplete()) ButtonStyle="ButtonStyle.Secondary" Text="Результат" />
+                        
                     </div>
                     <InfoFile SelectedFiles="@SelectedFiles" />
                 }
@@ -56,8 +58,6 @@
 
     protected override async void OnInitialized()
     {
-        DialogService.OnOpen += Open;
-        DialogService.OnClose += Close;
 
         var authState = await authenticationState;
 
@@ -87,66 +87,42 @@
 
     private async void CheckingComplete()
     {
-        await DialogService.OpenAsync<ResultCheckDialog>($"Затраченное время",
-      new Dictionary<string, object>(),
-      new DialogOptions()
+        ResultCheck res= await DialogService.OpenAsync<ResultCheckDialog>($"Результат проверки",
+        new Dictionary<string, object>(),
+        new DialogOptions()
           {
               Width = "500px",
               Height = "400px",
               Resizable = true,
               Draggable = false,
-              CloseDialogOnOverlayClick = true
+              CloseDialogOnOverlayClick = false
           });
+        if (res is null)
+        {
+            return;
+        }
 
         var c = await ControlService.GetActualControlForPersonAsync(SelectedFiles.FirstOrDefault().Id,CurrentPerson.Id);
-        c.IsConfirmed = true;
-        c.TimeForChecking += AddTime;
-        c.Description = Descripton;
-        c.DateTime = DateTime.Now;
-
-
-        await ControlService.UpdateControlAsync(c);
-
-        var f = await FileService.GetItemByIdAsync(SelectedFiles.FirstOrDefault().Id);
-        f.Status = StatusFile.Archive;
-        await FileService.UpdateFileAsync(f);
-
-        files.Remove(SelectedFiles.First());
-
-        SelectedFiles = new List<FileUnit>();
-
-        if (files.Count == 0)
-        {
-            NavigatetoToFiles();
-        }
-
-        StateHasChanged();
-
-    }
-    private async void CheckingDenied()
-    {
-        await DialogService.OpenAsync<ResultCheckDialog>($"Затраченное время",
-      new Dictionary<string, object>(),
-      new DialogOptions()
-          {
-              Width = "500px",
-              Height = "400px",
-              Resizable = true,
-              Draggable = false,
-              CloseDialogOnOverlayClick = true
-          });
-        var c = await ControlService.GetActualControlForPersonAsync(SelectedFiles.FirstOrDefault().Id, CurrentPerson.Id);
+        c.IsConfirmed = res.IsConfirmed;
         c.IsInAction = false;
-        c.TimeForChecking += AddTime;
-        c.Description = Descripton;
+        c.TimeForChecking += double.Parse(res.AdditionalTime);
+        c.Description = res.Description;
         c.DateTime = DateTime.Now;
-
         await ControlService.UpdateControlAsync(c);
 
         var f = await FileService.GetItemByIdAsync(SelectedFiles.FirstOrDefault().Id);
-        f.Status = StatusFile.Work;
+        if (res.IsConfirmed)
+        {
+            f.Status = StatusFile.Archive;
+        }
+        else
+        {
+            f.Status = StatusFile.Work;
+        }
         await FileService.UpdateFileAsync(f);
+
         files.Remove(SelectedFiles.First());
+
         SelectedFiles = new List<FileUnit>();
 
         if (files.Count == 0)
@@ -155,29 +131,8 @@
         }
 
         StateHasChanged();
-
-    }
-    void Open(string title, Type type, Dictionary<string, object> parameters, DialogOptions options)
-    {
-
     }
 
-    void Close(dynamic result)
-    {
-        if (result != null)
-        {
-            AddTime = double.Parse(result["time"]);
-            Descripton = result["description"];
-        }
-        Dispose();
-    }
-
-    public void Dispose()
-    {
-        // The DialogService is a singleton so it is advisable to unsubscribe.
-        DialogService.OnOpen -= Open;
-        DialogService.OnClose -= Close;
-    }
     private void NavigatetoToFiles()
     {
         Navigation.NavigateTo("/Files");

@@ -107,17 +107,17 @@
         Unit = SelectedFiles.FirstOrDefault();
         Controls = await ControlService.GetControlsByFileIdAsync(Unit.Id);
 
+        IsController = Controls.Select(c => c.PersonId).Contains(CurrentPerson.Id);
+
         var ctrl = Controls.Where(c => c.IsConfirmed == true).FirstOrDefault();
         if (ctrl != null)
         {
             Controller = ctrl.PersonName;
             DateToArhive = ctrl.DateTime.ToString("HH:mm|dd:MMM:yy");
-            IsController = ctrl.PersonId == CurrentPerson.Id;
         }
         else 
         {
             Controller = string.Empty;
-            IsController = false;
         }
         DateToCreate = Unit.CreateDate.ToString("HH:mm|dd:MMM:yy");
 

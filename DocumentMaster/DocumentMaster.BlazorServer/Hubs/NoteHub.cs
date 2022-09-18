@@ -6,9 +6,24 @@ namespace DocumentMaster.BlazorServer.Hubs
 {
     public class NoteHub:Hub
     {
+        private readonly NoteService _noteService;
+        public NoteHub(NoteService noteService)
+        {
+            _noteService = noteService;
+        }
+
         public async Task SendMessage(int questId,string user, string message)
         {
             await Clients.All.SendAsync("ReceiveNote", questId, user, message);
+
+            await _noteService.AddItemAsync(new NoteDTO
+            {
+                UserName = user,
+                Content = message,
+                QuestionId = questId,
+                DateTime = DateTime.Now,
+                HasFile = false
+            });
         }
     }
 }

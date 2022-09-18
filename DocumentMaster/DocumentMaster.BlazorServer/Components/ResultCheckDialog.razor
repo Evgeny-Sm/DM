@@ -17,7 +17,7 @@
             <RadzenLabel Text="Описание" />
         </div>
         <div class="col">
-            <RadzenTextArea Style="width:inherit" @bind-Value="Description" Name="ProjectName" />
+            <RadzenTextArea Style="width:inherit" @bind-Value="ResultCheck.Description" Name="ProjectName" />
         </div>
     </div>
     <br />
@@ -27,39 +27,46 @@
         </div>
         <br />
         <div class="col-md-4">
-            <RadzenTextBox style="width: 100%;" @bind-Value="AdditionalTime" Name="AddTime" />
+            <RadzenTextBox style="width: 100%;" @bind-Value="ResultCheck.AdditionalTime" Name="AddTime" />
         </div>
     </div>
 
     <br />
     <div>
-        <RadzenButton Size="Radzen.ButtonSize.Small" ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Ok" Click=@(args => Submit()) />
+        <RadzenButton Size="Radzen.ButtonSize.Small" ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Утвердить" Click=@(args => Submit()) />
+        <RadzenButton Size="Radzen.ButtonSize.Small" ButtonStyle="ButtonStyle.Danger" Text="Вернуть" Click=@(args => Denied()) />
     </div>
 </RadzenCard>
 
 @code {
-
-    private string AdditionalTime { get; set; } = "0";
-    private string Description { get; set; } = string.Empty;
+    private ResultCheck ResultCheck { get; set; } = new();
 
 
-    private async Task Submit()
+    private async void Submit()
     {
 
-        if (!double.TryParse(AdditionalTime, out double t))
+        if (!double.TryParse(ResultCheck.AdditionalTime, out double t))
         {
             await JS.InvokeVoidAsync("alert", "Введите время на доработку в часах или 0");
             return;
         }
-        Dictionary<string, string> result = new Dictionary<string, string>
-        { 
-            { "time", AdditionalTime},
-            { "description", Description}
-        };
+        ResultCheck.IsConfirmed = true;
 
-        DialogService.Close(result);
+        DialogService.Close(ResultCheck);
 
     }
+    private async void Denied()
+    {
+        if (!double.TryParse(ResultCheck.AdditionalTime, out double t))
+        {
+            await JS.InvokeVoidAsync("alert", "Введите время на доработку в часах или 0");
+            return;
+        }
+        ResultCheck.IsConfirmed = false;
+
+        DialogService.Close(ResultCheck);
+    }
+
 
 
 }

@@ -11,7 +11,8 @@ namespace DM.DAL.Models
     {
         [Key]
         public int Id { get; set; }
-        public int CreatorId { get; set; }
+        [StringLength(50)]
+        public string UserName { get; set; } = string.Empty;
 
         [StringLength(1000)]
         public string Content { get; set; }=string.Empty;
