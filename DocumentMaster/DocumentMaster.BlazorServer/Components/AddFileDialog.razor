@@ -209,7 +209,7 @@
 
         var n = await fileService.UpdateFileAsync(result);
 
-        string path = Configuration.GetConnectionString("ProjectRootDir") + $"\\{result.ProjectId}\\";
+        string path = Configuration.GetRequiredSection("ProjectRootDir").Value + $"\\{result.ProjectId}\\";
         var uploadPath = WebHostEnvironment.WebRootPath + path;
         if (!Directory.Exists(uploadPath))
         {

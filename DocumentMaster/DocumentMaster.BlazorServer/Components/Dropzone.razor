@@ -7,7 +7,7 @@
 
 <div @ref="@dropZoneElement" class="drop-zone">
     <div @ref="@inputFileContainer">
-        <InputFile OnChange="OnChange" multiple />
+        <InputFile OnChange="OnChange" style="opacity:0" multiple />
     </div>
 </div>
 @code {
@@ -40,7 +40,6 @@
             _module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./js/dropZone.js");
 
             _dropZoneInstance = await _module.InvokeAsync<IJSObjectReference>("initializeFileDropZone", dropZoneElement, inputFileContainer);
-
         }
     }
 
@@ -60,7 +59,7 @@
 
         await BrowserFile.OpenReadStream(maxAllowedSize: 1000000).CopyToAsync(fs);
 
-        await PathLoadedCallBack.InvokeAsync(path);
+        await PathLoadedCallBack.InvokeAsync(fileName);
 
     }
 

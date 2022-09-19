@@ -12,9 +12,9 @@ namespace DocumentMaster.BlazorServer.Hubs
             _noteService = noteService;
         }
 
-        public async Task SendMessage(int questId,string user, string message)
+        public async Task SendMessage(int questId,string user, string message, string fileName)
         {
-            await Clients.All.SendAsync("ReceiveNote", questId, user, message);
+            await Clients.All.SendAsync("ReceiveNote", questId, user, message, fileName);
 
             await _noteService.AddItemAsync(new NoteDTO
             {
@@ -22,7 +22,8 @@ namespace DocumentMaster.BlazorServer.Hubs
                 Content = message,
                 QuestionId = questId,
                 DateTime = DateTime.Now,
-                HasFile = false
+                HasFile = !string.IsNullOrEmpty(fileName),
+                Path = fileName
             });
         }
     }
