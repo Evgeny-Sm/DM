@@ -1,6 +1,13 @@
 ﻿@page "/Questions"
+
+@attribute [Authorize]
+
 @using DM.BLL.Services
 @using Models
+@using DM.DAL.Models
+@using DocumentMaster.BlazorServer.Pages
+@using Microsoft.EntityFrameworkCore
+@using System.Text.Json
 
 @inject PersonService PersonService
 @inject QuestionService QuestionService
@@ -52,7 +59,7 @@
 
     public IEnumerable<QuestionDTO> QuestionDTOs { get; set; } = new List<QuestionDTO>();
 
-    private PersonDTO CurrentPerson { get; set; }
+    private PersonDTO CurrentPerson { get; set; } = new();
 
     private QuestionDTO SelectedQuestion { get; set; }
 
@@ -60,8 +67,7 @@
     private string InputString { get; set; } = string.Empty;
 
 
-
-    protected override async void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         QuestionDTOs = await QuestionService.GetAllAsync();
 

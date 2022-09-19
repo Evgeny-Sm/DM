@@ -92,6 +92,7 @@
         var authState = await authenticationState;
 
         CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+
     }
 
     private void HandReload(bool b)
