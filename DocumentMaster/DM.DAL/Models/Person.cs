@@ -1,10 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace DM.DAL.Models
 {
@@ -22,11 +16,15 @@ namespace DM.DAL.Models
         public string TelegramContact { get; set; } = String.Empty;
         public double SalaryPerH { get; set; }
         public ICollection<Challenge> Challenges { get; set; }
+        public ICollection<Question> Questions { get; set; }
+        public ICollection<Note> Notes { get; set; }
         public bool IsDeleted { get; set; } = false;
         public bool IsConfirmed { get; set; }=false;
         public Person()
         { 
             Challenges= new List<Challenge>();
+            Questions= new List<Question>();
+            Notes= new List<Note>();
         }
     }
 }

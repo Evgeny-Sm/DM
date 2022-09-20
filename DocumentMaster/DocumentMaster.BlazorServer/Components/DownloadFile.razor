@@ -26,7 +26,7 @@
         if (SelectedFiles != null)
         {
             var name = SelectedFiles.FirstOrDefault().Name;
-            var downloadPath = WebHostInvironment.WebRootPath + Configuration.GetConnectionString("ProjectRootDir")
+            var downloadPath = WebHostInvironment.WebRootPath + Configuration.GetRequiredSection("ProjectRootDir").Value
                                 + $"\\{SelectedFiles.FirstOrDefault().ProjectId}" + $"\\{name}";
 
             var fileStream = File.OpenRead(@$"{downloadPath}");

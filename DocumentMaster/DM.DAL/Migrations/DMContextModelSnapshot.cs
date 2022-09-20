@@ -229,6 +229,45 @@ namespace DM.DAL.Migrations
                     b.ToTable("FileUnits");
                 });
 
+            modelBuilder.Entity("DM.DAL.Models.Note", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("HasFile")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionId");
+
+                    b.ToTable("Notes");
+                });
+
             modelBuilder.Entity("DM.DAL.Models.Person", b =>
                 {
                     b.Property<int>("Id")
@@ -323,6 +362,37 @@ namespace DM.DAL.Migrations
                     b.ToTable("Projects");
                 });
 
+            modelBuilder.Entity("DM.DAL.Models.Question", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("CreatorId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LinkedFile")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Questions");
+                });
+
             modelBuilder.Entity("DM.DAL.Models.Section", b =>
                 {
                     b.Property<int>("Id")
@@ -372,39 +442,34 @@ namespace DM.DAL.Migrations
                     b.ToTable("Messages");
                 });
 
-            modelBuilder.Entity("DM.DAL.Models.UserAction", b =>
+            modelBuilder.Entity("NotePerson", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("NotesId")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("ActionNumber")
+                    b.Property<int>("PersonsId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.HasKey("NotesId", "PersonsId");
 
-                    b.Property<int>("FileUnitId")
+                    b.HasIndex("PersonsId");
+
+                    b.ToTable("NotePerson");
+                });
+
+            modelBuilder.Entity("PersonQuestion", b =>
+                {
+                    b.Property<int>("PersonsId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("PersonId")
+                    b.Property<int>("QuestionsId")
                         .HasColumnType("int");
 
-                    b.Property<double>("TimeForAction")
-                        .HasColumnType("float");
+                    b.HasKey("PersonsId", "QuestionsId");
 
-                    b.HasKey("Id");
+                    b.HasIndex("QuestionsId");
 
-                    b.HasIndex("FileUnitId");
-
-                    b.HasIndex("PersonId");
-
-                    b.ToTable("UserActions");
+                    b.ToTable("PersonQuestion");
                 });
 
             modelBuilder.Entity("ChallengePerson", b =>
@@ -487,6 +552,17 @@ namespace DM.DAL.Migrations
                     b.Navigation("Section");
                 });
 
+            modelBuilder.Entity("DM.DAL.Models.Note", b =>
+                {
+                    b.HasOne("DM.DAL.Models.Question", "Question")
+                        .WithMany("Notes")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Question");
+                });
+
             modelBuilder.Entity("DM.DAL.Models.Person", b =>
                 {
                     b.HasOne("DM.DAL.Models.Department", "Department")
@@ -517,23 +593,34 @@ namespace DM.DAL.Migrations
                     b.Navigation("MainIng");
                 });
 
-            modelBuilder.Entity("DM.DAL.Models.UserAction", b =>
+            modelBuilder.Entity("NotePerson", b =>
                 {
-                    b.HasOne("DM.DAL.Models.FileUnit", "FileUnit")
+                    b.HasOne("DM.DAL.Models.Note", null)
                         .WithMany()
-                        .HasForeignKey("FileUnitId")
+                        .HasForeignKey("NotesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DM.DAL.Models.Person", "Person")
+                    b.HasOne("DM.DAL.Models.Person", null)
                         .WithMany()
-                        .HasForeignKey("PersonId")
+                        .HasForeignKey("PersonsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PersonQuestion", b =>
+                {
+                    b.HasOne("DM.DAL.Models.Person", null)
+                        .WithMany()
+                        .HasForeignKey("PersonsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("FileUnit");
-
-                    b.Navigation("Person");
+                    b.HasOne("DM.DAL.Models.Question", null)
+                        .WithMany()
+                        .HasForeignKey("QuestionsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DM.DAL.Models.Department", b =>
@@ -562,6 +649,11 @@ namespace DM.DAL.Migrations
             modelBuilder.Entity("DM.DAL.Models.Project", b =>
                 {
                     b.Navigation("FileUnits");
+                });
+
+            modelBuilder.Entity("DM.DAL.Models.Question", b =>
+                {
+                    b.Navigation("Notes");
                 });
 
             modelBuilder.Entity("DM.DAL.Models.Section", b =>

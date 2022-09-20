@@ -90,7 +90,7 @@
             await JS.InvokeVoidAsync("alert", "Введите время на доработку в часах или 0");
             return;
         }
-        var fullPath = $"{WebHostEnvironment.WebRootPath}\\{Configuration.GetConnectionString("ProjectRootDir")}\\{Path}";
+        var fullPath = $"{WebHostEnvironment.WebRootPath}\\{Configuration.GetRequiredSection("ProjectRootDir").Value}\\{Path}";
 
         await using FileStream fs = new(fullPath, FileMode.Create);
 

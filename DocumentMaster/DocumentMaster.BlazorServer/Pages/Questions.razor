@@ -1,0 +1,111 @@
+﻿@page "/Questions"
+
+@attribute [Authorize]
+
+@using DM.BLL.Services
+@using Models
+@using DM.DAL.Models
+@using DocumentMaster.BlazorServer.Pages
+@using Microsoft.EntityFrameworkCore
+@using System.Text.Json
+
+@inject PersonService PersonService
+@inject QuestionService QuestionService
+@inject DialogService DialogService
+
+<h3>Решения</h3>
+
+<AuthorizeView>
+    <Authorized>
+        <div class="row">
+            <div class="col-2">
+                <RadzenButton Text="Добавить" ButtonStyle="ButtonStyle.Secondary"
+                              Click=@OpenAddQuestDialog />
+            </div>
+            <div class="col-md-4">
+                <input type="text" value="@InputString" @onchange="@((args)=>Find(args))" class="form-control" placeholder="поиск..." />
+            </div>
+            @if (!string.IsNullOrEmpty(InputString))
+            {
+                <div class="col-1">
+                    <button type="button" @onclick=@(args=>SetAllFileList()) class="btn-close"></button>
+                </div>
+            }
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <RadzenDataGrid Data="@QuestionDTOs" TItem="QuestionDTO" ValueChanged="@(args=>ValueChanged(args))" AllowVirtualization="true" Style="height:600px"
+                                AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.Or"
+                                AllowSorting="true">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="QuestionDTO" Property="Id" Title="Id" Width="50px" />
+                        <RadzenDataGridColumn TItem="QuestionDTO" Property="Title" Title="Тема" Width="100px" />
+                    </Columns>
+                </RadzenDataGrid>
+            </div>
+            <div class="col-md-6">
+                @if(SelectedQuestion is not null)
+                {
+                    <NoteChat CurrentQuestion="@SelectedQuestion"/>
+                }
+            </div>
+        </div>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+    public IEnumerable<QuestionDTO> QuestionDTOs { get; set; } = new List<QuestionDTO>();
+
+    private PersonDTO CurrentPerson { get; set; } = new();
+
+    private QuestionDTO SelectedQuestion { get; set; }
+
+    private string RememberedString { get; set; } = string.Empty;
+    private string InputString { get; set; } = string.Empty;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        QuestionDTOs = await QuestionService.GetAllAsync();
+
+        var authState = await authenticationState;
+
+        CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+        StateHasChanged();
+    }
+
+    private async void ValueChanged(IList<QuestionDTO> args)
+    {
+        SelectedQuestion = args.FirstOrDefault();
+        StateHasChanged();
+    }
+
+    private async Task OpenAddQuestDialog()
+    { 
+        QuestionDTO data = await DialogService.OpenAsync<AddQuestDialog>("Добавить тему");
+
+        if (data != null)
+        {
+            data.CreatorId = CurrentPerson.Id;
+
+            data.PersonIds = data.PersonIds.Distinct().ToList();
+
+            var res = await QuestionService.AddItemAsync(data);
+
+            QuestionDTOs = QuestionDTOs.Append(res);
+
+        }
+
+
+    }
+    private async Task Find(ChangeEventArgs args)
+    {
+    }
+    private async Task SetAllFileList()
+    {
+    }
+
+}

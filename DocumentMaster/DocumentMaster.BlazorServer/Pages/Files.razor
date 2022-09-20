@@ -23,7 +23,7 @@
 <AuthorizeView>
     <Authorized>
         <div class="row">
-            <div class="col-1">
+            <div class="col-2">
                 <AddFileButton FileCreated="HandReload" />
             </div>
             <div class="col-md-4">
@@ -92,6 +92,7 @@
         var authState = await authenticationState;
 
         CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+
     }
 
     private void HandReload(bool b)

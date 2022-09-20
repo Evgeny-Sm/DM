@@ -1,0 +1,169 @@
+﻿@using DM.BLL.Services
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Microsoft.AspNetCore.SignalR.Client
+@using Models
+
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@inject ProtectedSessionStorage sessionStorage
+@inject PersonService PersonService
+@inject NoteService NoteService
+@inject IConfiguration configuration
+@inject IWebHostEnvironment env
+
+@implements IAsyncDisposable
+
+<img scr="/images/0S1JJOMH2020-08-03_16-59-23.jpg" />
+<AuthorizeView>
+    <Authorized>
+        <div class="container overflow-auto shadow-sm p-3 mb-5 bg-white rounded" id="chatContainer" style="height:600px">
+            @if (!userMessages.Any())
+            {
+                <p style="color:gray"> No messages </p>
+            }
+            @foreach (var userMessage in userMessages)
+            {
+                @if (userMessage.HasFile)
+                {
+                    
+                        <div class="card shadow @(userMessage.IsCurrentUser? "color-green mr-5":"color-blue mr-5")" style="width: 12rem;font-size:small">
+                            <div class="card-header justify-content-end">
+                                @(userMessage.IsCurrentUser ? "Я" : @userMessage.UserName)
+                            </div>
+                            <div>
+                                <RadzenImage Path="@userMessage.Path"  Style="width:500px; height:auto" />
+                            </div>
+                            <div class="card-footer">
+                                <span class="small justify-content-end">@userMessage.DateTime.ToString("HH:mm| MMM:dd")</span>
+                            </div>
+                        </div>
+
+                    <br />
+
+                }
+                else
+                {
+                    <div class="row mb-3 d-flex @(userMessage.IsCurrentUser? "justify-content-end":"")">
+                        <div class="card shadow @(userMessage.IsCurrentUser? "color-green mr-5":"color-cornflowerblue mr-5")" style="width: 12rem;font-size:small">
+                        <div class="card-header">
+                            @(userMessage.IsCurrentUser ? "Я" : @userMessage.UserName)
+                        </div>
+                        <ul class="list-group">
+                            <li class="list-group-item @(userMessage.IsCurrentUser? "color-green":"color-cornflowerblue")">
+                                @userMessage.Content
+                            </li>
+                        </ul>
+                        <div class="card-footer">
+                            <span class="small justify-content-end">@userMessage.DateTime.ToString("HH:mm| MMM:dd")</span>
+                        </div>
+                    </div>
+                </div>
+                    <br />
+                }
+            }
+            <div style="vertical-align:bottom; position:static">
+                <Dropzone CurrentPerson="@CurrentPerson" QuestionId="@CurrentQuestion.Id" PathLoadedCallBack="@SetPath" />
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-9">
+                    <textarea @bind="messageInput" type="text" class="form-control" placeholder="Start typing..."> </textarea>
+                </div>
+                <div class="col-3">
+                    <button type="button" @onclick="Send" class="btn btn-primary"> send</button>
+                </div>
+            </div>
+        </div>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+    [Parameter]
+    public QuestionDTO CurrentQuestion { get; set; }
+
+    private PersonDTO CurrentPerson { get; set; } = new();
+    private HubConnection hubConnection;
+    private List<NoteDTO> userMessages = new List<NoteDTO>();
+    private string messageInput;
+    private string userNameInput { get; set; }
+
+
+    public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authenticationState;
+        CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+        hubConnection = new HubConnectionBuilder().WithUrl(Navigation.ToAbsoluteUri("/notehub"))
+       .Build();
+        hubConnection.On<int, string, string, string>("ReceiveNote", (questId, user, message, fileName) =>
+     {
+         if (questId == CurrentQuestion.Id)
+         {
+             userMessages.Add(new NoteDTO
+                 {
+                     UserName = user,
+                     Content = message,
+                     IsCurrentUser = user == CurrentPerson.UserName,
+                     DateTime = DateTime.Now,
+                     Path = $"/{configuration.GetRequiredSection("PathToQuestPictures").Value}/{questId.ToString()}/{fileName}",
+                     HasFile=!string.IsNullOrEmpty(fileName)
+                 });
+             InvokeAsync(StateHasChanged);
+         }
+
+     });
+        await hubConnection.StartAsync();
+
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        await CompareMes();            
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JS.InvokeAsync<string>("ScrollToBottom", "chatContainer");
+    }
+
+    private async Task Send()
+    {
+        if (!string.IsNullOrEmpty(messageInput))
+        {
+            await hubConnection.SendAsync("SendMessage", CurrentQuestion.Id, CurrentPerson.UserName, messageInput,string.Empty);
+            messageInput = string.Empty;
+        }
+    }
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+    private async Task CompareMes()
+    {
+        var messages = await NoteService.GetItemsByQuestionIdAsync(CurrentQuestion.Id);
+        foreach (var mes in messages)
+        {
+            mes.IsCurrentUser = mes.UserName == CurrentPerson.UserName;
+            mes.PersonIds.Add(CurrentPerson.Id);
+            mes.PersonIds = mes.PersonIds.Distinct().ToList();
+            if (mes.HasFile)
+            {
+                mes.Path = $"/{configuration.GetRequiredSection("PathToQuestPictures").Value}/{CurrentQuestion.Id.ToString()}/{mes.Path}";
+            }
+        }
+        userMessages = messages.ToList();
+    }
+    private async Task SetPath(string fileName)
+    {
+        if(!String.IsNullOrEmpty(fileName))
+
+        await hubConnection.SendAsync("SendMessage", CurrentQuestion.Id, CurrentPerson.UserName, string.Empty, fileName);
+       
+    }
+}

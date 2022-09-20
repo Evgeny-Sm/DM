@@ -18,7 +18,7 @@
 @implements IAsyncDisposable
 
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Главная</PageTitle>
 
 <AuthorizeView>
     <Authorized>
@@ -31,7 +31,7 @@
                     <RemoveChatButton></RemoveChatButton>
                 </div>
 
-                <div class="container overflow-auto shadow-sm p-3 mb-5 bg-white rounded" style="height:500px">
+                <div class="container overflow-auto shadow-sm p-3 mb-5 bg-white rounded" id="chatContainer" style="height:500px">
                     @if (!userMessages.Any())
                     {
                         <p style="color:gray"> No messages </p>
@@ -115,6 +115,16 @@
             await hubConnection.StartAsync();
         }
     }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var authState = await authenticationState;
+
+        if (authState.User.Identities.FirstOrDefault().IsAuthenticated)
+        {
+            await JS.InvokeAsync<string>("ScrollToBottom", "chatContainer");
+        }
+    }
+
     private async Task Send()
     {
         if (!string.IsNullOrEmpty(messageInput))
