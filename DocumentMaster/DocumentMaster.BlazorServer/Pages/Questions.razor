@@ -85,7 +85,15 @@
 
     private async Task OpenAddQuestDialog()
     { 
-        QuestionDTO data = await DialogService.OpenAsync<AddQuestDialog>("Добавить тему");
+        QuestionDTO data = await DialogService.OpenAsync<AddQuestDialog>("Добавить решение", new Dictionary<string, object>(),
+              new DialogOptions()
+                  {
+                      Width = "800px",
+                      Height = "800px",
+                      Resizable = true,
+                      Draggable = false,
+                      CloseDialogOnOverlayClick = false
+                  });
 
         if (data != null)
         {

@@ -10,6 +10,7 @@
 /DocumentMaster/DocumentMaster.BlazorServer/bin/*
 /DocumentMaster/DocumentMaster.BlazorServer/obj/*
 /DocumentMaster/DocumentMaster.BlazorServer/wwwroot/Upload/*
+/DocumentMaster/DocumentMaster.BlazorServer/wwwroot/Quest/*
 /DocumentMaster/Models/bin/*
 /DocumentMaster/Models/obj/*
 

@@ -57,6 +57,20 @@ namespace DM.BLL.Services
             return result;
 
         }
+        public async Task<bool> Exist(int id)
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            var element = await context.FileUnits.Where(f => f.Id == id && f.IsDeleted==false).FirstOrDefaultAsync();
+
+            if (element == null)
+            {
+                return false;
+            }
+            
+            return true;
+
+        }
 
         public async Task<FileDTO> AddFileAsync(FileDTO fileDTO)
         {
