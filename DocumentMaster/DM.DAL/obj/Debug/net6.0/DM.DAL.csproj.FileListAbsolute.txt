@@ -1,0 +1,14 @@
+C:\Soft\DM\DocumentMaster\DM.DAL\obj\Debug\net6.0\DM.DAL.csproj.AssemblyReference.cache
+C:\Soft\DM\DocumentMaster\DM.DAL\obj\Debug\net6.0\DM.DAL.GeneratedMSBuildEditorConfig.editorconfig
+C:\Soft\DM\DocumentMaster\DM.DAL\obj\Debug\net6.0\DM.DAL.AssemblyInfoInputs.cache
+C:\Soft\DM\DocumentMaster\DM.DAL\obj\Debug\net6.0\DM.DAL.AssemblyInfo.cs
+C:\Soft\DM\DocumentMaster\DM.DAL\obj\Debug\net6.0\DM.DAL.csproj.CoreCompileInputs.cache
+C:\Soft\DM\DocumentMaster\DM.DAL\bin\Debug\net6.0\DM.DAL.deps.json
+C:\Soft\DM\DocumentMaster\DM.DAL\bin\Debug\net6.0\DM.DAL.runtimeconfig.json
+C:\Soft\DM\DocumentMaster\DM.DAL\bin\Debug\net6.0\DM.DAL.dll
+C:\Soft\DM\DocumentMaster\DM.DAL\bin\Debug\net6.0\DM.DAL.pdb
+C:\Soft\DM\DocumentMaster\DM.DAL\obj\Debug\net6.0\DM.DAL.dll
+C:\Soft\DM\DocumentMaster\DM.DAL\obj\Debug\net6.0\ref\DM.DAL.dll
+C:\Soft\DM\DocumentMaster\DM.DAL\obj\Debug\net6.0\DM.DAL.pdb
+C:\Soft\DM\DocumentMaster\DM.DAL\obj\Debug\net6.0\DM.DAL.genruntimeconfig.cache
+C:\Soft\DM\DocumentMaster\DM.DAL\obj\Debug\net6.0\refint\DM.DAL.dll

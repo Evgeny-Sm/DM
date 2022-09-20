@@ -1,0 +1,374 @@
+﻿++Решение "DocumentMaster" ‎(проекты: 5 из 5)
+i:{00000000-0000-0000-0000-000000000000}:DocumentMaster.sln
+++DocumentMaster.API
+i:{00000000-0000-0000-0000-000000000000}:DocumentMaster.API
+++Connected Services 
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:>974
+i:{ea383027-1071-4068-b181-5b408123510d}:>975
+++Properties
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\properties\
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\properties\
+++wwwroot
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\wwwroot\
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\wwwroot\
+++Зависимости
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:>972
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:>586
+i:{4a708f39-8601-4c11-b417-e25b05ebf373}:>555
+i:{dd048a2b-3e0a-472d-ba6e-8887eab7968b}:>556
+i:{ea383027-1071-4068-b181-5b408123510d}:>973
+++Controllers
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\controllers\
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\controllers\
+++ActionController.cs
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\controllers\actioncontroller.cs
+++DepartmentController.cs
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\controllers\departmentcontroller.cs
+++DownloadController.cs
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\controllers\downloadcontroller.cs
+++FileController.cs
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\controllers\filecontroller.cs
+++PositionController.cs
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\controllers\positioncontroller.cs
+++ProjectController.cs
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\controllers\projectcontroller.cs
+++TestController.cs
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\controllers\testcontroller.cs
+++UploadController.cs
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\controllers\uploadcontroller.cs
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\controllers\uploadcontroller.cs
+++appsettings.json
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\appsettings.json
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\appsettings.json
+++Program.cs
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\program.cs
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\program.cs
+++Зависимости службы не обнаружены
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:>976
+i:{ea383027-1071-4068-b181-5b408123510d}:>977
+++launchSettings.json
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\properties\launchsettings.json
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\properties\launchsettings.json
+++1
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\wwwroot\1\
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\wwwroot\upload\1\
+++2
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\wwwroot\2\
+++3
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\wwwroot\3\
+++4
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\wwwroot\4\
+++Files
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\wwwroot\files\
+++Анализаторы
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:анализаторы
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:анализаторы
+i:{4a708f39-8601-4c11-b417-e25b05ebf373}:анализаторы
+i:{dd048a2b-3e0a-472d-ba6e-8887eab7968b}:анализаторы
+i:{ea383027-1071-4068-b181-5b408123510d}:анализаторы
+++Пакеты
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:пакеты
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:пакеты
+i:{dd048a2b-3e0a-472d-ba6e-8887eab7968b}:пакеты
+i:{ea383027-1071-4068-b181-5b408123510d}:пакеты
+++Платформы
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:платформы
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:платформы
+i:{4a708f39-8601-4c11-b417-e25b05ebf373}:платформы
+i:{dd048a2b-3e0a-472d-ba6e-8887eab7968b}:платформы
+i:{ea383027-1071-4068-b181-5b408123510d}:платформы
+++Проекты
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:проекты
+i:{dd048a2b-3e0a-472d-ba6e-8887eab7968b}:проекты
+i:{ea383027-1071-4068-b181-5b408123510d}:проекты
+++appsettings.Development.json
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\appsettings.development.json
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\appsettings.development.json
+++nbki_report.pdf
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\wwwroot\1\nbki_report.pdf
+++vizitka-inzhener-stroitel.pdf
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\wwwroot\1\vizitka-inzhener-stroitel.pdf
+++w8.pdf
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\wwwroot\1\w8.pdf
+++362.pdf
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\wwwroot\3\362.pdf
+++330.pdf
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\wwwroot\files\330.pdf
+++hello.pdf
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\wwwroot\files\hello.pdf
+++КМ.dwg
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\wwwroot\files\км.dwg
+++Microsoft.AspNetCore.Analyzers
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\program files\dotnet\sdk\6.0.101\sdks\microsoft.net.sdk.web\analyzers\cs\microsoft.aspnetcore.analyzers.dll
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\program files\dotnet\sdk\6.0.101\sdks\microsoft.net.sdk.web\analyzers\cs\microsoft.aspnetcore.analyzers.dll
+++Microsoft.AspNetCore.App.Analyzers
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\program files\dotnet\packs\microsoft.aspnetcore.app.ref\6.0.0\analyzers\dotnet\cs\microsoft.aspnetcore.app.analyzers.dll
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\program files\dotnet\packs\microsoft.aspnetcore.app.ref\6.0.0\analyzers\dotnet\cs\microsoft.aspnetcore.app.analyzers.dll
+++Microsoft.AspNetCore.App.CodeFixes
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\program files\dotnet\packs\microsoft.aspnetcore.app.ref\6.0.0\analyzers\dotnet\cs\microsoft.aspnetcore.app.codefixes.dll
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\program files\dotnet\packs\microsoft.aspnetcore.app.ref\6.0.0\analyzers\dotnet\cs\microsoft.aspnetcore.app.codefixes.dll
+++Microsoft.AspNetCore.Components.Analyzers
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\program files\dotnet\sdk\6.0.101\sdks\microsoft.net.sdk.web\analyzers\cs\microsoft.aspnetcore.components.analyzers.dll
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\program files\dotnet\sdk\6.0.101\sdks\microsoft.net.sdk.web\analyzers\cs\microsoft.aspnetcore.components.analyzers.dll
+++Microsoft.AspNetCore.Mvc.Analyzers
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\program files\dotnet\sdk\6.0.101\sdks\microsoft.net.sdk.web\analyzers\cs\microsoft.aspnetcore.mvc.analyzers.dll
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\program files\dotnet\sdk\6.0.101\sdks\microsoft.net.sdk.web\analyzers\cs\microsoft.aspnetcore.mvc.analyzers.dll
+++Microsoft.AspNetCore.Razor.Internal.SourceGenerator.Transport
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\program files\dotnet\sdk\6.0.101\sdks\microsoft.net.sdk.razor\source-generators\microsoft.aspnetcore.razor.internal.sourcegenerator.transport.dll
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\program files\dotnet\sdk\6.0.101\sdks\microsoft.net.sdk.razor\source-generators\microsoft.aspnetcore.razor.internal.sourcegenerator.transport.dll
+++Microsoft.CodeAnalysis.CSharp.NetAnalyzers
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\program files\dotnet\sdk\6.0.101\sdks\microsoft.net.sdk\analyzers\microsoft.codeanalysis.csharp.netanalyzers.dll
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:c:\program files\dotnet\sdk\6.0.101\sdks\microsoft.net.sdk\analyzers\microsoft.codeanalysis.csharp.netanalyzers.dll
+i:{4a708f39-8601-4c11-b417-e25b05ebf373}:c:\program files\dotnet\sdk\6.0.101\sdks\microsoft.net.sdk\analyzers\microsoft.codeanalysis.csharp.netanalyzers.dll
+i:{dd048a2b-3e0a-472d-ba6e-8887eab7968b}:c:\program files\dotnet\sdk\6.0.101\sdks\microsoft.net.sdk\analyzers\microsoft.codeanalysis.csharp.netanalyzers.dll
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\program files\dotnet\sdk\6.0.101\sdks\microsoft.net.sdk\analyzers\microsoft.codeanalysis.csharp.netanalyzers.dll
+++Microsoft.CodeAnalysis.NetAnalyzers
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\program files\dotnet\sdk\6.0.101\sdks\microsoft.net.sdk\analyzers\microsoft.codeanalysis.netanalyzers.dll
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:c:\program files\dotnet\sdk\6.0.101\sdks\microsoft.net.sdk\analyzers\microsoft.codeanalysis.netanalyzers.dll
+i:{4a708f39-8601-4c11-b417-e25b05ebf373}:c:\program files\dotnet\sdk\6.0.101\sdks\microsoft.net.sdk\analyzers\microsoft.codeanalysis.netanalyzers.dll
+i:{dd048a2b-3e0a-472d-ba6e-8887eab7968b}:c:\program files\dotnet\sdk\6.0.101\sdks\microsoft.net.sdk\analyzers\microsoft.codeanalysis.netanalyzers.dll
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\program files\dotnet\sdk\6.0.101\sdks\microsoft.net.sdk\analyzers\microsoft.codeanalysis.netanalyzers.dll
+++Microsoft.EntityFrameworkCore.Analyzers
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\users\evgas\.nuget\packages\microsoft.entityframeworkcore.analyzers\6.0.7\analyzers\dotnet\cs\microsoft.entityframeworkcore.analyzers.dll
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:c:\users\evgas\.nuget\packages\microsoft.entityframeworkcore.analyzers\6.0.7\analyzers\dotnet\cs\microsoft.entityframeworkcore.analyzers.dll
+i:{dd048a2b-3e0a-472d-ba6e-8887eab7968b}:c:\users\evgas\.nuget\packages\microsoft.entityframeworkcore.analyzers\6.0.7\analyzers\dotnet\cs\microsoft.entityframeworkcore.analyzers.dll
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\users\evgas\.nuget\packages\microsoft.entityframeworkcore.analyzers\6.0.7\analyzers\dotnet\cs\microsoft.entityframeworkcore.analyzers.dll
+++Microsoft.Extensions.Logging.Generators
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\program files\dotnet\packs\microsoft.aspnetcore.app.ref\6.0.0\analyzers\dotnet\roslyn4.0\cs\microsoft.extensions.logging.generators.dll
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:c:\users\evgas\.nuget\packages\microsoft.extensions.logging.abstractions\6.0.0\analyzers\dotnet\roslyn4.0\cs\microsoft.extensions.logging.generators.dll
+i:{dd048a2b-3e0a-472d-ba6e-8887eab7968b}:c:\users\evgas\.nuget\packages\microsoft.extensions.logging.abstractions\6.0.0\analyzers\dotnet\roslyn4.0\cs\microsoft.extensions.logging.generators.dll
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\program files\dotnet\packs\microsoft.aspnetcore.app.ref\6.0.0\analyzers\dotnet\roslyn4.0\cs\microsoft.extensions.logging.generators.dll
+++Microsoft.NET.Sdk.Razor.SourceGenerators
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\program files\dotnet\sdk\6.0.101\sdks\microsoft.net.sdk.razor\source-generators\microsoft.net.sdk.razor.sourcegenerators.dll
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\program files\dotnet\sdk\6.0.101\sdks\microsoft.net.sdk.razor\source-generators\microsoft.net.sdk.razor.sourcegenerators.dll
+++System.Text.Json.SourceGeneration
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\6.0.1\analyzers\dotnet\cs\system.text.json.sourcegeneration.dll
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\6.0.1\analyzers\dotnet\cs\system.text.json.sourcegeneration.dll
+i:{4a708f39-8601-4c11-b417-e25b05ebf373}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\6.0.1\analyzers\dotnet\cs\system.text.json.sourcegeneration.dll
+i:{dd048a2b-3e0a-472d-ba6e-8887eab7968b}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\6.0.1\analyzers\dotnet\cs\system.text.json.sourcegeneration.dll
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\6.0.1\analyzers\dotnet\cs\system.text.json.sourcegeneration.dll
+++AutoMapper (11.0.1)
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:>1056
+i:{dd048a2b-3e0a-472d-ba6e-8887eab7968b}:>1030
+++Microsoft.AspNetCore.Authentication.JwtBearer (6.0.7)
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:>1058
+++Microsoft.AspNetCore.Http (2.2.2)
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:>1057
+i:{dd048a2b-3e0a-472d-ba6e-8887eab7968b}:>1035
+++Microsoft.EntityFrameworkCore (6.0.7)
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:>1045
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:>1032
+i:{ea383027-1071-4068-b181-5b408123510d}:>993
+++Microsoft.EntityFrameworkCore.Design (6.0.7)
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:>1048
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:>1037
+i:{ea383027-1071-4068-b181-5b408123510d}:>995
+++Microsoft.EntityFrameworkCore.SqlServer (6.0.7)
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:>1047
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:>1033
+i:{ea383027-1071-4068-b181-5b408123510d}:>994
+++Microsoft.EntityFrameworkCore.Tools (6.0.7)
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:>1059
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:>1042
+++Swagger (1.0.0)
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:>1051
+++Swashbuckle.AspNetCore (6.4.0)
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:>1049
+++Swashbuckle.AspNetCore.Swagger (6.4.0)
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:>1052
+++Swashbuckle.AspNetCore.SwaggerGen (6.4.0)
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:>1054
+++Swashbuckle.AspNetCore.SwaggerUI (6.4.0)
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:>1060
+++System.Configuration.ConfigurationManager (6.0.0)
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:>1055
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:>1040
+++Microsoft.AspNetCore.App
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\microsoft.aspnetcore.app
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\microsoft.aspnetcore.app
+++Microsoft.NETCore.App
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\documentmaster\microsoft.netcore.app
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:c:\soft\dm\documentmaster\dm.dal\microsoft.netcore.app
+i:{4a708f39-8601-4c11-b417-e25b05ebf373}:c:\soft\dm\documentmaster\models\microsoft.netcore.app
+i:{dd048a2b-3e0a-472d-ba6e-8887eab7968b}:c:\soft\dm\documentmaster\dm.bll\microsoft.netcore.app
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\microsoft.netcore.app
+++DM.BLL
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\dm.bll\bin\debug\net6.0\dm.bll.dll
+i:{00000000-0000-0000-0000-000000000000}:DM.BLL
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\dm.bll\dm.bll.csproj
+++DM.DAL
+i:{13bc7b28-2ed2-4de5-ba5c-aa82774abfbc}:c:\soft\dm\documentmaster\dm.dal\bin\debug\net6.0\dm.dal.dll
+i:{00000000-0000-0000-0000-000000000000}:DM.DAL
+i:{dd048a2b-3e0a-472d-ba6e-8887eab7968b}:c:\soft\dm\documentmaster\dm.dal\bin\debug\net6.0\dm.dal.dll
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\dm.dal\dm.dal.csproj
+++Migrations
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:c:\soft\dm\documentmaster\dm.dal\migrations\
+++Models
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:c:\soft\dm\documentmaster\dm.dal\models\
+i:{00000000-0000-0000-0000-000000000000}:Models
+i:{dd048a2b-3e0a-472d-ba6e-8887eab7968b}:c:\soft\dm\documentmaster\models\bin\debug\net6.0\models.dll
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\models\models.csproj
+++Account.cs
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:c:\soft\dm\documentmaster\dm.dal\models\account.cs
+++Department.cs
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:c:\soft\dm\documentmaster\dm.dal\models\department.cs
+++DMContext.cs
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:c:\soft\dm\documentmaster\dm.dal\models\dmcontext.cs
+++FileUnit.cs
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:c:\soft\dm\documentmaster\dm.dal\models\fileunit.cs
+++Person.cs
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:c:\soft\dm\documentmaster\dm.dal\models\person.cs
+++Position.cs
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:c:\soft\dm\documentmaster\dm.dal\models\position.cs
+++Project.cs
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:c:\soft\dm\documentmaster\dm.dal\models\project.cs
+++SeedData.cs
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:c:\soft\dm\documentmaster\dm.dal\models\seeddata.cs
+++UserAction.cs
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:c:\soft\dm\documentmaster\dm.dal\models\useraction.cs
+++20220809173214_InitalCreate1.cs
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:c:\soft\dm\documentmaster\dm.dal\migrations\20220809173214_initalcreate1.cs
+++DMContextModelSnapshot.cs
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:c:\soft\dm\documentmaster\dm.dal\migrations\dmcontextmodelsnapshot.cs
+++20220809173214_InitalCreate1.Designer.cs
+i:{e5f76ff7-0cd6-4d80-abc3-0caeec93e341}:c:\soft\dm\documentmaster\dm.dal\migrations\20220809173214_initalcreate1.designer.cs
+++AccountDTO.cs
+i:{4a708f39-8601-4c11-b417-e25b05ebf373}:c:\soft\dm\documentmaster\models\accountdto.cs
+++DepartmentDTO.cs
+i:{4a708f39-8601-4c11-b417-e25b05ebf373}:c:\soft\dm\documentmaster\models\departmentdto.cs
+++FileDTO.cs
+i:{4a708f39-8601-4c11-b417-e25b05ebf373}:c:\soft\dm\documentmaster\models\filedto.cs
+++PersonDTO.cs
+i:{4a708f39-8601-4c11-b417-e25b05ebf373}:c:\soft\dm\documentmaster\models\persondto.cs
+++PositionDTO.cs
+i:{4a708f39-8601-4c11-b417-e25b05ebf373}:c:\soft\dm\documentmaster\models\positiondto.cs
+++ProjectDTO.cs
+i:{4a708f39-8601-4c11-b417-e25b05ebf373}:c:\soft\dm\documentmaster\models\projectdto.cs
+++UserActionDTO.cs
+i:{4a708f39-8601-4c11-b417-e25b05ebf373}:c:\soft\dm\documentmaster\models\useractiondto.cs
+++Authorization
+i:{dd048a2b-3e0a-472d-ba6e-8887eab7968b}:c:\soft\dm\documentmaster\dm.bll\authorization\
+++MapServices
+i:{dd048a2b-3e0a-472d-ba6e-8887eab7968b}:c:\soft\dm\documentmaster\dm.bll\mapservices\
+++AutoMappingProfile.cs
+i:{dd048a2b-3e0a-472d-ba6e-8887eab7968b}:c:\soft\dm\documentmaster\dm.bll\mapservices\automappingprofile.cs
+++Services
+i:{dd048a2b-3e0a-472d-ba6e-8887eab7968b}:c:\soft\dm\documentmaster\dm.bll\services\
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\services\
+++ActionService.cs
+i:{dd048a2b-3e0a-472d-ba6e-8887eab7968b}:c:\soft\dm\documentmaster\dm.bll\services\actionservice.cs
+++DepartmentService.cs
+i:{dd048a2b-3e0a-472d-ba6e-8887eab7968b}:c:\soft\dm\documentmaster\dm.bll\services\departmentservice.cs
+++FileService.cs
+i:{dd048a2b-3e0a-472d-ba6e-8887eab7968b}:c:\soft\dm\documentmaster\dm.bll\services\fileservice.cs
+++PersonService.cs
+i:{dd048a2b-3e0a-472d-ba6e-8887eab7968b}:c:\soft\dm\documentmaster\dm.bll\services\personservice.cs
+++PositionService.cs
+i:{dd048a2b-3e0a-472d-ba6e-8887eab7968b}:c:\soft\dm\documentmaster\dm.bll\services\positionservice.cs
+++ProjectService.cs
+i:{dd048a2b-3e0a-472d-ba6e-8887eab7968b}:c:\soft\dm\documentmaster\dm.bll\services\projectservice.cs
+++AccountService.cs
+i:{dd048a2b-3e0a-472d-ba6e-8887eab7968b}:c:\soft\dm\documentmaster\dm.bll\authorization\accountservice.cs
+++Microsoft.AspNetCore.Authentication.Cookies (2.2.0)
+i:{dd048a2b-3e0a-472d-ba6e-8887eab7968b}:>1039
+++Microsoft.AspNetCore.Mvc.Core (2.2.5)
+i:{dd048a2b-3e0a-472d-ba6e-8887eab7968b}:>1044
+++DocumentMaster.BlazorServer
+i:{00000000-0000-0000-0000-000000000000}:DocumentMaster.BlazorServer
+++css
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\wwwroot\css\
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\wwwroot\css\open-iconic\font\css\
+++Upload
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\wwwroot\upload\
+++40_Магазин_186_АР - Лист - ‎2 - План на отм- -4,200, план на отм- 0,000.dwg
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\wwwroot\upload\1\40_магазин_186_ар - лист - ‎2 - план на отм- -4,200, план на отм- 0,000.dwg
+++5.pdf
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\wwwroot\upload\1\5.pdf
+++res.txt
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\wwwroot\upload\1\res.txt
+++favicon.ico
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\wwwroot\favicon.ico
+++Authentication
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\authentication\
+++CustomAuthenticationStateProvider.cs
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\authentication\customauthenticationstateprovider.cs
+++UserSession.cs
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\authentication\usersession.cs
+++Data
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\data\
+++Pages
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\pages\
+++_Host.cshtml
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\pages\_host.cshtml
+++_Layout.cshtml
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\pages\_layout.cshtml
+++AddFile.razor
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\pages\addfile.razor
+++Error.cshtml
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\pages\error.cshtml
+++Files.razor
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\pages\files.razor
+++Index.razor
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\pages\index.razor
+++Login.razor
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\pages\login.razor
+++LoginForm.razor
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\pages\loginform.razor
+++ApiRequestService.cs
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\services\apirequestservice.cs
+++InvalidUserService.cs
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\services\invaliduserservice.cs
+++Shared
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\shared\
+++LoginControl.razor
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\shared\logincontrol.razor
+++MainLayout.razor
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\shared\mainlayout.razor
+++NavMenu.razor
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\shared\navmenu.razor
+++SurveyPrompt.razor
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\shared\surveyprompt.razor
+++_Imports.razor
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\_imports.razor
+++App.razor
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\app.razor
+++bootstrap
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\wwwroot\css\bootstrap\
+++open-iconic
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\wwwroot\css\open-iconic\
+++site.css
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\wwwroot\css\site.css
+++Error.cshtml.cs
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\pages\error.cshtml.cs
+++MainLayout.razor.css
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\shared\mainlayout.razor.css
+++NavMenu.razor.css
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\shared\navmenu.razor.css
+++bootstrap.min.css
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\wwwroot\css\bootstrap\bootstrap.min.css
+++font
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\wwwroot\css\open-iconic\font\
+++FONT-LICENSE
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\wwwroot\css\open-iconic\font-license
+++ICON-LICENSE
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\wwwroot\css\open-iconic\icon-license
+++README.md
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\wwwroot\css\open-iconic\readme.md
+++Radzen.Blazor (3.19.11)
+i:{ea383027-1071-4068-b181-5b408123510d}:>996
+++bootstrap.min.css.map
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\wwwroot\css\bootstrap\bootstrap.min.css.map
+++fonts
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\wwwroot\css\open-iconic\font\fonts\
+++open-iconic-bootstrap.min.css
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\wwwroot\css\open-iconic\font\css\open-iconic-bootstrap.min.css
+++open-iconic.eot
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\wwwroot\css\open-iconic\font\fonts\open-iconic.eot
+++open-iconic.otf
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\wwwroot\css\open-iconic\font\fonts\open-iconic.otf
+++open-iconic.svg
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\wwwroot\css\open-iconic\font\fonts\open-iconic.svg
+++open-iconic.ttf
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\wwwroot\css\open-iconic\font\fonts\open-iconic.ttf
+++open-iconic.woff
+i:{ea383027-1071-4068-b181-5b408123510d}:c:\soft\dm\documentmaster\documentmaster.blazorserver\wwwroot\css\open-iconic\font\fonts\open-iconic.woff
