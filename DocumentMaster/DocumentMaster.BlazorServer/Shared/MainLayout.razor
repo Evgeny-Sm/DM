@@ -1,0 +1,90 @@
+﻿@inherits LayoutComponentBase
+@inject AuthenticationStateProvider authStateProvider
+@inject NavigationManager navManager
+@inject PersonService PersonService
+@inject ControlService ControlService
+
+@using DM.BLL.Services
+@using DocumentMaster.BlazorServer.Authentication
+@using Models
+@using Radzen
+
+<RadzenDialog />
+<RadzenNotification />
+<RadzenContextMenu />
+<RadzenTooltip />
+
+<PageTitle>DocumentMaster.BlazorServer</PageTitle>
+
+
+<div class="page">
+    <AuthorizeView>
+        <Authorized>
+            <div class="sidebarcustom">
+                <NavMenu />
+            </div>
+        </Authorized>
+    </AuthorizeView>
+    <main>
+        <div class="top-row px-4">
+            <AuthorizeView>
+                <Authorized>
+                    <div class="col">
+                        <span style="color:darkslateblue">@CurrentPerson.FirstName @CurrentPerson.LastName</span>
+                        <a @onclick="RedirectToCheck" href="javascript:void(0)"> На проверку: @CountToCheck</a>
+                    </div>
+                    <a @onclick="Logout" href="javascript:void(0)">Logout</a>
+                    <a @onclick="RedirectToUserInfo" href="javascript:void(0)">Settings</a>
+                </Authorized>
+                <NotAuthorized>
+                    <a href="/Login">Login</a>
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+@code
+{
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+    private PersonDTO CurrentPerson { get; set; } = new PersonDTO();
+
+    private int CountToCheck { get; set; }
+
+    protected override async void OnInitialized()
+    {
+        var authState = await authenticationState;
+        if (authState.User.Identities.FirstOrDefault().IsAuthenticated)
+        {
+            CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+
+            CountToCheck = await ControlService.GetCountControlsByIdAsync(CurrentPerson.Id);
+
+            StateHasChanged();
+        }
+
+    }
+
+    private async Task Logout()
+    {
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        await customAuthStateProvider.UpdateAuthenticationState(null);
+        navManager.NavigateTo("/", true);
+    }
+    private void RedirectToUserInfo()
+    {
+
+        navManager.NavigateTo("/UserInfo");
+    }
+    private void RedirectToCheck()
+    {
+
+        navManager.NavigateTo("/FilesToCheck");
+    }
+
+}
+

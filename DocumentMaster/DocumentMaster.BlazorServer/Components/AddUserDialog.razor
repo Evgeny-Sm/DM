@@ -1,0 +1,49 @@
+﻿@using DM.BLL.Authorization
+@using Models
+
+@inject DialogService DialogService
+@inject AccountService AccountService
+@inject IJSRuntime js
+
+
+        <div class="row">
+            <div class="col-md-4 align-items-center d-flex">
+                <RadzenLabel Text="Login" />
+            </div>
+
+            <div class="col-md-8">
+                <RadzenTextBox  style="width: 100%;" @bind-Value="UserName" Name="NameUser" />
+            <RadzenRequiredValidator Component="NameUser" Text="Enter username" Popup="@popup" Style="position: absolute" />
+            </div>
+        </div>
+
+        <br />
+<button type="button" @onclick=@(args=>Submit()) class="btn btn-primary">Add</button>
+       
+
+
+@code{
+    private string UserName { get; set; } = string.Empty;
+    bool popup;
+
+    private async void Submit()
+    {
+        if (UserName.Length < 4)
+        {
+            return;
+        }
+        var check = await AccountService.NameIsBusy(UserName);
+        if (check)
+        { 
+            await js.InvokeVoidAsync("alert", "Name is Busy");
+            return;
+        }
+
+        DialogService.Close(UserName);
+    }
+
+    private void Cancel()
+    {
+        DialogService.Close();
+    }
+}

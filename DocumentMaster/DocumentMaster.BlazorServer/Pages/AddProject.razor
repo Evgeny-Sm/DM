@@ -1,0 +1,115 @@
+﻿@page "/AddProject"
+
+@using DM.BLL.Services
+@using Models
+
+@inject ProjectService ProjectService
+@inject NavigationManager Navigation
+@inject PersonService PersonService
+
+<h3 style="color:blue">Add Project</h3>
+
+<AuthorizeView Roles="admin,head">
+    <Authorized>
+        <RadzenTemplateForm Context="Cont" Data="@Project" Submit="@((ProjectDTO args) => { Submit(args);})">
+            <RadzenFieldset Text="Новый проект">
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Название" />
+                    </div>
+
+                    <div class="col-md-8">
+                        <RadzenTextBox style="width: 100%;" @bind-Value="Project.Name" Name="ProjectName" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Описание" />
+                    </div>
+
+                    <div class="col-md-8">
+                        <RadzenTextBox style="width: 100%;" @bind-Value="Project.Description" Name="ProjectName" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Заказчик" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenTextBox style="width: 100%;" @bind-Value="Project.Client" Name="ProjectName" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Главный инженер" />
+                    </div>
+                    <div class="col-md-8 ">
+                        <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                                Data=@(Persons) Style="width: 100%" AllowColumnResize="true"
+                                                TextProperty="LastName" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
+                                                Change=@(args => OnChangePerson(args))>
+                            <Columns>
+                                <RadzenDropDownDataGridColumn Property="FirstName" Title="FirstName" Width="100px" />
+                                <RadzenDropDownDataGridColumn Property="LastName" Title="LastName" Width="100px" />
+                            </Columns>
+                        </RadzenDropDownDataGrid>
+                    </div>
+                </div>
+                <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Submit"></RadzenButton>
+                <RadzenButton Click="@Cancel" ButtonStyle="ButtonStyle.Danger" Text="Cancel" Style="width: 120px" />
+            </RadzenFieldset>
+
+        </RadzenTemplateForm>
+    </Authorized>
+</AuthorizeView>
+
+
+
+
+@code {
+    private ProjectDTO Project { get; set; } = new ProjectDTO();
+
+    private IList<PersonDTO> Persons { get; set; }
+
+    protected override async void OnInitialized()
+    {
+        var p = await PersonService.GetPersonsAsync();
+        Persons = p.ToList();
+
+        Project = await ProjectService.AddProjectAsync(new ProjectDTO
+            {
+                Name = "",
+                IsDeleted = true,
+                MainIngId = Persons.FirstOrDefault().Id
+            }
+        );
+
+
+        StateHasChanged();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+    }
+
+    async void Submit(ProjectDTO arg)
+    {
+        arg.IsDeleted = false;
+        await ProjectService.UpdateProjectAsync(arg);
+
+        Navigation.NavigateTo("/Projects");
+    }
+    void OnChangePerson(object value)
+    {
+        Project.MainIngId = (int)value;
+
+    }
+
+    async void Cancel()
+    {
+        var t=await ProjectService.RemoveProject(Project.Id);
+        Navigation.NavigateTo("/Projects");
+    }
+
+
+}

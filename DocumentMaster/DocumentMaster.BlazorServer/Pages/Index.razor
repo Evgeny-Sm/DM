@@ -1,0 +1,144 @@
+﻿@page "/"
+
+@using DM.BLL.Services
+@using DocumentMaster.BlazorServer.Authentication
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Models
+@using System.IO
+@using Microsoft.AspNetCore.SignalR.Client
+
+
+
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@inject ProtectedSessionStorage sessionStorage
+@inject PersonService PersonService
+@inject MessageService MessageService
+
+@implements IAsyncDisposable
+
+
+<PageTitle>Index</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <div class="row">
+            <div class="col-9">
+                <Schaduler></Schaduler>
+            </div>
+            <div class="col-3">
+                <div>
+                    <RemoveChatButton></RemoveChatButton>
+                </div>
+
+                <div class="container overflow-auto shadow-sm p-3 mb-5 bg-white rounded" style="height:500px">
+                    @if (!userMessages.Any())
+                    {
+                        <p style="color:gray"> No messages </p>
+                    }
+                    @foreach (var userMessage in userMessages)
+                    {
+                        <div class="row mb-3 d-flex @(userMessage.IsCurrentUser? "justify-content-end":"")">
+                            <div class="card shadow @(userMessage.IsCurrentUser? "color-green mr-5":"color-cornflowerblue mr-5")" style="width: 12rem;font-size:small">
+                                <div class="card-header">
+                                    @(userMessage.IsCurrentUser ? "Я" : @userMessage.UserName)
+                                </div>
+                                <ul class="list-group">
+                                    <li class="list-group-item @(userMessage.IsCurrentUser? "color-green":"color-cornflowerblue")">
+                                        @userMessage.Message
+                                    </li>
+                                </ul>
+                                <div class="card-footer">
+                                    <span class="small justify-content-end">@userMessage.DateSend.ToString("HH:mm| MMM:dd")</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-9">
+                            <textarea @bind="messageInput" type="text" class="form-control" placeholder="Start typing..."> </textarea>
+                        </div>
+                        <div class="col-3">
+                            <button type="button" @onclick="Send" class="btn btn-primary"> send</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </Authorized>
+    <NotAuthorized>
+        <h1>Hello, Guest!</h1>
+        <img src="/images/background.jpg" class="background" />
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code
+{
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+    private PersonDTO CurrentPerson { get; set; } = new();
+    private HubConnection hubConnection;
+    private List<UserMessage> userMessages = new List<UserMessage>();
+    private string messageInput;
+    private string userNameInput { get; set; }
+
+    public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        var authState = await authenticationState;
+        if (authState.User.Identities.FirstOrDefault().IsAuthenticated)
+        {          
+            CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+            CompareMes();
+            hubConnection = new HubConnectionBuilder().WithUrl(Navigation.ToAbsoluteUri("/chathub"))
+            .Build();          
+            hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
+            {
+                userMessages.Add(new UserMessage
+                    {
+                        UserName = user,
+                        Message = message,
+                        IsCurrentUser = user == CurrentPerson.UserName,
+                        DateSend = DateTime.Now
+                    });
+                InvokeAsync(StateHasChanged);
+
+            });
+            await hubConnection.StartAsync();
+        }
+    }
+    private async Task Send()
+    {
+        if (!string.IsNullOrEmpty(messageInput))
+        {
+            await hubConnection.SendAsync("SendMessage",CurrentPerson.UserName,messageInput);
+            messageInput = string.Empty;
+        }
+    }
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+    private async Task CompareMes()
+    { 
+        var messages = await MessageService.GetFromLastDayAsync();
+        foreach (var mes in messages)
+        {
+            mes.IsCurrentUser = mes.UserName == CurrentPerson.UserName;
+        }
+        userMessages = messages;
+        StateHasChanged();
+    }
+
+}

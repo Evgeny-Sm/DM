@@ -1,0 +1,89 @@
+﻿@using DM.BLL.Services
+@using DM.DAL.Models
+@using DocumentMaster.BlazorServer.Pages
+@using Microsoft.EntityFrameworkCore
+@using Models
+@using System.Text.Json
+
+@inject FileService fileService
+@inject PersonService PersonService
+@inject DMContext db
+
+<AuthorizeView>
+    <Authorized>
+        <RadzenDataGrid Data="@files" TItem="FileUnit" ValueChanged="@(args=>ValueChanged(args))" AllowVirtualization="true" Style="height:600px"
+                        AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.Or"
+                        AllowSorting="true">
+            <Columns>
+                <RadzenDataGridColumn TItem="FileUnit" Property="Id" Title="Id" Width="50px" />
+                <RadzenDataGridColumn TItem="FileUnit" Property="Name" Title="Название" Width="200px" />
+                <RadzenDataGridColumn TItem="FileUnit" Property="Status" Title="Статус" Width="80px" />
+                <RadzenDataGridColumn TItem="FileUnit"  Title="Разработчик" Width="60px">
+                    <Template Context="file">
+                        <RadzenLabel Text="@GetName(file)"/>
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="FileUnit" Property="ProjectId" Title="Проект" Width="60px" />
+            </Columns>
+        </RadzenDataGrid>
+    </Authorized>
+</AuthorizeView>
+
+
+
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+    [Parameter]
+    public IEnumerable<FileUnit>? files { get; set; }
+
+    [Parameter]
+    public EventCallback<IList<FileUnit>> FilesGetCallBack { get; set; }
+
+
+    private PersonDTO CurrentPerson { get; set; }
+
+    private IList<PersonDTO> Persons { get; set; }
+
+
+
+
+
+    protected override async void OnInitialized()
+    {
+        var p = await PersonService.GetPersonsAsync();
+        Persons = p.ToList();
+
+        var authState = await authenticationState;
+
+        CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+
+    }
+
+    private async void ValueChanged(IList<FileUnit> args)
+    {
+        await FilesGetCallBack.InvokeAsync(args);
+    }
+
+    private string GetName(FileUnit file)
+    {
+        if (file is not null)
+        {
+            return $"{file.Person.LastName} {file.Person.FirstName.Substring(0, 1)}.";
+        }
+        return string.Empty;
+    }
+
+
+    private void OnChange(bool value)
+    {
+
+    }
+
+}

@@ -1,0 +1,121 @@
+﻿@using DM.BLL.Services
+@using DM.DAL.Models
+@using Models
+@using Microsoft.EntityFrameworkCore;
+
+@inject DialogService DialogService
+@inject ChallengeService ChallengeService
+@inject PersonService PersonService
+@inject NavigationManager navManager
+
+<RadzenScheduler @ref=@scheduler SlotRender=@OnSlotRender style="height: 768px;" TItem="ChallengeDTO" Data=@Challenges StartProperty="Start" EndProperty="End"
+                 TextProperty="Name" SelectedIndex="2"
+                 SlotSelect=@OnSlotSelect AppointmentSelect=@OnAppointmentSelect AppointmentRender=@OnAppointmentRender>
+    <RadzenDayView />
+    <RadzenWeekView />
+    <RadzenMonthView />
+</RadzenScheduler>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+
+    private PersonDTO CurrentPerson { get; set; }
+
+    RadzenScheduler<ChallengeDTO> scheduler;
+
+    private IEnumerable<ChallengeDTO> Challenges { get; set; } = new List<ChallengeDTO>();
+
+    Dictionary<DateTime, string> events = new Dictionary<DateTime, string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authenticationState;
+        CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+        if (CurrentPerson is not null)
+        {
+            Challenges = await ChallengeService.GetAllFofUserAsync(CurrentPerson.Id);
+        }
+        else
+        { 
+            Challenges = await ChallengeService.GetAllAsync();
+        }
+    }
+    void OnSlotRender(SchedulerSlotRenderEventArgs args)
+    {
+        // Highlight today in month view
+        if (args.View.Text == "Month" && args.Start.Date == DateTime.Today)
+        {
+            args.Attributes["style"] = "background: rgba(255,220,40,.2);";
+        }
+
+        // Highlight working hours (9-18)
+        if ((args.View.Text == "Week" || args.View.Text == "Day") && args.Start.Hour > 8 && args.Start.Hour < 19)
+        {
+            args.Attributes["style"] = "background: rgba(255,220,40,.2);";
+        }
+    }
+
+    private async Task OnSlotSelect(SchedulerSlotSelectEventArgs args)
+    {
+
+        ChallengeDTO data = await DialogService.OpenAsync<AddAppointmentPage>("Add Task",
+            new Dictionary<string, object> { { "Start", args.Start }, { "End", args.End } });
+
+        if (data != null)
+        {
+            data.PersonCreatorId=CurrentPerson.Id;
+            
+            data.PersonIds = data.PersonIds.Distinct().ToList();
+            var res=await ChallengeService.AddChallengeAsync(data);
+            Challenges=Challenges.Append(res);
+            // Either call the Reload method or reassign the Data property of the Scheduler
+            await scheduler.Reload();
+
+        }
+    }
+
+    private async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<ChallengeDTO> args)
+    {
+
+        ChallengeDTO data = await DialogService.OpenAsync<EditAppointmentPage>("Edit Task", new Dictionary<string, object> { { "Appointment", args.Data } });
+        if (data != null)
+        {
+            data.PersonIds = data.PersonIds.Distinct().ToList();
+            await ChallengeService.UpdateItemAsync(data);
+            if (data.IsDeleted)
+            {
+                Challenges = Challenges.Where(c => c.Id != data.Id);
+            }
+            if (!data.PersonIds.Contains(CurrentPerson.Id) && data.PersonCreatorId!=CurrentPerson.Id)
+            { 
+                Challenges = Challenges.Where(c => c.Id != data.Id);
+            }
+
+            await scheduler.Reload();
+
+        }
+    }
+
+    void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<ChallengeDTO> args)
+    {
+        // Never call StateHasChanged in AppointmentRender - would lead to infinite loop
+
+        if (args.Data.Name.Contains("Birthday"))
+        {
+            args.Attributes["style"] = "background: red";
+        }
+        if (args.Data.PersonCreatorId == CurrentPerson.Id)
+        { 
+            args.Attributes["style"] = "background: rgba(38,174,212,1)";
+        }
+    }
+
+    private void RedirectToIndex()
+    {
+
+        navManager.NavigateTo("/");
+    }
+
+}

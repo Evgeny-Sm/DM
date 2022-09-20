@@ -1,6 +1,10 @@
 {
   "Version": 1,
+<<<<<<< HEAD
   "Hash": "BQ1zMXViddQuk3qjkQbESQpiWouxmm7wTNdD+T9uE04=",
+=======
+  "Hash": "02vR+Nc+bJOCwJNUaDUjvIbODcptQRN9/3S27SrB8sc=",
+>>>>>>> 718dc6f1ab0f18af48c010f0f7b3342843c82ac1
   "Source": "DocumentMaster.API",
   "BasePath": "_content/DocumentMaster.API",
   "Mode": "Default",
@@ -10,17 +14,28 @@
     {
       "Name": "DocumentMaster.API\\wwwroot",
       "Source": "DocumentMaster.API",
+<<<<<<< HEAD
       "ContentRoot": "C:\\Soft\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\",
+=======
+      "ContentRoot": "C:\\Tasks\\work\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\",
+>>>>>>> 718dc6f1ab0f18af48c010f0f7b3342843c82ac1
       "BasePath": "_content/DocumentMaster.API",
       "Pattern": "**"
     }
   ],
   "Assets": [
     {
+<<<<<<< HEAD
       "Identity": "C:\\Soft\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\1\\nbki_report.pdf",
       "SourceId": "DocumentMaster.API",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Soft\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\",
+=======
+      "Identity": "C:\\Tasks\\work\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\1\\nbki_report.pdf",
+      "SourceId": "DocumentMaster.API",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Tasks\\work\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\",
+>>>>>>> 718dc6f1ab0f18af48c010f0f7b3342843c82ac1
       "BasePath": "_content/DocumentMaster.API",
       "RelativePath": "1/nbki_report.pdf",
       "AssetKind": "All",
@@ -34,10 +49,17 @@
       "OriginalItemSpec": "wwwroot\\1\\nbki_report.pdf"
     },
     {
+<<<<<<< HEAD
       "Identity": "C:\\Soft\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\1\\vizitka-inzhener-stroitel.pdf",
       "SourceId": "DocumentMaster.API",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Soft\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\",
+=======
+      "Identity": "C:\\Tasks\\work\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\1\\vizitka-inzhener-stroitel.pdf",
+      "SourceId": "DocumentMaster.API",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Tasks\\work\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\",
+>>>>>>> 718dc6f1ab0f18af48c010f0f7b3342843c82ac1
       "BasePath": "_content/DocumentMaster.API",
       "RelativePath": "1/vizitka-inzhener-stroitel.pdf",
       "AssetKind": "All",
@@ -51,10 +73,17 @@
       "OriginalItemSpec": "wwwroot\\1\\vizitka-inzhener-stroitel.pdf"
     },
     {
+<<<<<<< HEAD
       "Identity": "C:\\Soft\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\1\\w8.pdf",
       "SourceId": "DocumentMaster.API",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Soft\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\",
+=======
+      "Identity": "C:\\Tasks\\work\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\1\\w8.pdf",
+      "SourceId": "DocumentMaster.API",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Tasks\\work\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\",
+>>>>>>> 718dc6f1ab0f18af48c010f0f7b3342843c82ac1
       "BasePath": "_content/DocumentMaster.API",
       "RelativePath": "1/w8.pdf",
       "AssetKind": "All",
@@ -68,10 +97,17 @@
       "OriginalItemSpec": "wwwroot\\1\\w8.pdf"
     },
     {
+<<<<<<< HEAD
       "Identity": "C:\\Soft\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\3\\362.pdf",
       "SourceId": "DocumentMaster.API",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Soft\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\",
+=======
+      "Identity": "C:\\Tasks\\work\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\3\\362.pdf",
+      "SourceId": "DocumentMaster.API",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Tasks\\work\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\",
+>>>>>>> 718dc6f1ab0f18af48c010f0f7b3342843c82ac1
       "BasePath": "_content/DocumentMaster.API",
       "RelativePath": "3/362.pdf",
       "AssetKind": "All",
@@ -85,10 +121,17 @@
       "OriginalItemSpec": "wwwroot\\3\\362.pdf"
     },
     {
+<<<<<<< HEAD
       "Identity": "C:\\Soft\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\Files\\330.pdf",
       "SourceId": "DocumentMaster.API",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Soft\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\",
+=======
+      "Identity": "C:\\Tasks\\work\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\Files\\330.pdf",
+      "SourceId": "DocumentMaster.API",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Tasks\\work\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\",
+>>>>>>> 718dc6f1ab0f18af48c010f0f7b3342843c82ac1
       "BasePath": "_content/DocumentMaster.API",
       "RelativePath": "Files/330.pdf",
       "AssetKind": "All",
@@ -102,10 +145,17 @@
       "OriginalItemSpec": "wwwroot\\Files\\330.pdf"
     },
     {
+<<<<<<< HEAD
       "Identity": "C:\\Soft\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\Files\\hello.pdf",
       "SourceId": "DocumentMaster.API",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Soft\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\",
+=======
+      "Identity": "C:\\Tasks\\work\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\Files\\hello.pdf",
+      "SourceId": "DocumentMaster.API",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Tasks\\work\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\",
+>>>>>>> 718dc6f1ab0f18af48c010f0f7b3342843c82ac1
       "BasePath": "_content/DocumentMaster.API",
       "RelativePath": "Files/hello.pdf",
       "AssetKind": "All",
@@ -119,10 +169,17 @@
       "OriginalItemSpec": "wwwroot\\Files\\hello.pdf"
     },
     {
+<<<<<<< HEAD
       "Identity": "C:\\Soft\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\Files\\КМ.dwg",
       "SourceId": "DocumentMaster.API",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Soft\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\",
+=======
+      "Identity": "C:\\Tasks\\work\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\Files\\КМ.dwg",
+      "SourceId": "DocumentMaster.API",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Tasks\\work\\DM\\DocumentMaster\\DocumentMaster\\wwwroot\\",
+>>>>>>> 718dc6f1ab0f18af48c010f0f7b3342843c82ac1
       "BasePath": "_content/DocumentMaster.API",
       "RelativePath": "Files/КМ.dwg",
       "AssetKind": "All",

@@ -1,0 +1,7 @@
+using System;
+class Example {
+// Любая программа на C# начинается с вызова метола Main().
+static void Main() {
+Console.WriteLine("Простая программа на С#.");
+}
+}

@@ -1,0 +1,119 @@
+﻿@page "/Projects"
+
+
+
+
+@using DM.BLL.Services
+@using DM.DAL.Models
+@using Models
+@using DocumentMaster.BlazorServer.Pages
+@using Microsoft.EntityFrameworkCore
+
+
+@inject NavigationManager Navigation
+@inject PersonService personService
+@inject ProjectService projectService
+
+@inject IDbContextFactory<DMContext> contextFactory
+
+
+
+<h3>Projects</h3>
+
+<div class="row">
+    <div class="col-md-6">
+
+                <AddProjectButton/>
+
+    </div>
+    <div class="col-md-6">
+        @if (SelectedFiles.Count != 0)
+        {
+            <DownloadFile SelectedFiles="@SelectedFiles" />
+        }
+    </div>
+
+</div>
+
+<AuthorizeView>
+    <Authorized>
+        <div class="row">
+            <div class="col-md-6">
+                <ProjectList ProjectsGetCallBack="@SetSelectedProjects" />
+            </div>
+
+
+            <div class="col-md-6">
+                @if (SelectedProjects.Count != 0)
+                {
+                    <div class="row">
+                        <div class="col-md-6">
+                            <InfoProject SelectedProjects="@SelectedProjects" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <InfoFile SelectedFiles="SelectedFiles" />
+                        </div>
+                    </div>
+
+                    <FileList FilesGetCallBack="@SetSelectedFiles"
+                          files="@_Files"> </FileList>
+
+
+                }
+            </div>
+        </div>
+
+
+    </Authorized>
+</AuthorizeView>
+
+@code {
+
+    private IList<ProjectDTO> SelectedProjects { get; set; }
+
+    private IList<FileUnit> SelectedFiles { get; set; }
+
+    private IList<FileUnit> _Files { get; set; }
+
+    private IEnumerable<ProjectDTO> _projects { get; set; }
+
+
+    protected override async void OnInitialized()
+    {
+        SelectedProjects = new List<ProjectDTO>();
+        SelectedFiles = new List<FileUnit>();
+        _Files = new List<FileUnit>();
+    }
+
+
+
+    private void SetSelectedProjects(IList<ProjectDTO> projects)
+    {
+        if (projects != null)
+        {
+            SelectedProjects = projects;
+            _Files = GetFilesInProject(projects.FirstOrDefault().Id).ToList();
+            SelectedFiles = new List<FileUnit>();
+        }
+        
+
+    }
+
+        private void SetSelectedFiles(IList<FileUnit> fileUnit)
+    {
+        if (fileUnit != null)
+        {
+            SelectedFiles = fileUnit;
+        }
+    }
+
+
+    private IEnumerable<FileUnit> GetFilesInProject(int id)
+    {
+        using var context = contextFactory.CreateDbContext();
+        return context.FileUnits.Where(f => f.ProjectId == id).Include(p => p.Person).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).OrderByDescending(f => f.Id).ToArray();
+
+    }
+
+}

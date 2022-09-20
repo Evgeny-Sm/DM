@@ -1,0 +1,62 @@
+﻿@using DM.BLL.Services
+@using DM.DAL.Models
+@using DocumentMaster.BlazorServer.Pages
+@using Microsoft.EntityFrameworkCore
+@using Models
+@using System.Text.Json
+
+@inject PersonService PersonService
+
+
+<AuthorizeView>
+    <Authorized>
+        <RadzenDataGrid Data="@Persons" TItem="PersonDTO" ValueChanged="@(args=>ValueChanged(args))" Style="height:800px"
+                        AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.Or"
+                        AllowSorting="true">
+            <Columns>
+                <RadzenDataGridColumn TItem="PersonDTO" Property="Id" Title="Id" Width="50px" />
+                <RadzenDataGridColumn TItem="PersonDTO" Property="UserName" Title="Login" Width="80px" />
+                <RadzenDataGridColumn TItem="PersonDTO" Property="FirstName" Title="Имя" Width="100px" />
+                <RadzenDataGridColumn TItem="PersonDTO" Property="LastName" Title="Фамилия" Width="100px" />
+                <RadzenDataGridColumn TItem="PersonDTO" Property="Role" Title="Доступ" Width="100px" />
+                <RadzenDataGridColumn TItem="PersonDTO" Property="IsConfirmed" Title="Подтвержден" Width="50px" />
+                <RadzenDataGridColumn TItem="PersonDTO" Property="IsDeleted" Title="Удален" Width="100px" />
+            </Columns>
+        </RadzenDataGrid>
+    </Authorized>
+</AuthorizeView>
+
+
+
+
+@code {
+
+    [Parameter]
+    public IList<PersonDTO>? Persons { get; set; }
+
+    [Parameter]
+    public EventCallback<IList<PersonDTO>> PersonsGetCallBack { get; set; }
+
+    protected override async void OnInitialized()
+    {
+
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+
+        if (Persons == null)
+        {
+
+            var p = await PersonService.GetAllPersonsAsync();
+            Persons =p.ToList();
+        }
+        
+    }
+
+    private async void ValueChanged(IList<PersonDTO> args)
+    {
+        await PersonsGetCallBack.InvokeAsync(args);
+    }
+
+}

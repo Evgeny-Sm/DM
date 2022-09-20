@@ -39,10 +39,6 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBZGRQcm9qZWN0RGlhbG9nLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Soft/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/AddQuestDialog.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBZGRRdWVzdERpYWxvZy5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
 [C:/Soft/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/AddUserDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBZGRVc2VyRGlhbG9nLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
@@ -63,10 +59,6 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEb3dubG9hZEZpbGUucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Soft/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/Dropzone.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEcm9wem9uZS5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
 [C:/Soft/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/EditAppointmentPage.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xFZGl0QXBwb2ludG1lbnRQYWdlLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
@@ -85,10 +77,6 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Soft/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/InfoProject.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xJbmZvUHJvamVjdC5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Soft/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/NoteChat.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xOb3RlQ2hhdC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Soft/DM/DocumentMaster/DocumentMaster.BlazorServer/Components/PersonData.razor]
@@ -165,10 +153,6 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Soft/DM/DocumentMaster/DocumentMaster.BlazorServer/Pages/Projects.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvamVjdHMucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Soft/DM/DocumentMaster/DocumentMaster.BlazorServer/Pages/Questions.razor]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUXVlc3Rpb25zLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Soft/DM/DocumentMaster/DocumentMaster.BlazorServer/Pages/UserInfo.razor]
