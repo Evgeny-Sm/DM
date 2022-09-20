@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Vw1npeHtbZHJ9zyayz3qS95o7kAzi4kjJ0tehNQ2MU4Z1lU4NLWP/g68HMoyahsvvX0DbMYat4wTk4cfRfgFSQ==",
+  "dgSpecHash": "bebMB/mjKObo5hdABVLmw6zV5aiq+8VI6ijYSjtDXqsj1bKZmj+AblytH3LuYJllZSgUhdF8xTgJEJGVy1vpPQ==",
   "success": true,
-  "projectFilePath": "C:\\Tasks\\work\\DM\\DocumentMaster\\Models\\Models.csproj",
+  "projectFilePath": "C:\\Soft\\DM\\DocumentMaster\\Models\\Models.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }
