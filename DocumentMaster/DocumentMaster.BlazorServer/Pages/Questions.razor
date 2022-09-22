@@ -18,36 +18,47 @@
 <AuthorizeView>
     <Authorized>
         <div class="row">
-            <div class="col-2">
-                <RadzenButton Text="Добавить" ButtonStyle="ButtonStyle.Secondary"
-                              Click=@OpenAddQuestDialog />
-            </div>
-            <div class="col-md-4">
-                <input type="text" value="@InputString" @onchange="@((args)=>Find(args))" class="form-control" placeholder="поиск..." />
-            </div>
-            @if (!string.IsNullOrEmpty(InputString))
-            {
-                <div class="col-1">
-                    <button type="button" @onclick=@(args=>SetAllFileList()) class="btn-close"></button>
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-2">
+                        <RadzenButton Text="Добавить" ButtonStyle="ButtonStyle.Secondary"
+                                      Click=@OpenAddQuestDialog />
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" value="@InputString" @onchange="@((args)=>Find(args))" class="form-control" placeholder="поиск..." />
+                    </div>
+                    @if (!string.IsNullOrEmpty(InputString))
+                    {
+                        <div class="col-1">
+                            <button type="button" @onclick=@(args=>SetAllFileList()) class="btn-close"></button>
+                        </div>
+                    }
                 </div>
-            }
-        </div>
-        <div class="row">
-            <div class="col-md-6">
-                <RadzenDataGrid Data="@QuestionDTOs" TItem="QuestionDTO" ValueChanged="@(args=>ValueChanged(args))" AllowVirtualization="true" Style="height:600px"
-                                AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.Or"
-                                AllowSorting="true">
-                    <Columns>
-                        <RadzenDataGridColumn TItem="QuestionDTO" Property="Id" Title="Id" Width="50px" />
-                        <RadzenDataGridColumn TItem="QuestionDTO" Property="Title" Title="Тема" Width="100px" />
-                    </Columns>
-                </RadzenDataGrid>
+                <div class="row">
+                    <div class="col-md-12">
+                        <RadzenDataGrid Data="@QuestionDTOs" TItem="QuestionDTO" ValueChanged="@(args=>ValueChanged(args))" AllowVirtualization="true" Style="height:600px"
+                                        AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.Or"
+                                        AllowSorting="true">
+                            <Columns>
+                                <RadzenDataGridColumn TItem="QuestionDTO" Property="Id" Title="Id" Width="50px" />
+                                <RadzenDataGridColumn TItem="QuestionDTO" Property="Title" Title="Тема" Width="100px" />
+                            </Columns>
+                        </RadzenDataGrid>
+                    </div>
+                </div>
             </div>
+
             <div class="col-md-6">
-                @if(SelectedQuestion is not null)
-                {
-                    <NoteChat CurrentQuestion="@SelectedQuestion"/>
-                }
+                <div class="row">
+                    <InfoQuest CurrentQuestion="@SelectedQuestion" />
+                </div>
+                <br />
+                <div class="row">
+                    @if (SelectedQuestion is not null)
+                    {
+                        <NoteChat CurrentQuestion="@SelectedQuestion" />
+                    }
+                </div>
             </div>
         </div>
     </Authorized>
@@ -89,7 +100,7 @@
               new DialogOptions()
                   {
                       Width = "800px",
-                      Height = "800px",
+                      Height = "600px",
                       Resizable = true,
                       Draggable = false,
                       CloseDialogOnOverlayClick = false

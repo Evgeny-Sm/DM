@@ -1,0 +1,67 @@
+﻿@using Models
+@using DM.BLL.Services
+
+
+@inject PersonService PersonService
+@inject ProjectService ProjectService
+
+
+    <RadzenTabs SelectedIndex="0">
+        <Tabs>
+            <RadzenTabsItem Text="Данные">
+                <b>Разработал: @Developer   </b>
+                <div>Дата создания: @DateToCreate</div>
+            </RadzenTabsItem>
+
+            <RadzenTabsItem Text="Участники">
+
+            </RadzenTabsItem>
+
+            <RadzenTabsItem Text="Файлы">
+
+            </RadzenTabsItem>
+        </Tabs>
+    </RadzenTabs>
+
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+    [Parameter]
+    public QuestionDTO CurrentQuestion { get; set; }
+
+    private PersonDTO CurrentPerson { get; set; } = new();
+
+    private string Developer { get; set; } = string.Empty;
+
+    private string DateToCreate { get; set; } = string.Empty;
+
+    private string ProjectName { get; set; } = string.Empty;
+
+    private IEnumerable<PersonDTO> PersonDTOs = new List<PersonDTO>();
+
+    private IEnumerable<ProjectDTO> ProjectDTOs = new List<ProjectDTO>();
+
+    protected override async void OnInitialized()
+    {
+        var authState = await authenticationState;
+        PersonDTOs = await PersonService.GetPersonsAsync();
+        CurrentPerson = PersonDTOs.Where(p=>p.UserName==(authState.User.Identity.Name)).Single();
+
+        ProjectDTOs = await ProjectService.GetProjectsListAsync();
+
+    }
+
+    protected override async void OnParametersSet()
+    {
+        if (CurrentQuestion is not null)
+        {
+            var per = PersonDTOs.Where(p => p.Id == CurrentQuestion.CreatorId).Single();
+            Developer = $"{per.LastName} {per.FirstName}";
+
+            DateToCreate = CurrentQuestion.DateTime.ToString("HH:mm|dd:MMM:yy");
+        }
+
+    }
+}

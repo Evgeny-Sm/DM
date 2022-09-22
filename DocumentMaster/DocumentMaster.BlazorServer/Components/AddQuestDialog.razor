@@ -4,74 +4,90 @@
 @inject DialogService DialogService
 @inject PersonService PersonService
 @inject FileService FileService
+@inject ProjectService ProjectService
+@inject DepartmentService DepartmentService
 
 <div class="row">
-    <div class="col-6">
+    <div class="col-md-6">
         <RadzenTemplateForm TItem="QuestionDTO" Data="@model" Submit=@OnSubmit>
-            <div class="row" style="margin-bottom: 16px">
-                <div class="col-md-3">
+            <div class="row justify-content-start" style="margin-bottom: 16px">
+                <div class="col-md-4">
                     <RadzenLabel Text="Название" />
                 </div>
-                <div class="col-6">
-                    <RadzenTextBox @bind-Value="@model.Title" Name="Text" />
+                <div class="col-md-8">
+                    <RadzenTextBox Style="width:100%"   @bind-Value="@model.Title" Name="Text" />
                     <RadzenRequiredValidator Text="Title is required" Component="Text" />
                 </div>
             </div>
-            <div class="row" style="margin-bottom: 16px">
-                <div class="col-md-4">
+            <div class="row justify-content-start" style="margin-bottom: 16px">
+                <div class="col-4">
                     <RadzenLabel Text="Файл(необязательно)" />
                 </div>
-                <div class="col-4">
-                    <RadzenTextBox  Change="@((args)=>Find(args))" Name="Text" />                    
+                <div class="col-8">
+                    <RadzenTextBox Style="width:100%" Change="@((args)=>Find(args))" Name="Text" />
                 </div>
-                <div class="col-4">
-                    @foreach (var s in FileNumbers)
-                    {
-                        <div>
-                            <span style="color:cornflowerblue"> @s </span>
-                            <button type="button" @onclick=@(args=>RemoveFromNumbers(s)) class="btn-close"></button>
-                        </div>
-                    }
+
+                @foreach (var s in FileNumbers)
+                {
+                    <div>
+                        <span style="color:cornflowerblue"> @s </span>
+                        <button type="button" @onclick=@(args=>RemoveFromNumbers(s)) class="btn-close"></button>
+                    </div>
+                }
+            </div>
+            <div class="row justify-content-start" style="margin-bottom: 16px">
+                <div class="col-md-4">
+                    <RadzenLabel Text="Связанный проект" />
+                </div>
+                <div class="col-md-8">
+                    <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                            Data=@(Projects) Style="width: 100%" AllowColumnResize="true"
+                                            TextProperty="Name" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
+                                            Change=@(args => OnChangeProject(args))>
+                        <Columns>
+                            <RadzenDropDownDataGridColumn Property="Name" Title="Название" Width="80px" />
+                        </Columns>
+                    </RadzenDropDownDataGrid>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-3"></div>
+            <br />
+            <div class="row justify-content-start">
+
                 <div class="col">
-                    <RadzenButton ButtonType="ButtonType.Submit" Text="Save" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Secondary" ButtonType="ButtonType.Submit" Text="Save" />
                 </div>
             </div>
         </RadzenTemplateForm>
     </div>
-    <div class="col-6">
-        <div class="container">
-            <div class="row justify-content-start g-1">
-                <div class="col-md-3">
-                    <RadzenLabel Text="Участники" />
-                </div>
-                <div class="col-md-7">
-                    <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
-                                            Data=@(Persons) Style="width: 100%" AllowColumnResize="true"
-                                            TextProperty="LastName" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
-                                            Change=@(args => OnChangePerson(args))>
-                        <Columns>
-                            <RadzenDropDownDataGridColumn Property="FirstName" Title="Имя" Width="80px" />
-                            <RadzenDropDownDataGridColumn Property="LastName" Title="Фамилия" Width="80px" />
-                        </Columns>
-                    </RadzenDropDownDataGrid>
-                </div>
-                <div class="col-md-2">
-                    <button type="button" @onclick="AddPersonToTask" class="btn btn-primary">добавить</button>
-                </div>
-            </div>
+    <div class="col-md-6">
 
-            @foreach (var p in ChoosenPersons)
-            {
-                <div>
-                    <span style="color:cornflowerblue"> @p.LastName @p.FirstName </span>
-                    <button type="button" @onclick=@(args=>RemoveFromChallenge(p)) class="btn-close"></button>
-                </div>
-            }
+        <div class="row justify-content-start g-1">
+            <div class="col-md-3">
+                <RadzenLabel Text="Участники" />
+            </div>
+            <div class="col-md-7">
+                <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                        Data=@(Persons) Style="width: 100%" AllowColumnResize="true"
+                                        TextProperty="LastName" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
+                                        Change=@(args => OnChangePerson(args))>
+                    <Columns>
+                        <RadzenDropDownDataGridColumn Property="FirstName" Title="Имя" Width="80px" />
+                        <RadzenDropDownDataGridColumn Property="LastName" Title="Фамилия" Width="80px" />
+                    </Columns>
+                </RadzenDropDownDataGrid>
+            </div>
+            <div class="col-md-2">
+                <button type="button" @onclick="AddPersonToTask" class="btn btn-primary oi-plus"></button>
+            </div>
         </div>
+
+        @foreach (var p in ChoosenPersons)
+        {
+            <div>
+                <span style="color:cornflowerblue"> @p.LastName @p.FirstName </span>
+                <button type="button" @onclick=@(args=>RemoveFromChallenge(p)) class="btn-close"></button>
+            </div>
+        }
     </div>
 </div>
 
@@ -83,6 +99,8 @@
 @code {
 
     private IEnumerable<PersonDTO> Persons = new List<PersonDTO>();
+
+    private IEnumerable<ProjectDTO> Projects = new List<ProjectDTO>();
 
     private IList<PersonDTO> ChoosenPersons = new List<PersonDTO>();
 
@@ -97,6 +115,8 @@
     protected override async Task OnInitializedAsync()
     {
         Persons = await PersonService.GetPersonsAsync();
+        Projects = await ProjectService.GetProjectsListAsync();
+
         StateHasChanged();
     }
     protected override void OnParametersSet()
@@ -106,13 +126,16 @@
 
     private void OnSubmit(QuestionDTO model)
     {
-
         DialogService.Close(model);
     }
     private void OnChangePerson(object value)
     {
         ChoosenPersonId = (int)value;
         choose = true;
+    }
+    private void OnChangeProject(object value)
+    {
+        model.ProjectId = (int)value;       
     }
     private void AddPersonToTask()
     {
@@ -134,15 +157,23 @@
             var exist = await FileService.Exist(t);
             if (exist)
             {
-                FileNumbers.Add($"{args}|");
-                model.LinkedFile=FileNumbers.ToString();
+                FileNumbers.Add($"{args}");
+                model.LinkedFile = FileNumbers.Aggregate((a, b) => a + " " + b); 
             }
         }
 
     }
     private void RemoveFromNumbers(string s)
     {
-        FileNumbers.Remove($"{s}|");
-        model.LinkedFile = FileNumbers.ToString();
+        FileNumbers.Remove(new string($"{s}"));
+        if (FileNumbers.Count != 0)
+        {
+            model.LinkedFile = FileNumbers.Aggregate((a, b) => a + " " + b);
+        }
+        else
+        {
+            model.LinkedFile = string.Empty;
+        }
     }
+
 }

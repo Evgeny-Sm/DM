@@ -1,24 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Tasks\\work\\DM\\DocumentMaster\\Models\\Models.csproj": {}
+    "C:\\Soft\\DM\\DocumentMaster\\Models\\Models.csproj": {}
   },
   "projects": {
-    "C:\\Tasks\\work\\DM\\DocumentMaster\\Models\\Models.csproj": {
+    "C:\\Soft\\DM\\DocumentMaster\\Models\\Models.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Tasks\\work\\DM\\DocumentMaster\\Models\\Models.csproj",
+        "projectUniqueName": "C:\\Soft\\DM\\DocumentMaster\\Models\\Models.csproj",
         "projectName": "Models",
-        "projectPath": "C:\\Tasks\\work\\DM\\DocumentMaster\\Models\\Models.csproj",
+        "projectPath": "C:\\Soft\\DM\\DocumentMaster\\Models\\Models.csproj",
         "packagesPath": "C:\\Users\\evgas\\.nuget\\packages\\",
-        "outputPath": "C:\\Tasks\\work\\DM\\DocumentMaster\\Models\\obj\\",
+        "outputPath": "C:\\Soft\\DM\\DocumentMaster\\Models\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
           "C:\\Users\\evgas\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -26,7 +22,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
