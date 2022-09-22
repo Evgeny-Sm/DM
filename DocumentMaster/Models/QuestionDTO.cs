@@ -17,5 +17,6 @@ namespace Models
         public bool IsDeleted { get; set; }
         public string LinkedFile { get; set; } = string.Empty;
         public int CreatorId { get; set; }
+        public int ProjectId { get; set; }
     }
 }

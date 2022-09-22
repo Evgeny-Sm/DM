@@ -19,9 +19,11 @@ namespace DM.DAL.Models
         public Person? MainIng { get; set; }
         public int PersonId { get; set; }
         public ICollection<FileUnit>? FileUnits { get; set; }
+        public ICollection<Question>? Questions { get; set; }
         public Project()
         { 
             FileUnits = new List<FileUnit>();
+            Questions = new List<Question>();
         }
     }
 }

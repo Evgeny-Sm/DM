@@ -19,6 +19,8 @@ namespace DM.DAL.Models
         public bool IsDeleted { get; set; }
         public string LinkedFile { get; set; } = string.Empty;
         public int CreatorId { get; set; }
+        public Project? Project { get; set; }
+        public int PrijectId { get; set; }
 
     }
 }

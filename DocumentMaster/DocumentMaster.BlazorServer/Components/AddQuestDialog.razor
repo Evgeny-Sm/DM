@@ -3,53 +3,80 @@
 
 @inject DialogService DialogService
 @inject PersonService PersonService
+@inject FileService FileService
 
+<div class="row">
+    <div class="col-6">
+        <RadzenTemplateForm TItem="QuestionDTO" Data="@model" Submit=@OnSubmit>
+            <div class="row" style="margin-bottom: 16px">
+                <div class="col-md-3">
+                    <RadzenLabel Text="Название" />
+                </div>
+                <div class="col-6">
+                    <RadzenTextBox @bind-Value="@model.Title" Name="Text" />
+                    <RadzenRequiredValidator Text="Title is required" Component="Text" />
+                </div>
+            </div>
+            <div class="row" style="margin-bottom: 16px">
+                <div class="col-md-4">
+                    <RadzenLabel Text="Файл(необязательно)" />
+                </div>
+                <div class="col-4">
+                    <RadzenTextBox  Change="@((args)=>Find(args))" Name="Text" />                    
+                </div>
+                <div class="col-4">
+                    @foreach (var s in FileNumbers)
+                    {
+                        <div>
+                            <span style="color:cornflowerblue"> @s </span>
+                            <button type="button" @onclick=@(args=>RemoveFromNumbers(s)) class="btn-close"></button>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col">
+                    <RadzenButton ButtonType="ButtonType.Submit" Text="Save" />
+                </div>
+            </div>
+        </RadzenTemplateForm>
+    </div>
+    <div class="col-6">
+        <div class="container">
+            <div class="row justify-content-start g-1">
+                <div class="col-md-3">
+                    <RadzenLabel Text="Участники" />
+                </div>
+                <div class="col-md-7">
+                    <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                            Data=@(Persons) Style="width: 100%" AllowColumnResize="true"
+                                            TextProperty="LastName" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
+                                            Change=@(args => OnChangePerson(args))>
+                        <Columns>
+                            <RadzenDropDownDataGridColumn Property="FirstName" Title="Имя" Width="80px" />
+                            <RadzenDropDownDataGridColumn Property="LastName" Title="Фамилия" Width="80px" />
+                        </Columns>
+                    </RadzenDropDownDataGrid>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" @onclick="AddPersonToTask" class="btn btn-primary">добавить</button>
+                </div>
+            </div>
 
-<div class="container">
-    <div class="row justify-content-start g-1">
-        <div class="col-md-8">
-            <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
-                                    Data=@(Persons) Style="width: 100%" AllowColumnResize="true"
-                                    TextProperty="LastName" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
-                                    Change=@(args => OnChangePerson(args))>
-                <Columns>
-                    <RadzenDropDownDataGridColumn Property="FirstName" Title="FirstName" Width="80px" />
-                    <RadzenDropDownDataGridColumn Property="LastName" Title="LastName" Width="80px" />
-                </Columns>
-            </RadzenDropDownDataGrid>
-        </div>
-        <div class="col-md-2">
-            <button type="button" @onclick="AddPersonToTask" class="btn btn-primary">add</button>
+            @foreach (var p in ChoosenPersons)
+            {
+                <div>
+                    <span style="color:cornflowerblue"> @p.LastName @p.FirstName </span>
+                    <button type="button" @onclick=@(args=>RemoveFromChallenge(p)) class="btn-close"></button>
+                </div>
+            }
         </div>
     </div>
-
-    @foreach (var p in ChoosenPersons)
-    {
-        <div>
-            <span style="color:cornflowerblue"> @p.LastName @p.FirstName </span>
-            <button type="button" @onclick=@(args=>RemoveFromChallenge(p)) class="btn-close"></button>
-        </div>
-    }
 </div>
-<br />
 
-<RadzenTemplateForm TItem="QuestionDTO" Data="@model" Submit=@OnSubmit>
-    <div class="row" style="margin-bottom: 16px">
-        <div class="col-md-3">
-            <RadzenLabel Text="Описание" />
-        </div>
-        <div class="col">
-            <RadzenTextBox @bind-Value="@model.Title" Name="Text" />
-            <RadzenRequiredValidator Text="Title is required" Component="Text" />
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-3"></div>
-        <div class="col">
-            <RadzenButton ButtonType="ButtonType.Submit" Text="Save" />
-        </div>
-    </div>
-</RadzenTemplateForm>
+
+
 
 
 
@@ -64,6 +91,8 @@
     QuestionDTO model = new QuestionDTO();
 
     private bool choose = false;
+
+    private List<string> FileNumbers { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -98,5 +127,22 @@
         ChoosenPersons.Remove(person);
         model.PersonIds.Remove(person.Id);
     }
+    private async Task Find(string args)
+    {
+        if (int.TryParse(args, out int t))
+        {
+            var exist = await FileService.Exist(t);
+            if (exist)
+            {
+                FileNumbers.Add($"{args}|");
+                model.LinkedFile=FileNumbers.ToString();
+            }
+        }
 
+    }
+    private void RemoveFromNumbers(string s)
+    {
+        FileNumbers.Remove($"{s}|");
+        model.LinkedFile = FileNumbers.ToString();
+    }
 }
