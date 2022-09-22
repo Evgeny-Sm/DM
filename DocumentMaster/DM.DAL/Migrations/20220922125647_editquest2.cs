@@ -24,7 +24,7 @@ namespace DM.DAL.Migrations
                 defaultValue: 0,
                 oldClrType: typeof(int),
                 oldType: "int",
-                oldNullable: true);
+                oldNullable: false);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Questions_Projects_ProjectId",
@@ -32,7 +32,7 @@ namespace DM.DAL.Migrations
                 column: "ProjectId",
                 principalTable: "Projects",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.NoAction);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

@@ -135,7 +135,8 @@
     }
     private void OnChangeProject(object value)
     {
-        model.ProjectId = (int)value;       
+        if(value is not null)
+            model.ProjectId = (int)value;       
     }
     private void AddPersonToTask()
     {
@@ -158,7 +159,7 @@
             if (exist)
             {
                 FileNumbers.Add($"{args}");
-                model.LinkedFile = FileNumbers.Aggregate((a, b) => a + " " + b); 
+                model.FileUnitsId.Add(t); 
             }
         }
 
@@ -166,14 +167,7 @@
     private void RemoveFromNumbers(string s)
     {
         FileNumbers.Remove(new string($"{s}"));
-        if (FileNumbers.Count != 0)
-        {
-            model.LinkedFile = FileNumbers.Aggregate((a, b) => a + " " + b);
-        }
-        else
-        {
-            model.LinkedFile = string.Empty;
-        }
+        model.FileUnitsId.Remove(int.Parse(s));
     }
 
 }

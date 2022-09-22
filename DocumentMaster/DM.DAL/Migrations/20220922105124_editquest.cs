@@ -19,7 +19,8 @@ namespace DM.DAL.Migrations
                 name: "ProjectId",
                 table: "Questions",
                 type: "int",
-                nullable: true);
+                nullable: false,
+                defaultValue: 0);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Questions_ProjectId",

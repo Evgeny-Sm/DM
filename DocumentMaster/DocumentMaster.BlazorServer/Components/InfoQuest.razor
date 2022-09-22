@@ -6,22 +6,31 @@
 @inject ProjectService ProjectService
 
 
-    <RadzenTabs SelectedIndex="0">
-        <Tabs>
-            <RadzenTabsItem Text="Данные">
-                <b>Разработал: @Developer   </b>
-                <div>Дата создания: @DateToCreate</div>
-            </RadzenTabsItem>
+<RadzenTabs SelectedIndex="0">
+    <Tabs>
+        <RadzenTabsItem Text="Данные">
+            <b>Создал: @Developer   </b>
+            <div>Дата создания: @DateToCreate</div>
+            <div>Проект: @ProjectName</div>
+        </RadzenTabsItem>
 
-            <RadzenTabsItem Text="Участники">
+        <RadzenTabsItem Text="Участники">
+            @foreach(var p in Participants)
+            {
+                <span style="color:cornflowerblue"> @p.LastName @p.FirstName.Substring(0,1) | </span>
+            }
+        </RadzenTabsItem>
 
-            </RadzenTabsItem>
-
-            <RadzenTabsItem Text="Файлы">
-
-            </RadzenTabsItem>
-        </Tabs>
-    </RadzenTabs>
+        <RadzenTabsItem Text="Файлы">
+            @foreach(var f in Files)
+            {
+                <span> @f |</span>
+            }
+                
+            
+        </RadzenTabsItem>
+    </Tabs>
+</RadzenTabs>
 
 
 @code {
@@ -43,6 +52,10 @@
 
     private IEnumerable<ProjectDTO> ProjectDTOs = new List<ProjectDTO>();
 
+    private List<PersonDTO> Participants = new();
+
+    private List<int> Files { get; set; } = new();
+
     protected override async void OnInitialized()
     {
         var authState = await authenticationState;
@@ -61,7 +74,14 @@
             Developer = $"{per.LastName} {per.FirstName}";
 
             DateToCreate = CurrentQuestion.DateTime.ToString("HH:mm|dd:MMM:yy");
+            ProjectName = ProjectDTOs.Where(p => p.Id == CurrentQuestion.ProjectId).Single().Name;
+            Participants = PersonDTOs.Where(p => CurrentQuestion.PersonIds.Contains(p.Id) || p.Id==CurrentQuestion.CreatorId).ToList();
+            Files = CurrentQuestion.FileUnitsId;
         }
 
+
+    }
+    private void Show()
+    { 
     }
 }
