@@ -1,9 +1,15 @@
-﻿@using Models
+﻿@attribute [Authorize]
+
+@using Models
 @using DM.BLL.Services
 
 
 @inject PersonService PersonService
 @inject ProjectService ProjectService
+@inject FileService FileService
+@inject IWebHostEnvironment WebHostInvironment
+@inject IConfiguration Configuration
+@inject IJSRuntime JS
 
 
 <RadzenTabs SelectedIndex="0">
@@ -24,10 +30,8 @@
         <RadzenTabsItem Text="Файлы">
             @foreach(var f in Files)
             {
-                <span> @f |</span>
-            }
-                
-            
+                <RadzenButton Variant="Variant.Text" Click=@(args => OnClickToFile(f)) Text="@f.ToString()" ButtonStyle="ButtonStyle.Secondary" /> 
+            }                      
         </RadzenTabsItem>
     </Tabs>
 </RadzenTabs>
@@ -81,7 +85,20 @@
 
 
     }
-    private void Show()
-    { 
+    private async Task OnClickToFile(int id)
+    {
+        var file = await FileService.GetItemByIdAsync(id);
+        if (file != null)
+        {
+            var name = file.Name;
+            var downloadPath = WebHostInvironment.WebRootPath + Configuration.GetRequiredSection("ProjectRootDir").Value
+                                + $"\\{file.ProjectId}" + $"\\{name}";
+
+            var fileStream = File.OpenRead(@$"{downloadPath}");
+
+            using var streamRef = new DotNetStreamReference(stream: fileStream);
+            await JS.InvokeVoidAsync("downloadFileFromStream", name, streamRef);
+        }
+
     }
 }

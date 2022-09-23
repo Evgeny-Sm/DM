@@ -76,9 +76,6 @@
                     </Columns>
                 </RadzenDropDownDataGrid>
             </div>
-            <div class="col-md-2">
-                <button type="button" @onclick="AddPersonToTask" class="btn btn-primary oi-plus"></button>
-            </div>
         </div>
 
         @foreach (var p in ChoosenPersons)
@@ -90,10 +87,6 @@
         }
     </div>
 </div>
-
-
-
-
 
 
 @code {
@@ -132,20 +125,15 @@
     {
         ChoosenPersonId = (int)value;
         choose = true;
+        model.PersonIds.Add(ChoosenPersonId);
+        ChoosenPersons.Add(Persons.Where(p => p.Id == ChoosenPersonId).Single());
     }
     private void OnChangeProject(object value)
     {
         if(value is not null)
             model.ProjectId = (int)value;       
     }
-    private void AddPersonToTask()
-    {
-        if (choose)
-        {
-            model.PersonIds.Add(ChoosenPersonId);
-            ChoosenPersons.Add(Persons.Where(p => p.Id == ChoosenPersonId).Single());
-        }
-    }
+
     private void RemoveFromChallenge(PersonDTO person)
     {
         ChoosenPersons.Remove(person);
@@ -164,6 +152,7 @@
         }
 
     }
+
     private void RemoveFromNumbers(string s)
     {
         FileNumbers.Remove(new string($"{s}"));
