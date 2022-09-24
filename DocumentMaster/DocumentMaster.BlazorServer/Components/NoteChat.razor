@@ -13,10 +13,10 @@
 
 @implements IAsyncDisposable
 
-<img scr="/images/0S1JJOMH2020-08-03_16-59-23.jpg" />
+
 <AuthorizeView>
     <Authorized>
-        <div class="container overflow-auto shadow-sm p-3 mb-5 bg-white rounded" id="chatContainer" style="height:600px">
+        <div class="container overflow-auto shadow-sm p-3 mb-5 bg-white rounded" id="chatContainer" style="height:550px">
             @if (!userMessages.Any())
             {
                 <p style="color:gray"> No messages </p>
@@ -156,6 +156,7 @@
             {
                 mes.Path = $"/{configuration.GetRequiredSection("PathToQuestPictures").Value}/{CurrentQuestion.Id.ToString()}/{mes.Path}";
             }
+            await NoteService.UpdateItemAsync(mes);
         }
         userMessages = messages.ToList();
     }

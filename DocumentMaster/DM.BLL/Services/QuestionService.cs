@@ -28,8 +28,9 @@ namespace DM.BLL.Services
         {
             using var context = _contextFactory.CreateDbContext();
             var quests = await context.Questions.Where(p => p.IsDeleted == false).Include(p => p.Persons)
-                .Include(n=>n.Notes)
-                .Include(f => f.FileUnits).ToListAsync();
+                .Include(n=>n.Notes).ThenInclude(p=>p.Persons)
+                .Include(f => f.FileUnits)
+                .Include(p=>p.Project).ToListAsync();
             var result = _mapper.Map<IEnumerable<QuestionDTO>>(quests);
             return result;
         }
@@ -39,14 +40,24 @@ namespace DM.BLL.Services
             using var context = _contextFactory.CreateDbContext();
             var item = await context.Questions.Where(c => c.Id == id)
                 .Include(p => p.Persons)
-                .Include(n => n.Notes)
-                .Include(f => f.FileUnits).SingleAsync();
+                .Include(n => n.Notes).ThenInclude(p => p.Persons)
+                .Include(f => f.FileUnits)
+                .Include(p => p.Project).SingleAsync();
             if (item == null)
             {
                 return null;
             }
             var result = _mapper.Map<QuestionDTO>(item);
             return result;
+        }
+        public async Task<int> GetCountUnreaded(int personId, int questId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var item = await context.Questions.Where(c => c.Id == questId)
+                .Include(n => n.Notes).ThenInclude(p => p.Persons)
+                .SingleAsync();
+            var count = item.Notes.Select(n => n.Persons.Select(p => p.Id)).Where(t=>!t.Contains(personId)).Count();
+            return count;
         }
 
         public async Task<QuestionDTO> AddItemAsync(QuestionDTO questionDTO)
@@ -81,8 +92,8 @@ namespace DM.BLL.Services
         {
             using var context = _contextFactory.CreateDbContext();
 
-            var element = context.Questions.Where(p => p.Id == questionDTO.Id).Include(a => a.Persons)
-                .Include(a => a.FileUnits).Single();
+            var element =await context.Questions.Where(p => p.Id == questionDTO.Id).Include(a => a.Persons)
+                .Include(a => a.FileUnits).SingleAsync();
             if (element is null)
             {
                 element = new Question();
@@ -99,6 +110,18 @@ namespace DM.BLL.Services
             await context.SaveChangesAsync();
         }
 
+        public async Task HideItem(int id)
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            var element = context.Questions.Find(id);
+            if (element != null)
+            {
+                element.IsDeleted = true;
+                context.Questions.Update(element);
+                await context.SaveChangesAsync();
+            }
+        }
         public async Task RemoveItem(int id)
         {
             using var context = _contextFactory.CreateDbContext();

@@ -18,5 +18,7 @@ namespace Models
         public List<int> FileUnitsId { get; set; }=new ();
         public int CreatorId { get; set; }
         public int ProjectId { get; set; }
+        public string ProjectName { get; set; }=string.Empty;
+        public string UnreadedCount { get; set; } = string.Empty;
     }
 }

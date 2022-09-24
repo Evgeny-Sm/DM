@@ -22,10 +22,13 @@
                     <div>Дата создания: @DateToCreate</div>
                     <div>Проект: @ProjectName</div>
                 </div>
-                <div class="col-6 d-inline-block">
-                    <RadzenCheckBox @bind-Value=@CheckBox Name="CheckBox1" TValue="bool" Change=@(args => OnChangeCheckBox(args)) />
-                    <RadzenLabel Text="Отслеживать" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
-                </div>
+                @if (CurrentQuestion is not null)
+                {
+                    <div class="col-6 d-inline-block">
+                        <RadzenCheckBox @bind-Value=@CheckBox Name="CheckBox1" TValue="bool" Change=@(args => OnChangeCheckBox(args)) />
+                        <RadzenLabel Text="Отслеживать" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
+                    </div>
+                }
             </div>
         </RadzenTabsItem>
 
@@ -81,9 +84,9 @@
 
     }
 
-    protected override async void OnParametersSet()
+    protected override void OnParametersSet()
     {
-        if (CurrentQuestion is not null)
+        if (CurrentQuestion is not null && !string.IsNullOrEmpty(CurrentQuestion.Title))
         {
             var per = PersonDTOs.Where(p => p.Id == CurrentQuestion.CreatorId).Single();
             Developer = $"{per.LastName} {per.FirstName}";
