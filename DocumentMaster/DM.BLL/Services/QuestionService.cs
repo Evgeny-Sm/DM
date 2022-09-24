@@ -77,6 +77,40 @@ namespace DM.BLL.Services
             }
             return await GetItemByIdAsync(question.Id);
         }
+        public async Task UpdateItemAsync(QuestionDTO questionDTO)
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            var element = context.Questions.Where(p => p.Id == questionDTO.Id).Include(a => a.Persons)
+                .Include(a => a.FileUnits).Single();
+            if (element is null)
+            {
+                element = new Question();
+                throw new ArgumentNullException($"Unknown {element.GetType().Name}");
+            }
+            element.Title = questionDTO.Title;
+            element.IsDeleted = questionDTO.IsDeleted;
+            
+            element.Persons = await context.Persons.Where(p => questionDTO.PersonIds.Contains(p.Id)).ToListAsync();
+            element.FileUnits = await context.FileUnits.Where(p => questionDTO.FileUnitsId.Contains(p.Id)).ToListAsync();
+
+            context.Questions.Update(element);
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task RemoveItem(int id)
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            var element = context.Questions.Find(id);
+            if (element != null)
+            {
+                context.Questions.Remove(element);
+                await context.SaveChangesAsync();
+            }
+        }
+
 
 
     }

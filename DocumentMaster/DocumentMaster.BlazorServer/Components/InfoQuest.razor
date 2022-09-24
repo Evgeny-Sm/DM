@@ -7,6 +7,7 @@
 @inject PersonService PersonService
 @inject ProjectService ProjectService
 @inject FileService FileService
+@inject QuestionService QuestionService
 @inject IWebHostEnvironment WebHostInvironment
 @inject IConfiguration Configuration
 @inject IJSRuntime JS
@@ -15,9 +16,17 @@
 <RadzenTabs SelectedIndex="0">
     <Tabs>
         <RadzenTabsItem Text="Данные">
-            <b>Создал: @Developer   </b>
-            <div>Дата создания: @DateToCreate</div>
-            <div>Проект: @ProjectName</div>
+            <div class="row">
+                <div class="col-6">
+                    <b>Создал: @Developer   </b>
+                    <div>Дата создания: @DateToCreate</div>
+                    <div>Проект: @ProjectName</div>
+                </div>
+                <div class="col-6 d-inline-block">
+                    <RadzenCheckBox @bind-Value=@CheckBox Name="CheckBox1" TValue="bool" Change=@(args => OnChangeCheckBox(args)) />
+                    <RadzenLabel Text="Отслеживать" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
+                </div>
+            </div>
         </RadzenTabsItem>
 
         <RadzenTabsItem Text="Участники">
@@ -60,6 +69,8 @@
 
     private List<int> Files { get; set; } = new();
 
+    private bool CheckBox { get; set; }
+
     protected override async void OnInitialized()
     {
         var authState = await authenticationState;
@@ -81,6 +92,7 @@
             ProjectName = ProjectDTOs.Where(p => p.Id == CurrentQuestion.ProjectId).Single().Name;
             Participants = PersonDTOs.Where(p => CurrentQuestion.PersonIds.Contains(p.Id) || p.Id==CurrentQuestion.CreatorId).ToList();
             Files = CurrentQuestion.FileUnitsId;
+            CheckBox = CurrentQuestion.PersonIds.Contains(CurrentPerson.Id);
         }
 
 
@@ -98,6 +110,23 @@
 
             using var streamRef = new DotNetStreamReference(stream: fileStream);
             await JS.InvokeVoidAsync("downloadFileFromStream", name, streamRef);
+        }
+
+    }
+    private async Task OnChangeCheckBox(bool args)
+    {
+        if (args)
+        {
+            CurrentQuestion.PersonIds.Add(CurrentPerson.Id);
+            await QuestionService.UpdateItemAsync(CurrentQuestion);
+        }
+        else
+        {
+            var b=CurrentQuestion.PersonIds.Remove(CurrentPerson.Id);
+            if (b)
+            { 
+                await QuestionService.UpdateItemAsync(CurrentQuestion);
+            }
         }
 
     }
