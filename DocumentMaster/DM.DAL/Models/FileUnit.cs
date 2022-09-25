@@ -14,8 +14,11 @@ namespace DM.DAL.Models
         public int Id { get; set; }
         public bool IsDeleted { get; set; }
         [Required]
+        [StringLength(200)]
         public string Name { get; set; }=String.Empty;
+        [StringLength(500)]
         public string Description { get; set; }=string.Empty;
+        [StringLength(200)]
         public string PathFile { get; set; } = String.Empty;
         public Department? Department { get; set; }
         public int DepartmentId { get; set; }

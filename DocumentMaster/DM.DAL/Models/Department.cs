@@ -12,7 +12,9 @@ namespace DM.DAL.Models
         [Key]
         public int Id { get; set; }
         public bool IsDeleted { get; set; }
+        [StringLength(50)]
         public string Name { get; set; }=String.Empty;
+        [StringLength(200)]
         public string Description { get; set; }=String.Empty;
         public ICollection<Person> Persons { get; set; }        
         public ICollection<FileUnit> FileUnits { get; set; }

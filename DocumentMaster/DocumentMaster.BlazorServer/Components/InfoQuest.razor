@@ -40,10 +40,19 @@
         </RadzenTabsItem>
 
         <RadzenTabsItem Text="Файлы">
-            @foreach(var f in Files)
-            {
-                <RadzenButton Variant="Variant.Text" Click=@(args => OnClickToFile(f)) Text="@f.ToString()" ButtonStyle="ButtonStyle.Secondary" /> 
-            }                      
+
+            <div class="row">
+                <div class="col-md-9">
+                    @foreach (var f in Files)
+                    {
+                        <RadzenButton Variant="Variant.Text" Click=@(args => OnClickToFile(f)) Text="@f.ToString()" ButtonStyle="ButtonStyle.Secondary" />
+                    }
+                </div>
+                <div class="col-md-3">
+                    <RadzenTextBox Style="width:100%" Placeholder="..номер файла"  Change="@((args)=>Find(args))" Name="Text" />
+                </div>
+            </div>
+
         </RadzenTabsItem>
     </Tabs>
 </RadzenTabs>
@@ -129,6 +138,24 @@
             if (b)
             { 
                 await QuestionService.UpdateItemAsync(CurrentQuestion);
+            }
+        }
+
+    }
+
+    private async Task Find(string args)
+    {
+        if (CurrentQuestion is not null && !string.IsNullOrEmpty(CurrentQuestion.Title))
+        {
+            if (int.TryParse(args, out int t))
+            {
+                var exist = await FileService.Exist(t);
+                if (exist)
+                {
+                    CurrentQuestion.FileUnitsId.Add(t);
+                    await QuestionService.UpdateItemAsync(CurrentQuestion);
+
+                }
             }
         }
 
