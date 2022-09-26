@@ -19,7 +19,7 @@
 
 
 
-<h3>Files </h3>
+<h3>Файлы </h3>
 <AuthorizeView>
     <Authorized>
         <div class="row">
@@ -54,10 +54,15 @@
                         @if (IsReadyToCheck)
                         {
                             <SendToCheckButton SendedToCheck="@SetSendedStatus" SelectedFiles="@SelectedFiles"/>
-                            <ReloadFileButton SelectedFiles="@SelectedFiles"/>
+                            <ReloadFileButton SelectedFiles="@SelectedFiles"/>                          
+                        }
+                        @if (IsReadyToCheck || CurrentPerson.Role=="admin")
+                        {
+                            <HideFileButton FileWasRemoved="@SetFiles" SelectedFiles="@SelectedFiles" />
                         }
                     </div>
                     <InfoFile SelectedFiles="@SelectedFiles"/>
+                    <RecoverButton FileWasRecover="@SetFiles" SelectedFiles="@SelectedFiles" />
                 }
             </div>
         </div>
@@ -74,7 +79,7 @@
 
     private bool CheckBoxUser = false;
 
-    private PersonDTO CurrentPerson { get; set; }
+    private PersonDTO CurrentPerson { get; set; } = new();
 
     private bool IsReadyToCheck { get; set; } = true;
 
@@ -86,7 +91,9 @@
     {
 
         using var context = contextFactory.CreateDbContext();
-        files = context.FileUnits.Include(d => d.Department).Include(p => p.Person).Include(p => p.Project).Include(s => s.Section).OrderByDescending(f => f.Id).ToArray();
+        files = context.FileUnits.Where(f=>f.IsDeleted==false).Include(d => d.Department)
+        .Include(p => p.Person).Include(p => p.Project)
+        .Include(s => s.Section).OrderByDescending(f => f.Id).ToArray();
 
         SelectedFiles = new List<FileUnit>();
         var authState = await authenticationState;
@@ -102,6 +109,7 @@
 
     private void SetSelectedFiles(IList<FileUnit> fileUnit)
     {
+
         if (fileUnit != null)
         {
             SelectedFiles = fileUnit;
@@ -122,7 +130,7 @@
     {
         if (files is not null)
         {
-            
+
             if (CheckBoxUser)
             {
                 files = files.Where(t => t.Person.Id == CurrentPerson.Id).OrderByDescending(f => f.Id).ToArray();
@@ -130,7 +138,9 @@
             else
             {
                 using var context = contextFactory.CreateDbContext();
-                files = context.FileUnits.Include(d => d.Department).Include(p => p.Person).Include(p => p.Project).Include(s => s.Section).OrderByDescending(f => f.Id).ToArray();
+                files = context.FileUnits.Include(d => d.Department)
+                .Include(p => p.Person).Include(p => p.Project)
+                .Include(s => s.Section).OrderByDescending(f => f.Id).ToArray();
             }
         }
 
@@ -141,20 +151,29 @@
         if (statusFromDialog)
         {
             using var context = contextFactory.CreateDbContext();
-            files = context.FileUnits.Include(d => d.Department).Include(p => p.Person).Include(p => p.Project).Include(s => s.Section).OrderByDescending(f => f.Id).ToArray();
+            files = context.FileUnits.Where(f => f.IsDeleted == false).Include(d => d.Department).Include(p => p.Person).Include(p => p.Project).Include(s => s.Section).OrderByDescending(f => f.Id).ToArray();
             SelectedFiles = new List<FileUnit>();
         }
     }
     private async Task Find(ChangeEventArgs args)
     {
+        var authState = await authenticationState;
         InputString = args.Value.ToString();
         string filteringString = args.Value.ToString();
+        if (filteringString == "Show-Removed" && authState.User.IsInRole("admin"))
+        { 
+            using var context = contextFactory.CreateDbContext();
+            files = await context.FileUnits.Where(f => f.IsDeleted == true).Include(p => p.Person).Include(p => p.Project).
+            Include(d => d.Department).Include(p => p.Project).
+            Include(s => s.Section).OrderByDescending(f => f.Id).ToArrayAsync();
+            return;
+        }
 
         if (filteringString.Length >= 2 && filteringString.Substring(0, 2) != RememberedString)
         {
             RememberedString = filteringString.Substring(0, 2);
             using var context = contextFactory.CreateDbContext();
-            files = await context.FileUnits.Include(p => p.Person).Include(p => p.Project).
+            files = await context.FileUnits.Where(f => f.IsDeleted == false).Include(p => p.Person).Include(p => p.Project).
             Where(f => f.Name.Contains(filteringString) || f.Description.Contains(filteringString) 
             || f.Project.Name.Contains(filteringString)).
             Include(d => d.Department).Include(p => p.Project).
@@ -170,9 +189,14 @@
     private async Task SetAllFileList()
     { 
         using var context = contextFactory.CreateDbContext();
-        files =await context.FileUnits.Include(d => d.Department).Include(p => p.Person).
-        Include(p => p.Project).Include(s => s.Section).OrderByDescending(f => f.Id).ToArrayAsync();
+        files = await context.FileUnits.Where(f => f.IsDeleted == false).Include(d => d.Department)
+        .Include(p => p.Person)
+        .Include(p => p.Project).Include(s => s.Section).OrderByDescending(f => f.Id).ToArrayAsync();
         InputString = string.Empty;
+    }
+    private void SetFiles(int id)
+    {
+        files = files.Where(f => f.Id != id).ToArray();
     }
 
 }

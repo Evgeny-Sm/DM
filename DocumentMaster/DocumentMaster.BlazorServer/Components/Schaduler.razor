@@ -60,7 +60,7 @@
     private async Task OnSlotSelect(SchedulerSlotSelectEventArgs args)
     {
 
-        ChallengeDTO data = await DialogService.OpenAsync<AddAppointmentPage>("Add Task",
+        ChallengeDTO data = await DialogService.OpenAsync<AddAppointmentPage>("Добавить событие",
             new Dictionary<string, object> { { "Start", args.Start }, { "End", args.End } });
 
         if (data != null)
@@ -79,7 +79,7 @@
     private async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<ChallengeDTO> args)
     {
 
-        ChallengeDTO data = await DialogService.OpenAsync<EditAppointmentPage>("Edit Task", new Dictionary<string, object> { { "Appointment", args.Data } });
+        ChallengeDTO data = await DialogService.OpenAsync<EditAppointmentPage>("Изменить событие", new Dictionary<string, object> { { "Appointment", args.Data } });
         if (data != null)
         {
             data.PersonIds = data.PersonIds.Distinct().ToList();

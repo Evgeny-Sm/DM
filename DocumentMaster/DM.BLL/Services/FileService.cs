@@ -47,7 +47,7 @@ namespace DM.BLL.Services
         {
             using var context = _contextFactory.CreateDbContext();
 
-            var element = await context.FileUnits.Where(f=>f.Id==id).SingleAsync();
+            var element = await context.FileUnits.FindAsync(id);
 
             if (element == null)
             {
@@ -116,6 +116,36 @@ namespace DM.BLL.Services
             context.FileUnits.Update(element);
             
             return await context.SaveChangesAsync();
+
+        }
+        public async Task RecoverFileAsync(int id)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var element = await context.FileUnits.FindAsync(id);
+            if (element is null)
+            {
+                element = new FileUnit();
+                throw new ArgumentNullException($"Unknown {element.GetType().Name}");
+            }
+            element.IsDeleted = false;
+            context.FileUnits.Update(element);
+
+            await context.SaveChangesAsync();
+
+        }
+        public async Task HideFile(int id)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var element = await context.FileUnits.FindAsync(id);
+            if (element is null)
+            {
+                element = new FileUnit();
+                throw new ArgumentNullException($"Unknown {element.GetType().Name}");
+            }
+            element.IsDeleted = true;
+            context.FileUnits.Update(element);
+
+            await context.SaveChangesAsync();
 
         }
 
