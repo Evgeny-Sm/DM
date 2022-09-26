@@ -6,6 +6,7 @@
 @inject FileService FileService
 @inject ProjectService ProjectService
 @inject DepartmentService DepartmentService
+@inject IJSRuntime JS
 
 <div class="row">
     <div class="col-md-6">
@@ -101,7 +102,8 @@
 
     QuestionDTO model = new QuestionDTO();
 
-    private bool choose = false;
+    private bool PersonChoose = false;
+    private bool ProjectChoose = false;
 
     private List<string> FileNumbers { get; set; } = new();
 
@@ -117,21 +119,30 @@
 
     }
 
-    private void OnSubmit(QuestionDTO model)
+    private async void OnSubmit(QuestionDTO model)
     {
-        DialogService.Close(model);
+        if (ProjectChoose)
+        {
+            DialogService.Close(model);
+            return;
+        }
+       await JS.InvokeVoidAsync("alert", "Выберите проект");
+        
     }
+
     private void OnChangePerson(object value)
     {
         ChoosenPersonId = (int)value;
-        choose = true;
+        PersonChoose = true;
         model.PersonIds.Add(ChoosenPersonId);
         ChoosenPersons.Add(Persons.Where(p => p.Id == ChoosenPersonId).Single());
     }
     private void OnChangeProject(object value)
     {
         if(value is not null)
-            model.ProjectId = (int)value;       
+            model.ProjectId = (int)value;
+        ProjectChoose = true;
+
     }
 
     private void RemoveFromChallenge(PersonDTO person)
