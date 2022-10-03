@@ -60,7 +60,7 @@
         </div>
 
         <br />
-        <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Submit"></RadzenButton>
+        <RadzenButton ButtonType="ButtonType.Submit" Disabled=@IsSubmitting ButtonStyle="ButtonStyle.Secondary" Text="Submit"></RadzenButton>
         <RadzenButton Click="@Cancel" ButtonStyle="ButtonStyle.Danger" Text="Cancel" Style="width: 120px" />
     </RadzenFieldset>
 
@@ -74,6 +74,8 @@
     private ProjectDTO Project { get; set; } = new ProjectDTO();
 
     private IList<PersonDTO> Persons { get; set; }
+
+    private bool IsSubmitting;
 
     protected override async void OnInitialized()
     {
@@ -90,21 +92,35 @@
 
     async void Submit(ProjectDTO arg)
     {
-        if (!Persons.Select(p=>p.Id).Contains(Project.MainIngId))
+        if (IsSubmitting)
         {
-            await JS.InvokeVoidAsync("alert", "Выберите ГИПа");
             return;
         }
-        arg.IsDeleted = false;
-
-        var p = await ProjectService.AddProjectAsync(arg);
-
-        if (p == null)
+        try
         {
-            await JS.InvokeVoidAsync("alert", "Ошибка базы данных");
+            IsSubmitting = true;
 
+            if (!Persons.Select(p => p.Id).Contains(Project.MainIngId))
+            {
+                await JS.InvokeVoidAsync("alert", "Выберите ГИПа");
+                return;
+            }
+            arg.IsDeleted = false;
+
+            var p = await ProjectService.AddProjectAsync(arg);
+
+            if (p == null)
+            {
+                await JS.InvokeVoidAsync("alert", "Ошибка базы данных");
+
+            }
+            DialogService.Close();
         }
-        DialogService.Close();
+        finally
+        {
+            IsSubmitting = false;
+        }
+
 
     }
     void OnChangePerson(object value)

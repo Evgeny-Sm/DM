@@ -77,6 +77,8 @@
 
     private IEnumerable<FileUnit>? files { get; set; }
 
+    private IEnumerable<FileUnit>? filesFromBase { get; set; }
+
     private bool CheckBoxUser = false;
 
     private PersonDTO CurrentPerson { get; set; } = new();
@@ -91,9 +93,10 @@
     {
 
         using var context = contextFactory.CreateDbContext();
-        files = context.FileUnits.Where(f=>f.IsDeleted==false).Include(d => d.Department)
+        filesFromBase = context.FileUnits.Where(f => f.IsDeleted == false).Include(d => d.Department)
         .Include(p => p.Person).Include(p => p.Project)
         .Include(s => s.Section).OrderByDescending(f => f.Id).ToArray();
+        files = filesFromBase;
 
         SelectedFiles = new List<FileUnit>();
         var authState = await authenticationState;
@@ -137,10 +140,8 @@
             }
             else
             {
-                using var context = contextFactory.CreateDbContext();
-                files = context.FileUnits.Include(d => d.Department)
-                .Include(p => p.Person).Include(p => p.Project)
-                .Include(s => s.Section).OrderByDescending(f => f.Id).ToArray();
+
+                files = filesFromBase;
             }
         }
 
@@ -188,10 +189,7 @@
     }
     private async Task SetAllFileList()
     { 
-        using var context = contextFactory.CreateDbContext();
-        files = await context.FileUnits.Where(f => f.IsDeleted == false).Include(d => d.Department)
-        .Include(p => p.Person)
-        .Include(p => p.Project).Include(s => s.Section).OrderByDescending(f => f.Id).ToArrayAsync();
+        files = filesFromBase;
         InputString = string.Empty;
     }
     private void SetFiles(int id)
