@@ -55,7 +55,7 @@
             <div class="row justify-content-start">
 
                 <div class="col">
-                    <RadzenButton ButtonStyle="ButtonStyle.Secondary" ButtonType="ButtonType.Submit" Text="Save" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Secondary" Disabled=@IsSubmitting ButtonType="ButtonType.Submit" Text="Save" />
                 </div>
             </div>
         </RadzenTemplateForm>
@@ -107,6 +107,8 @@
 
     private List<string> FileNumbers { get; set; } = new();
 
+    private bool IsSubmitting;
+
     protected override async Task OnInitializedAsync()
     {
         Persons = await PersonService.GetPersonsAsync();
@@ -121,13 +123,26 @@
 
     private async void OnSubmit(QuestionDTO model)
     {
-        if (ProjectChoose)
+        if (IsSubmitting)
         {
-            DialogService.Close(model);
             return;
         }
-       await JS.InvokeVoidAsync("alert", "Выберите проект");
-        
+        try
+        {
+            IsSubmitting = true;
+            if (ProjectChoose)
+            {
+                DialogService.Close(model);
+                return;
+            }
+            await JS.InvokeVoidAsync("alert", "Выберите проект");
+        }
+        finally
+        {
+            IsSubmitting = false;
+        }
+
+
     }
 
     private void OnChangePerson(object value)
@@ -150,6 +165,7 @@
         ChoosenPersons.Remove(person);
         model.PersonIds.Remove(person.Id);
     }
+
     private async Task Find(string args)
     {
         if (int.TryParse(args, out int t))
@@ -161,7 +177,6 @@
                 model.FileUnitsId.Add(t); 
             }
         }
-
     }
 
     private void RemoveFromNumbers(string s)
