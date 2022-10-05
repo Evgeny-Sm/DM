@@ -15,8 +15,10 @@ namespace Models
         public List<int> PersonIds { get; set; } = new ();
         public List<int> NoteIds { get; set; } = new ();
         public bool IsDeleted { get; set; }
-        public string LinkedFile { get; set; } = string.Empty;
+        public List<int> FileUnitsId { get; set; }=new ();
         public int CreatorId { get; set; }
         public int ProjectId { get; set; }
+        public string ProjectName { get; set; }=string.Empty;
+        public string UnreadedCount { get; set; } = string.Empty;
     }
 }

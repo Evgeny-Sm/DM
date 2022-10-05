@@ -66,6 +66,23 @@ namespace DM.BLL.Services
             await context.SaveChangesAsync();
             return await GetItemByIdAsync(note.Id);
         }
+        public async Task UpdateItemAsync(NoteDTO noteDTO)
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            var element =await context.Notes.Where(p => p.Id == noteDTO.Id).Include(a => a.Persons)
+                .SingleAsync();
+            if (element is null)
+            {
+                element = new Note();
+                throw new ArgumentNullException($"Unknown {element.GetType().Name}");
+            }
+            element.Persons = await context.Persons.Where(p => noteDTO.PersonIds.Contains(p.Id)).ToListAsync();
+            context.Notes.Update(element);
+
+            await context.SaveChangesAsync();
+
+        }
 
     }
 }

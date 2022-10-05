@@ -1,0 +1,37 @@
+﻿@using DM.BLL.Services
+@using DM.DAL.Models
+
+@inject FileService FileService
+
+
+        @if (!IsDeleted)
+        {
+            <button type="button" style="background-color:firebrick; color:white" @onclick="Hide" class="btn btn-info"> Удалить</button>
+        }
+
+
+@code {
+    [Parameter]
+    public IList<FileUnit> SelectedFiles { get; set; }
+    [Parameter]
+    public EventCallback<int> FileWasRemoved { get; set; }
+
+
+    private bool IsDeleted { get; set; }
+    private FileUnit UserFile { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        UserFile = SelectedFiles.FirstOrDefault();
+        if (UserFile is not null)
+            IsDeleted = UserFile.IsDeleted;
+    }
+
+    private async Task Hide()
+    {
+        await FileService.HideFile(UserFile.Id);
+        await FileWasRemoved.InvokeAsync(UserFile.Id);
+
+    }
+
+}

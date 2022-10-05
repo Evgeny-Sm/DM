@@ -1,0 +1,39 @@
+﻿@using DM.BLL.Services
+@using DM.DAL.Models
+
+@inject FileService FileService
+
+<AuthorizeView Roles="admin">
+    <Authorized>
+        @if(IsDeleted)
+        {
+        <RadzenButton Text="Восстановить" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Success"
+                      Click=@RecoverFile />
+        }
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public IList<FileUnit> SelectedFiles { get; set; }
+    [Parameter]
+    public EventCallback<int> FileWasRecover { get; set; }
+
+    private bool IsDeleted { get; set; }
+    private FileUnit UserFile { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        UserFile = SelectedFiles.FirstOrDefault();
+        if(UserFile is not null)
+            IsDeleted = UserFile.IsDeleted;
+    }
+
+    private async void RecoverFile()
+    {
+        await FileService.RecoverFileAsync(UserFile.Id);
+        await FileWasRecover.InvokeAsync(UserFile.Id);
+
+    }
+
+}

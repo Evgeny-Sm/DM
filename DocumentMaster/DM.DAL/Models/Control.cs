@@ -11,6 +11,7 @@ namespace DM.DAL.Models
     {
         [Key]
         public int Id { get; set; }
+        [StringLength(200)]
         public string Description { get; set; }
         public FileUnit FileUnit { get; set; }
         public int FileUnitId { get; set; }

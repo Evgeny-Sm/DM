@@ -6,13 +6,16 @@ namespace DM.DAL.Models
     {
         [Key]
         public int Id { get; set; }
+        [StringLength(100)]
         public string FirstName { get; set; }=String.Empty;
+        [StringLength(100)]
         public string LastName { get; set; }= String.Empty;
         public Account Account { get; set; }
         public Department? Department { get; set; }
         public int DepartmentId { get; set; }
         public Position? Position { get; set; }
         public int PositionId { get; set; }
+        [StringLength(50)]
         public string TelegramContact { get; set; } = String.Empty;
         public double SalaryPerH { get; set; }
         public ICollection<Challenge> Challenges { get; set; }

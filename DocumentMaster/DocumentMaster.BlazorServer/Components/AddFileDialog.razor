@@ -112,7 +112,7 @@
         </div>
         <div class="row justify-content-center">
             <div class="col-md-12 d-flex align-items-end justify-content-center" style="margin-top: 16px;">
-                <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Submit"></RadzenButton>
+                <RadzenButton ButtonType="ButtonType.Submit" Disabled=@IsSubmitting ButtonStyle="ButtonStyle.Secondary" Text="Submit"></RadzenButton>
                 <RadzenButton Click="@((args) => DialogService.Close())" ButtonStyle="ButtonStyle.Danger" Text="Cancel" Style="width: 120px" />
             </div>
         </div>
@@ -142,6 +142,8 @@
 
     bool popup;
 
+    private bool IsSubmitting;
+
 
     protected override async void OnInitialized()
     {
@@ -162,65 +164,77 @@
 
     async void Submit(FileDTO arg)
     {
-        if (!FileReadyToUpload)
+        if (IsSubmitting)
         {
-            await JS.InvokeVoidAsync("alert", "Выберите файл");
             return;
         }
-        if (!Projects.Select(p => p.Id).Contains(FileToCreate.ProjectId))
+        try
         {
-            await JS.InvokeVoidAsync("alert", "Выберите проект");
-            return;
-        }
-        if (!SectionsList.Select(p => p.Id).Contains(FileToCreate.SectionId))
-        {
-            await JS.InvokeVoidAsync("alert", "Выберите раздел проекта");
-            return;
-        }
-        arg.DepartmentId = CurrentPerson.DepartmentId;
+            IsSubmitting = true;
+            if (!FileReadyToUpload)
+            {
+                await JS.InvokeVoidAsync("alert", "Выберите файл");
+                return;
+            }
+            if (!Projects.Select(p => p.Id).Contains(FileToCreate.ProjectId))
+            {
+                await JS.InvokeVoidAsync("alert", "Выберите проект");
+                return;
+            }
+            if (!SectionsList.Select(p => p.Id).Contains(FileToCreate.SectionId))
+            {
+                await JS.InvokeVoidAsync("alert", "Выберите раздел проекта");
+                return;
+            }
+            arg.DepartmentId = CurrentPerson.DepartmentId;
 
-        if (int.TryParse(NumbersDrawings, out int num))
-        {
-            arg.NumbersDrawings = num;
-        }
-        else
-        {
-            arg.NumbersDrawings = 1;
-        }
-        if (double.TryParse(TimeToDevelop, out double t))
-        {
-            arg.TimeToCreate = t;
-        }
+            if (int.TryParse(NumbersDrawings, out int num))
+            {
+                arg.NumbersDrawings = num;
+            }
+            else
+            {
+                arg.NumbersDrawings = 1;
+            }
+            if (double.TryParse(TimeToDevelop, out double t))
+            {
+                arg.TimeToCreate = t;
+            }
 
-        arg.PersonId = CurrentPerson.Id;
+            arg.PersonId = CurrentPerson.Id;
 
-        arg.IsDeleted = false;
-        arg.Status = StatusFile.Work;
-        arg.CreateDate = DateTime.Now;
+            arg.IsDeleted = false;
+            arg.Status = StatusFile.Work;
+            arg.CreateDate = DateTime.Now;
 
-        var result = await fileService.AddFileAsync(arg);
+            var result = await fileService.AddFileAsync(arg);
 
-        if (result == null)
-        {
-            await JS.InvokeVoidAsync("alert", "Ошибка в базе данных");
+            if (result == null)
+            {
+                await JS.InvokeVoidAsync("alert", "Ошибка в базе данных");
+                DialogService.Close();
+            }
+            result.Name = GetPrefix(result.Id) + "_" + result.Name;
+
+            var n = await fileService.UpdateFileAsync(result);
+
+            string path = Configuration.GetRequiredSection("ProjectRootDir").Value + $"\\{result.ProjectId}\\";
+            var uploadPath = WebHostEnvironment.WebRootPath + path;
+            if (!Directory.Exists(uploadPath))
+            {
+                Directory.CreateDirectory(uploadPath);
+            }
+            var fullPath = Path.Combine(uploadPath, result.Name);
+
+            await using FileStream fs = new(fullPath, FileMode.Create);
+
+            await BrowserFile.OpenReadStream(maxAllowedSize: 100000000).CopyToAsync(fs);
             DialogService.Close();
         }
-        result.Name =  GetPrefix(result.Id) + "_" + result.Name;
-
-        var n = await fileService.UpdateFileAsync(result);
-
-        string path = Configuration.GetRequiredSection("ProjectRootDir").Value + $"\\{result.ProjectId}\\";
-        var uploadPath = WebHostEnvironment.WebRootPath + path;
-        if (!Directory.Exists(uploadPath))
+        finally
         {
-            Directory.CreateDirectory(uploadPath);
+            IsSubmitting = false;
         }
-        var fullPath = Path.Combine(uploadPath, result.Name);
-
-        await using FileStream fs = new(fullPath, FileMode.Create);
-
-        await BrowserFile.OpenReadStream(maxAllowedSize: 100000000).CopyToAsync(fs);
-        DialogService.Close();
 
     }
 

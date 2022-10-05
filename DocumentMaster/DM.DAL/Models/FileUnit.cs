@@ -14,8 +14,11 @@ namespace DM.DAL.Models
         public int Id { get; set; }
         public bool IsDeleted { get; set; }
         [Required]
+        [StringLength(200)]
         public string Name { get; set; }=String.Empty;
+        [StringLength(500)]
         public string Description { get; set; }=string.Empty;
+        [StringLength(200)]
         public string PathFile { get; set; } = String.Empty;
         public Department? Department { get; set; }
         public int DepartmentId { get; set; }
@@ -26,6 +29,7 @@ namespace DM.DAL.Models
         public Person? Person { get; set; }
         public int PersonId { get; set; }
         public ICollection<Control>? Controls { get; set; }
+        public ICollection<Question> Questions { get; set; } = new List<Question>();
         public int NumbersDrawings { get; set; }
         public double TimeToCreate { get; set; }
         public DateTime CreateDate { get; set; }=DateTime.Now;
