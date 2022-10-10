@@ -1,0 +1,107 @@
+﻿@page "/Stat"
+
+@using DM.BLL.Services
+@using Models
+
+@inject PersonService PersonService
+@inject ProjectService ProjectService
+
+<AuthorizeView Roles="user,head">
+    <Authorized>
+
+    </Authorized>
+</AuthorizeView>
+
+<AuthorizeView Roles="admin">
+    <Authorized>
+
+        <div class="row">
+
+            <div class="row">
+                <div class="col-md-4">
+                    <RadzenLabel Text="Сотрудник" />
+                </div>
+                <div class="col-md-6">
+                    <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                            Data=@(Persons) Style="width: 100%" AllowColumnResize="true"
+                                            TextProperty="LastName" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
+                                            Change=@(args => OnChangePerson(args))>
+                        <Columns>
+                            <RadzenDropDownDataGridColumn Property="FirstName" Title="FirstName" Width="120px" />
+                            <RadzenDropDownDataGridColumn Property="LastName" Title="LastName" Width="120px" />
+                        </Columns>
+                    </RadzenDropDownDataGrid>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <RadzenLabel Text="Проект" />
+                </div>
+                <div class="col-md-6">
+                    <RadzenDropDownDataGrid Name="Project" TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                            Data=@(Projects) Style="width: 100%" AllowColumnResize="true"
+                                            TextProperty="Name" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
+                                            Change=@(args => OnChange(args))>
+                        <Columns>
+                            <RadzenDropDownDataGridColumn Property="Id" Title="ID" Width="100px" />
+                            <RadzenDropDownDataGridColumn Property="Name" Title="Name" Width="200px" />
+                        </Columns>
+                    </RadzenDropDownDataGrid>
+
+                </div>
+            </div>
+            <br />
+            <br />
+
+
+        </div>
+
+
+    </Authorized>
+</AuthorizeView>
+
+@code {
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+    private PersonDTO CurrentPerson { get; set; } = new();
+
+    private IList<PersonDTO> Persons { get; set; } = new List<PersonDTO>();
+
+    private DateTime DateFrom { get; set; }
+
+    private DateTime DateTo { get; set; }
+
+    private IList<ProjectDTO> Projects { get; set; } = new List<ProjectDTO>();
+
+    private int ProjectId { get; set; }
+
+    private int PersonId { get; set; }
+
+    protected override async void OnInitialized()
+    {
+        var p = await PersonService.GetPersonsAsync();
+        Persons = p.ToList();
+
+        var pr = await ProjectService.GetProjectsListAsync();
+
+        Projects = pr.ToList();
+
+        var authState = await authenticationState;
+
+        CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+    }
+
+    void OnChange(object value)
+    {
+        ProjectId = (int)value;
+    }
+    void OnChangePerson(object value)
+    {
+        PersonId = (int)value;
+
+    }
+
+}
