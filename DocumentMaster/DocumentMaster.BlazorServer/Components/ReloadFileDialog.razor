@@ -26,7 +26,7 @@
         </div>
     </div>
     <div>
-        <RadzenButton Size="Radzen.ButtonSize.Small" ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Ok" Click=@(args => UploadFile()) />
+        <RadzenButton Size="Radzen.ButtonSize.Small" Disabled=@IsSubmitting ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Ok" Click=@(args => UploadFile()) />
     </div>
 </RadzenCard>
 
@@ -46,6 +46,7 @@
     private FileDTO CurrentFile { get; set; } = new FileDTO();
 
     private IBrowserFile? BrowserFile { get; set; }
+    private bool IsSubmitting;
 
     protected override  void OnInitialized()
     {
@@ -76,29 +77,41 @@
     }
     private async Task UploadFile()
     { 
-        if (!FileReadyToUpload)
+        if (IsSubmitting)
         {
-            await JS.InvokeVoidAsync("alert", "Выберите файл");
             return;
         }
-        if (double.TryParse(AdditionalTime, out double t))
+        try
         {
-            CurrentFile.TimeToCreate += t;
+            IsSubmitting = true;
+            if (!FileReadyToUpload)
+            {
+                await JS.InvokeVoidAsync("alert", "Выберите файл");
+                return;
+            }
+            if (double.TryParse(AdditionalTime, out double t))
+            {
+                CurrentFile.TimeToCreate += t;
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("alert", "Введите время на доработку в часах или 0");
+                return;
+            }
+            var fullPath = $"{WebHostEnvironment.WebRootPath}\\{Configuration.GetRequiredSection("ProjectRootDir").Value}\\{Path}";
+
+            await using FileStream fs = new(fullPath, FileMode.Create);
+
+            await BrowserFile.OpenReadStream(maxAllowedSize: 100000000).CopyToAsync(fs);
+
+            await FileService.UpdateFileAsync(CurrentFile);
+
+            DialogService.Close();
         }
-        else
-        { 
-            await JS.InvokeVoidAsync("alert", "Введите время на доработку в часах или 0");
-            return;
+        finally
+        {
+            IsSubmitting = false;
         }
-        var fullPath = $"{WebHostEnvironment.WebRootPath}\\{Configuration.GetRequiredSection("ProjectRootDir").Value}\\{Path}";
-
-        await using FileStream fs = new(fullPath, FileMode.Create);
-
-        await BrowserFile.OpenReadStream(maxAllowedSize: 100000000).CopyToAsync(fs);
-
-        await FileService.UpdateFileAsync(CurrentFile);
-
-        DialogService.Close();
 
     }
 
