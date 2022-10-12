@@ -5,6 +5,7 @@
 
 @inject PersonService PersonService
 @inject ProjectService ProjectService
+@inject StatService StatService
 
 <AuthorizeView Roles="user,head">
     <Authorized>
@@ -18,6 +19,9 @@
         <div class="row">
 
             <div class="row">
+
+                <div class="col-6">
+
                 <div class="col-md-4">
                     <RadzenLabel Text="Сотрудник" />
                 </div>
@@ -32,7 +36,6 @@
                         </Columns>
                     </RadzenDropDownDataGrid>
                 </div>
-            </div>
             <br />
             <br />
 
@@ -79,7 +82,13 @@
                                   Click=@Calculate />
                 </div>
             </div>
-
+            <div/>
+                <div class="col-6">
+                    <StatUserCard />
+                </div>
+                <div/>
+            </div>
+           
 
         </div>
 
