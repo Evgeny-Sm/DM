@@ -1,9 +1,19 @@
-﻿@using Models
+﻿@using DM.BLL.Services
+@using Models
         
 
-
+@inject FileService FileService
 
 <RadzenCard>
+    <div> Разработчик: @Developer   </div>
+    <div> Проект: @ProjectName   </div>
+    <div> Начало периода: @DateFrom   </div>
+    <div> Конец периода: @DateTo   </div>
+    <div> Листов разработано: @NumbersDrawingDev   </div>
+    <div> Время на разработку: @TimeToDev   </div>  
+    <div> Листов проверено: @NumbersDrawingCheck   </div>
+    <div> Время на проверку: @TimeToControl   </div>
+
 
 </RadzenCard>
 
@@ -28,7 +38,48 @@
     private string TimeToControl { get; set; } = string.Empty;
 
 
-    protected override async void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
+        if (StatModel is null)
+        {
+            return;
+        }
+        Developer = $"{StatModel.Person.FirstName} {StatModel.Person.LastName}";
+
+        ProjectName = (StatModel.Project is null) ? string.Empty : StatModel.Project.Name;
+
+        DateFrom = StatModel.DateFrom.ToString("HH:mm|dd:MMM:yy");
+
+        DateTo = StatModel.DateTo.ToString("HH:mm|dd:MMM:yy");
+
+        NumbersDrawingDev = StatModel.DevelopedFiles.Sum(f => f.NumbersDrawings).ToString();
+
+        TimeToDev = StatModel.DevelopedFiles.Sum(f => f.TimeToCreate).ToString();
+
+        var controlModel = await GetControlModel(StatModel.Controls);
+
+        NumbersDrawingCheck = controlModel.numbersDrawings.ToString();
+
+        TimeToControl = controlModel.timeToCheck.ToString();
+
+
+    }
+
+    private async Task<ControlModel> GetControlModel(List<ControlDTO> controls)
+    {
+        ControlModel controlModel=new();
+        foreach (var c in controls)
+        {
+            var file = await FileService.GetItemByIdAsync(c.FileUnitId);
+            controlModel.numbersDrawings += file.NumbersDrawings;
+            controlModel.timeToCheck += c.TimeForChecking;
+        }
+        return controlModel;
+    }
+
+    private class ControlModel
+    {
+        public int numbersDrawings = 0;
+        public double timeToCheck = 0;
     }
 }

@@ -1,5 +1,7 @@
 ﻿@page "/Stat"
 
+@attribute [Authorize]
+
 @using DM.BLL.Services
 @using Models
 
@@ -22,73 +24,77 @@
 
                 <div class="col-6">
 
-                <div class="col-md-4">
-                    <RadzenLabel Text="Сотрудник" />
-                </div>
-                <div class="col-md-6">
-                    <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
-                                            Data=@(Persons) Style="width: 100%" AllowColumnResize="true"
-                                            TextProperty="LastName" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
-                                            Change=@(args => OnChangePerson(args))>
-                        <Columns>
-                            <RadzenDropDownDataGridColumn Property="FirstName" Title="FirstName" Width="120px" />
-                            <RadzenDropDownDataGridColumn Property="LastName" Title="LastName" Width="120px" />
-                        </Columns>
-                    </RadzenDropDownDataGrid>
-                </div>
-            <br />
-            <br />
+                    <div class="row">
 
-            <div class="row">
-                <div class="col-md-4">
-                    <RadzenLabel Text="Проект" />
-                </div>
-                <div class="col-md-6">
-                    <RadzenDropDownDataGrid Name="Project" TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
-                                            Data=@(Projects) Style="width: 100%" AllowColumnResize="true"
-                                            TextProperty="Name" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
-                                            Change=@(args => OnChange(args))>
-                        <Columns>
-                            <RadzenDropDownDataGridColumn Property="Id" Title="ID" Width="100px" />
-                            <RadzenDropDownDataGridColumn Property="Name" Title="Name" Width="200px" />
-                        </Columns>
-                    </RadzenDropDownDataGrid>
+                        <div class="col-md-4">
+                            <RadzenLabel Text="Сотрудник" />
+                        </div>
+                        <div class="col-md-8">
+                            <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                                    Data=@(Persons) Style="width: 100%" AllowColumnResize="true"
+                                                    TextProperty="LastName" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
+                                                    Change=@(args => OnChangePerson(args))>
+                                <Columns>
+                                    <RadzenDropDownDataGridColumn Property="FirstName" Title="FirstName" Width="80px" />
+                                    <RadzenDropDownDataGridColumn Property="LastName" Title="LastName" Width="80px" />
+                                </Columns>
+                            </RadzenDropDownDataGrid>
+                        </div>
+                    </div>
+                    <br />
+                    <br />
 
-                </div>
-            </div>
-            <br />
-            <br />
-            <div class="row">
-                <div class="col-md-4">
-                    <RadzenCard>
-                        <RadzenLabel Text="Начало периода" />
-                        <RadzenDatePicker @bind-Value=@DateFromDefault DateFormat="d" Change="@OnChangeFrom" Class="w-100" />
-                    </RadzenCard>
-                </div>
-                <div class="col-md-4">
-                    <RadzenCard>
-                        <RadzenLabel Text="Конец периода" />
-                        <RadzenDatePicker @bind-Value=@DateToDefault DateFormat="d" Change="@OnChangeTo" Class="w-100" />
-                    </RadzenCard>
-                </div>
-            </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <RadzenLabel Text="Проект" />
+                        </div>
+                        <div class="col-md-8">
+                            <RadzenDropDownDataGrid Name="Project" TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                                    Data=@(Projects) Style="width: 100%" AllowColumnResize="true"
+                                                    TextProperty="Name" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
+                                                    Change=@(args => OnChange(args))>
+                                <Columns>
+                                    <RadzenDropDownDataGridColumn Property="Id" Title="ID" Width="100px" />
+                                    <RadzenDropDownDataGridColumn Property="Name" Title="Name" Width="200px" />
+                                </Columns>
+                            </RadzenDropDownDataGrid>
 
-            <br />
-            <br />
+                        </div>
+                    </div>
+                    <br />
+                    <br />
+                    <div class="row">
+                        <div class="col-md-6">
+                            <RadzenCard>
+                                <RadzenLabel Text="Начало периода" />
+                                <RadzenDatePicker @bind-Value=@DateFromDefault DateFormat="d" Change="@OnChangeFrom" Class="w-100" />
+                            </RadzenCard>
+                        </div>
+                        <div class="col-md-6">
+                            <RadzenCard>
+                                <RadzenLabel Text="Конец периода" />
+                                <RadzenDatePicker @bind-Value=@DateToDefault DateFormat="d" Change="@OnChangeTo" Class="w-100" />
+                            </RadzenCard>
+                        </div>
+                    </div>
 
-            <div class="row">
-                <div class="col-md-2">
-                    <RadzenButton Text="Рассчитать"  ButtonStyle="ButtonStyle.Secondary"
-                                  Click=@Calculate />
+                    <br />
+                    <br />
+
+                    <div class="row">
+                        <div class="col-md-2">
+                            <RadzenButton Text="Рассчитать" ButtonStyle="ButtonStyle.Secondary"
+                                          Click=@Calculate />
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div/>
+
                 <div class="col-6">
-                    <StatUserCard />
+                    <StatUserCard StatModel="@statUserModel" />
                 </div>
-                <div/>
+                <div />
             </div>
-           
+
 
         </div>
 
@@ -107,16 +113,19 @@
 
     private DateTime DateFrom { get; set; }
 
-    private DateTime DateTo { get; set; }
+    private DateTime DateTo { get; set; } = DateTime.Now;
 
-    private DateTime? DateFromDefault = DateTime.Now.AddMonths(-1);
-    private DateTime? DateToDefault = DateTime.Now;
+    private DateTime DateFromDefault = DateTime.Now.AddMonths(-1);
+
+    private DateTime DateToDefault = DateTime.Now;
 
     private IList<ProjectDTO> Projects { get; set; } = new List<ProjectDTO>();
 
-    private int ProjectId { get; set; }
+    private int ProjectId { get; set; } = 1000000;
 
-    private int PersonId { get; set; }
+    private int PersonId { get; set; } = 1000000;
+
+    private StatUserModel? statUserModel;
 
     protected override async void OnInitialized()
     {
@@ -145,15 +154,33 @@
     }
 
     void OnChangeFrom()
-    { 
+    {
+
+        DateFrom = DateFromDefault;
     }
 
     void OnChangeTo()
     {
+        DateTo = DateToDefault;
     }
 
     private async Task Calculate()
-    { 
+    {
+        if (PersonId == 1000000)
+        {
+            PersonId = CurrentPerson.Id;
+        }
+
+        if (ProjectId == 1000000)
+        {
+            statUserModel = await StatService.GetStatForPerson(PersonId, DateFrom, DateTo);
+        }
+        else
+        { 
+            statUserModel = await StatService.GetStatForPersonInProject(PersonId, ProjectId, DateFrom, DateTo);
+        }
+        PersonId = 1000000;
+        ProjectId = 1000000;
 
     }
 
