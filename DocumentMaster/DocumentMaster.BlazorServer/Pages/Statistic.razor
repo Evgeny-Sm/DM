@@ -111,7 +111,7 @@
 
     private IList<PersonDTO> Persons { get; set; } = new List<PersonDTO>();
 
-    private DateTime DateFrom { get; set; }
+    private DateTime DateFrom { get; set; } = DateTime.Now.AddMonths(-1);
 
     private DateTime DateTo { get; set; } = DateTime.Now;
 
@@ -121,9 +121,9 @@
 
     private IList<ProjectDTO> Projects { get; set; } = new List<ProjectDTO>();
 
-    private int ProjectId { get; set; } = 1000000;
+    private int ProjectId { get; set; } = 0;
 
-    private int PersonId { get; set; } = 1000000;
+    private int PersonId { get; set; } = 0;
 
     private StatUserModel? statUserModel;
 
@@ -145,10 +145,12 @@
 
     void OnChange(object value)
     {
+
         ProjectId = (int)value;
     }
     void OnChangePerson(object value)
     {
+
         PersonId = (int)value;
 
     }
@@ -166,12 +168,12 @@
 
     private async Task Calculate()
     {
-        if (PersonId == 1000000)
+        if (PersonId == 0)
         {
             PersonId = CurrentPerson.Id;
         }
 
-        if (ProjectId == 1000000)
+        if (ProjectId == 0)
         {
             statUserModel = await StatService.GetStatForPerson(PersonId, DateFrom, DateTo);
         }
@@ -179,8 +181,6 @@
         { 
             statUserModel = await StatService.GetStatForPersonInProject(PersonId, ProjectId, DateFrom, DateTo);
         }
-        PersonId = 1000000;
-        ProjectId = 1000000;
 
     }
 

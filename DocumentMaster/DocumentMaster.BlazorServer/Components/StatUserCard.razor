@@ -38,12 +38,13 @@
     private string TimeToControl { get; set; } = string.Empty;
 
 
-    protected override async Task OnParametersSetAsync()
+    protected override void OnParametersSet()
     {
         if (StatModel is null)
         {
             return;
         }
+
         Developer = $"{StatModel.Person.FirstName} {StatModel.Person.LastName}";
 
         ProjectName = (StatModel.Project is null) ? string.Empty : StatModel.Project.Name;
@@ -54,32 +55,12 @@
 
         NumbersDrawingDev = StatModel.DevelopedFiles.Sum(f => f.NumbersDrawings).ToString();
 
-        TimeToDev = StatModel.DevelopedFiles.Sum(f => f.TimeToCreate).ToString();
+        TimeToDev = StatModel.DevelopedFiles.Sum(f => f.TimeToCreate).ToString();      
 
-        var controlModel = await GetControlModel(StatModel.Controls);
+        NumbersDrawingCheck = StatModel.NumbersDrawingsCheck.ToString();
 
-        NumbersDrawingCheck = controlModel.numbersDrawings.ToString();
-
-        TimeToControl = controlModel.timeToCheck.ToString();
-
-
+        TimeToControl = StatModel.TimeToCheck.ToString();
+       
     }
 
-    private async Task<ControlModel> GetControlModel(List<ControlDTO> controls)
-    {
-        ControlModel controlModel=new();
-        foreach (var c in controls)
-        {
-            var file = await FileService.GetItemByIdAsync(c.FileUnitId);
-            controlModel.numbersDrawings += file.NumbersDrawings;
-            controlModel.timeToCheck += c.TimeForChecking;
-        }
-        return controlModel;
-    }
-
-    private class ControlModel
-    {
-        public int numbersDrawings = 0;
-        public double timeToCheck = 0;
-    }
 }

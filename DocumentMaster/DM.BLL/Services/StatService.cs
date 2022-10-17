@@ -41,7 +41,12 @@ namespace DM.BLL.Services
             var controls = await context.Controls
                 .Where(c => c.IsConfirmed && c.PersonId == personId && c.DateTime > dateFrom && c.DateTime < dateTo).ToListAsync();
             model.Controls = _mapper.Map<List<ControlDTO>>(controls);
-
+            foreach (var c in controls)
+            {
+                var file = await context.FileUnits.FindAsync(c.FileUnitId);
+                model.NumbersDrawingsCheck += file.NumbersDrawings;
+                model.TimeToCheck += c.TimeForChecking;
+            }
             return model;
         }
 
@@ -69,7 +74,12 @@ namespace DM.BLL.Services
                 .Where(t=>t.FileUnit.ProjectId==projectId).ToListAsync();
 
             model.Controls = _mapper.Map<List<ControlDTO>>(controls);
-
+            foreach (var c in controls)
+            {
+                var file = await context.FileUnits.FindAsync(c.FileUnitId);
+                model.NumbersDrawingsCheck += file.NumbersDrawings;
+                model.TimeToCheck += c.TimeForChecking;
+            }
             return model;
         }
 

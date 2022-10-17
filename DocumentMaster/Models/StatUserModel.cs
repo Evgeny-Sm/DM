@@ -15,5 +15,10 @@ namespace Models
         public List<FileDTO> DevelopedFiles { get; set; } = new List<FileDTO>();
         public List<ControlDTO> Controls { get; set; } = new List<ControlDTO>();
 
+        public int NumbersDrawingsCheck = 0;
+
+        public double TimeToCheck = 0;
+
+
     }
 }
