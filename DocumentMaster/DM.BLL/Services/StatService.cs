@@ -34,7 +34,8 @@ namespace DM.BLL.Services
 
             var files = await context.FileUnits.Where(f => f.PersonId == personId && f.Status == StatusFile.Archive)
                 .Include(c => c.Controls.Where(ch => ch.IsConfirmed))
-                .Where(f => dateFrom < f.Controls.First().DateTime && dateTo > f.Controls.First().DateTime).ToListAsync();
+                .Where(f => dateFrom < f.Controls.First().DateTime && dateTo > f.Controls.First().DateTime)
+                .Include(p=>p.Project).ToListAsync();
 
             model.DevelopedFiles = _mapper.Map<List<FileDTO>>(files);
 
@@ -67,7 +68,8 @@ namespace DM.BLL.Services
 
             var files = await context.FileUnits.Where(f => f.ProjectId==projectId && f.PersonId == personId && f.Status == StatusFile.Archive )
                 .Include(c => c.Controls.Where(ch => ch.IsConfirmed))
-                .Where(f => dateFrom < f.Controls.First().DateTime && dateTo > f.Controls.First().DateTime).ToListAsync();
+                .Where(f => dateFrom < f.Controls.First().DateTime && dateTo > f.Controls.First().DateTime)
+                .Include(p => p.Project).ToListAsync();
             model.DevelopedFiles = _mapper.Map<List<FileDTO>>(files);
 
             var controls = await context.Controls.Where(c => c.IsConfirmed && c.PersonId == personId && c.DateTime > dateFrom && c.DateTime < dateTo).Include(f=>f.FileUnit)
