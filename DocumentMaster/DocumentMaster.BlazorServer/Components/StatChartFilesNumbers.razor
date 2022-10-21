@@ -15,7 +15,7 @@
                     </ChildContent>
                     <TitleTemplate>
                         <div class="rz-donut-content">
-                            <div>Files</div>
+                            <div>По файлам</div>
                         </div>
                     </TitleTemplate>
                 </RadzenDonutSeries>
@@ -41,9 +41,9 @@
         }
         foreach (var f in Files)
         {
-            if (f.Name.Length > 30)
+            if (f.Name.Length > 20)
             {
-                f.Name = f.Name.Substring(0,30);
+                f.Name = f.Name.Substring(0,20);
             }
         }
         DataList = Files;

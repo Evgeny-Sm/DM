@@ -1,4 +1,7 @@
-﻿@using Models
+﻿@using DM.BLL.Services
+@using Models
+
+@inject SectionService SectionService
 
 
 <div class="container">
@@ -15,7 +18,7 @@
                     </ChildContent>
                     <TitleTemplate>
                         <div class="rz-donut-content">
-                            <div>Files</div>
+                            <div>По разделам</div>
                         </div>
                     </TitleTemplate>
                 </RadzenDonutSeries>
@@ -35,7 +38,7 @@
 
     bool showDataLabels = false;
 
-    protected override void OnParametersSet()
+    protected override async void OnParametersSet()
     {
 
         if (Files is null)
@@ -44,16 +47,16 @@
         }
         List<SectionVM> sectList = new();
 
-        List<int> sectIds = new();
+        List<string> sectNames = new();
 
         foreach (var f in Files)
         {
-            sectIds.Add(f.SectionId);
+            sectNames.Add(f.SectionName);
         }
-        foreach (var p in sectIds.Distinct())
+        foreach (var p in sectNames.Distinct())
         {
-            int count = Files.Where(t => t.SectionId == p).Sum(f => f.NumbersDrawings);
-            var section = new SectionVM { SectId = p, CountDrawings = count };
+            int count = Files.Where(t => t.SectionName == p).Sum(f => f.NumbersDrawings);
+            var section = new SectionVM { Name = p, CountDrawings = count };
             sectList.Add(section);
         }
         Sections = sectList;
@@ -61,7 +64,7 @@
 
     private class SectionVM
     {
-        public int SectId { get; set; }
+        public string Name { get; set; }
         public int CountDrawings { get; set; }
 
     }

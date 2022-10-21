@@ -35,12 +35,42 @@ namespace DM.BLL.Services
             var files = await context.FileUnits.Where(f => f.PersonId == personId && f.Status == StatusFile.Archive)
                 .Include(c => c.Controls.Where(ch => ch.IsConfirmed))
                 .Where(f => dateFrom < f.Controls.First().DateTime && dateTo > f.Controls.First().DateTime)
-                .Include(p=>p.Project).ToListAsync();
+                .Include(p=>p.Project)
+                .Include(s => s.Section).ToListAsync();
 
             model.DevelopedFiles = _mapper.Map<List<FileDTO>>(files);
 
             var controls = await context.Controls
                 .Where(c => c.IsConfirmed && c.PersonId == personId && c.DateTime > dateFrom && c.DateTime < dateTo).ToListAsync();
+            model.Controls = _mapper.Map<List<ControlDTO>>(controls);
+            foreach (var c in controls)
+            {
+                var file = await context.FileUnits.FindAsync(c.FileUnitId);
+                model.NumbersDrawingsCheck += file.NumbersDrawings;
+                model.TimeToCheck += c.TimeForChecking;
+            }
+            return model;
+        }
+
+        public async Task<StatUserModel> GetStatForAll(DateTime dateFrom, DateTime dateTo)
+        {
+            StatUserModel model = new();
+
+            model.DateFrom = dateFrom;
+            model.DateTo = dateTo;
+
+            using var context = _contextFactory.CreateDbContext();
+
+            var files = await context.FileUnits.Where(f => f.Status == StatusFile.Archive)
+                .Include(c => c.Controls.Where(ch => ch.IsConfirmed))
+                .Where(f => dateFrom < f.Controls.First().DateTime && dateTo > f.Controls.First().DateTime)
+                .Include(p => p.Project)
+                .Include(s => s.Section).ToListAsync();
+
+            model.DevelopedFiles = _mapper.Map<List<FileDTO>>(files);
+
+            var controls = await context.Controls
+                .Where(c => c.IsConfirmed && c.DateTime > dateFrom && c.DateTime < dateTo).ToListAsync();
             model.Controls = _mapper.Map<List<ControlDTO>>(controls);
             foreach (var c in controls)
             {
@@ -69,11 +99,43 @@ namespace DM.BLL.Services
             var files = await context.FileUnits.Where(f => f.ProjectId==projectId && f.PersonId == personId && f.Status == StatusFile.Archive )
                 .Include(c => c.Controls.Where(ch => ch.IsConfirmed))
                 .Where(f => dateFrom < f.Controls.First().DateTime && dateTo > f.Controls.First().DateTime)
-                .Include(p => p.Project).ToListAsync();
+                .Include(p => p.Project)
+                .Include(s => s.Section).ToListAsync();
             model.DevelopedFiles = _mapper.Map<List<FileDTO>>(files);
 
             var controls = await context.Controls.Where(c => c.IsConfirmed && c.PersonId == personId && c.DateTime > dateFrom && c.DateTime < dateTo).Include(f=>f.FileUnit)
                 .Where(t=>t.FileUnit.ProjectId==projectId).ToListAsync();
+
+            model.Controls = _mapper.Map<List<ControlDTO>>(controls);
+            foreach (var c in controls)
+            {
+                var file = await context.FileUnits.FindAsync(c.FileUnitId);
+                model.NumbersDrawingsCheck += file.NumbersDrawings;
+                model.TimeToCheck += c.TimeForChecking;
+            }
+            return model;
+        }
+        public async Task<StatUserModel> GetStatForAllInProject(int projectId, DateTime dateFrom, DateTime dateTo)
+        {
+            StatUserModel model = new();
+
+            model.DateFrom = dateFrom;
+            model.DateTo = dateTo;
+
+            using var context = _contextFactory.CreateDbContext();
+
+            var project = context.Projects.Find(projectId);
+            model.Project = _mapper.Map<ProjectDTO>(project);
+
+            var files = await context.FileUnits.Where(f => f.ProjectId == projectId  && f.Status == StatusFile.Archive)
+                .Include(c => c.Controls.Where(ch => ch.IsConfirmed))
+                .Where(f => dateFrom < f.Controls.First().DateTime && dateTo > f.Controls.First().DateTime)
+                .Include(p => p.Project)
+                .Include(s => s.Section).ToListAsync();
+            model.DevelopedFiles = _mapper.Map<List<FileDTO>>(files);
+
+            var controls = await context.Controls.Where(c => c.IsConfirmed  && c.DateTime > dateFrom && c.DateTime < dateTo).Include(f => f.FileUnit)
+                .Where(t => t.FileUnit.ProjectId == projectId).ToListAsync();
 
             model.Controls = _mapper.Map<List<ControlDTO>>(controls);
             foreach (var c in controls)
