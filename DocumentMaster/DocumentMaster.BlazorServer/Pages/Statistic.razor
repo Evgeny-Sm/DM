@@ -67,21 +67,26 @@
                 <StatUserCard StatModel="@statUserModel" />
             </div>
         </div>
-        <div class="row">
 
-            @if (FileList is not null)
-            {
-                <div class="col-4">
+        @if (FileList is not null)
+        {
+            <div class="row">
+
+                <div class="col-6">
                     <StatChartFilesNumbers Files="@FileList" />
                 </div>
-                <div class="col-4">
+                <div class="col-6">
                     <StatChartFilesInProj Files="@FileList" />
                 </div>
-                <div class="col-4">
+            </div>
+            <div class="row">
+                <div class="col-6">
                     <StatFileSect Files="@FileList" />
                 </div>
-            }
-        </div>
+            </div>
+
+
+        }
         
     </Authorized>
 </AuthorizeView>
@@ -170,28 +175,32 @@
                 Статистика по выплатам
             </div>
         </div>
-        <div class="row">
+        @if (FileList is not null)
+        {
+            <div class="row">
 
-            @if (FileList is not null)
-            {
-                <div class="col-4">
+                <div class="col-6">
                     <StatChartFilesNumbers Files="@FileList" />
                 </div>
-                <div class="col-4">
+                <div class="col-6">
                     <StatChartFilesInProj Files="@FileList" />
                 </div>
-                <div class="col-4">
+            </div>
+            <div class="row">
+                <div class="col-6">
                     <StatFileSect Files="@FileList" />
                 </div>
-            }
-        </div>
+            </div>
+
+
+        }
         <div class="row">
             <br />
             <h3>Общая статистика</h3>           
             <br />
             @if (FileListAll is not null)
             {
-                <div class="col-4">
+                <div class="col-6">
                     <StatChartFilesInProj Files="@FileListAll" />
                 </div>
             }
