@@ -50,6 +50,7 @@ builder.Services.AddScoped<ChallengeService>();
 builder.Services.AddScoped<MessageService>();
 builder.Services.AddScoped<QuestionService>();
 builder.Services.AddScoped<NoteService>();
+builder.Services.AddScoped<StatService>();
 
 builder.Services.AddResponseCompression(opts=>{
     opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(

@@ -1,0 +1,73 @@
+﻿@using Models
+        
+
+<RadzenCard>
+    <div> Разработчик: @Developer   </div>
+    <div> Проект: @ProjectName   </div>
+    <div> Начало периода: @DateFrom   </div>
+    <div> Конец периода: @DateTo   </div>
+    <div> Листов разработано: @NumbersDrawingDev   </div>
+    <div> Время на разработку: @TimeToDev   </div>  
+    <div> Листов проверено: @NumbersDrawingCheck   </div>
+    <div> Время на проверку: @TimeToControl   </div>
+    <div> Общий коэффициент: @SumRate   </div>
+
+
+</RadzenCard>
+
+@code {
+    [Parameter]
+    public StatUserModel? StatModel { get; set; }
+
+    private string Developer { get; set; } = string.Empty;
+
+    private string ProjectName { get; set; } = string.Empty;
+
+    private string DateFrom { get; set; } = string.Empty;
+
+    private string DateTo { get; set; } = string.Empty;
+
+    private string NumbersDrawingDev { get; set; } = string.Empty;
+
+    private string NumbersDrawingCheck { get; set; } = string.Empty;
+
+    private string TimeToDev { get; set; } = string.Empty;
+
+    private string TimeToControl { get; set; } = string.Empty;
+
+    private string SumRate { get; set; } = string.Empty;
+
+
+    protected override void OnParametersSet()
+    {
+        if (StatModel is null)
+        {
+            return;
+        }
+
+        Developer = $"{StatModel.Person.FirstName} {StatModel.Person.LastName}";
+
+        ProjectName = (StatModel.Project is null) ? string.Empty : StatModel.Project.Name;
+
+        DateFrom = StatModel.DateFrom.ToString("HH:mm|dd:MMM:yy");
+
+        DateTo = StatModel.DateTo.ToString("HH:mm|dd:MMM:yy");
+
+        int numbersDrDev = StatModel.DevelopedFiles.Sum(f => f.NumbersDrawings);
+
+        NumbersDrawingDev = numbersDrDev.ToString();
+
+        TimeToDev = StatModel.DevelopedFiles.Sum(f => f.TimeToCreate).ToString();
+
+        double numbDrCheck = (double)StatModel.NumbersDrawingsCheck;
+
+        NumbersDrawingCheck = numbDrCheck.ToString();
+
+        TimeToControl = StatModel.TimeToCheck.ToString();
+
+        double sum = numbersDrDev + numbDrCheck/4;
+
+        SumRate = sum.ToString();
+    }
+
+}

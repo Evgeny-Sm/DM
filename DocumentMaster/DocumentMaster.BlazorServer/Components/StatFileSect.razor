@@ -1,0 +1,72 @@
+﻿@using DM.BLL.Services
+@using Models
+
+@inject SectionService SectionService
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-12 my-5">
+            <RadzenCard Class="w-100 mb-4 d-inline-block">
+                <RadzenCheckBox @bind-Value="@showDataLabels" Name="dataLabels"></RadzenCheckBox>
+                <RadzenLabel Text="Подробности" Component="dataLabels" Style="margin-left: 30px; vertical-align: middle;" />
+            </RadzenCard>
+            <RadzenChart>
+                <RadzenDonutSeries Data="@Sections" CategoryProperty="Name" ValueProperty="CountDrawings">
+                    <ChildContent>
+                        <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                    </ChildContent>
+                    <TitleTemplate>
+                        <div class="rz-donut-content">
+                            <div>По разделам</div>
+                        </div>
+                    </TitleTemplate>
+                </RadzenDonutSeries>
+            </RadzenChart>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public List<FileDTO>? Files { get; set; }
+
+    private List<FileDTO>? DataList { get; set; }
+
+    private List<SectionVM>? Sections { get; set; }
+
+    bool showDataLabels = false;
+
+    protected override async void OnParametersSet()
+    {
+
+        if (Files is null)
+        {
+            return;
+        }
+        List<SectionVM> sectList = new();
+
+        List<string> sectNames = new();
+
+        foreach (var f in Files)
+        {
+            sectNames.Add(f.SectionName);
+        }
+        foreach (var p in sectNames.Distinct())
+        {
+            int count = Files.Where(t => t.SectionName == p).Sum(f => f.NumbersDrawings);
+            var section = new SectionVM { Name = p, CountDrawings = count };
+            sectList.Add(section);
+        }
+        Sections = sectList;
+    }
+
+    private class SectionVM
+    {
+        public string Name { get; set; }
+        public int CountDrawings { get; set; }
+
+    }
+
+}

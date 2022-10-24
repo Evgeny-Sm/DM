@@ -54,7 +54,7 @@
 
     private PersonDTO CurrentPerson { get; set; }
 
-    protected override async void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
 
         var authState = await authenticationState;

@@ -1,0 +1,309 @@
+﻿@page "/Stat"
+
+@attribute [Authorize]
+
+@using DM.BLL.Services
+@using Models
+
+@inject PersonService PersonService
+@inject ProjectService ProjectService
+@inject StatService StatService
+
+<AuthorizeView Roles="user,head">
+    <Authorized>
+        <div class="row">
+            <h3> Статистика </h3>
+            <br />
+            <br />
+            <div class="col-6">
+
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <RadzenLabel Text="Проект" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenDropDownDataGrid Name="Project" TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                                Data=@(Projects) Style="width: 100%" AllowColumnResize="true"
+                                                TextProperty="Name" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
+                                                Change=@(args => OnChange(args))>
+                            <Columns>
+                                <RadzenDropDownDataGridColumn Property="Id" Title="ID" Width="100px" />
+                                <RadzenDropDownDataGridColumn Property="Name" Title="Name" Width="200px" />
+                            </Columns>
+                        </RadzenDropDownDataGrid>
+
+                    </div>
+                </div>
+                <br />
+                <br />
+                <div class="row">
+                    <div class="col-md-6">
+                        <RadzenCard>
+                            <RadzenLabel Text="Начало периода" />
+                            <RadzenDatePicker @bind-Value=@DateFromDefault DateFormat="d" Change="@OnChangeFrom" Class="w-100" />
+                        </RadzenCard>
+                    </div>
+                    <div class="col-md-6">
+                        <RadzenCard>
+                            <RadzenLabel Text="Конец периода" />
+                            <RadzenDatePicker @bind-Value=@DateToDefault DateFormat="d" Change="@OnChangeTo" Class="w-100" />
+                        </RadzenCard>
+                    </div>
+                </div>
+
+                <br />
+                <br />
+
+                <div class="row">
+                    <div class="col-3">
+                        <RadzenButton Text="Рассчитать" ButtonStyle="ButtonStyle.Secondary"
+                                      Click=@Calculate />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-3">
+                <StatUserCard StatModel="@statUserModel" />
+            </div>
+        </div>
+        <div class="row">
+
+            @if (FileList is not null)
+            {
+                <div class="col-4">
+                    <StatChartFilesNumbers Files="@FileList" />
+                </div>
+                <div class="col-4">
+                    <StatChartFilesInProj Files="@FileList" />
+                </div>
+                <div class="col-4">
+                    <StatFileSect Files="@FileList" />
+                </div>
+            }
+        </div>
+        
+    </Authorized>
+</AuthorizeView>
+
+<AuthorizeView Roles="admin">
+    <Authorized>
+        <div class="row">
+            <h3> Статистика по сотрудникам</h3>
+            <br />
+            <br />
+            <div class="col-6">
+
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <RadzenLabel Text="Сотрудник" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                                Data=@(Persons) Style="width: 100%" AllowColumnResize="true"
+                                                TextProperty="LastName" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
+                                                Change=@(args => OnChangePerson(args))>
+                            <Columns>
+                                <RadzenDropDownDataGridColumn Property="FirstName" Title="FirstName" Width="80px" />
+                                <RadzenDropDownDataGridColumn Property="LastName" Title="LastName" Width="80px" />
+                            </Columns>
+                        </RadzenDropDownDataGrid>
+                    </div>
+                </div>
+                <br />
+                <br />
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <RadzenLabel Text="Проект" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenDropDownDataGrid Name="Project" TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                                Data=@(Projects) Style="width: 100%" AllowColumnResize="true"
+                                                TextProperty="Name" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
+                                                Change=@(args => OnChange(args))>
+                            <Columns>
+                                <RadzenDropDownDataGridColumn Property="Id" Title="ID" Width="100px" />
+                                <RadzenDropDownDataGridColumn Property="Name" Title="Name" Width="200px" />
+                            </Columns>
+                        </RadzenDropDownDataGrid>
+
+                    </div>
+                </div>
+                <br />
+                <br />
+                <div class="row">
+                    <div class="col-md-6">
+                        <RadzenCard>
+                            <RadzenLabel Text="Начало периода" />
+                            <RadzenDatePicker @bind-Value=@DateFromDefault DateFormat="d" Change="@OnChangeFrom" Class="w-100" />
+                        </RadzenCard>
+                    </div>
+                    <div class="col-md-6">
+                        <RadzenCard>
+                            <RadzenLabel Text="Конец периода" />
+                            <RadzenDatePicker @bind-Value=@DateToDefault DateFormat="d" Change="@OnChangeTo" Class="w-100" />
+                        </RadzenCard>
+                    </div>
+                </div>
+
+                <br />
+                <br />
+
+                <div class="row">
+                    <div class="col-3">
+                        <RadzenButton Text="По сотруднику" ButtonStyle="ButtonStyle.Secondary"
+                                      Click=@Calculate />
+                    </div>
+                    <div class="col-3">
+                        <RadzenButton Text="Общая" ButtonStyle="ButtonStyle.Secondary"
+                                      Click=@CalculateAll />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-3">
+                <StatUserCard StatModel="@statUserModel" />
+            </div>
+            <div class="col-3">
+                Статистика по выплатам
+            </div>
+        </div>
+        <div class="row">
+
+            @if (FileList is not null)
+            {
+                <div class="col-4">
+                    <StatChartFilesNumbers Files="@FileList" />
+                </div>
+                <div class="col-4">
+                    <StatChartFilesInProj Files="@FileList" />
+                </div>
+                <div class="col-4">
+                    <StatFileSect Files="@FileList" />
+                </div>
+            }
+        </div>
+        <div class="row">
+            <br />
+            <h3>Общая статистика</h3>           
+            <br />
+            @if (FileListAll is not null)
+            {
+                <div class="col-4">
+                    <StatChartFilesInProj Files="@FileListAll" />
+                </div>
+            }
+
+        </div>
+
+
+    </Authorized>
+</AuthorizeView>
+
+@code {
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+    private PersonDTO CurrentPerson { get; set; } = new();
+
+    private IList<PersonDTO> Persons { get; set; } = new List<PersonDTO>();
+
+    private DateTime DateFrom { get; set; } = DateTime.Now.AddMonths(-1);
+
+    private DateTime DateTo { get; set; } = DateTime.Now;
+
+    private DateTime DateFromDefault = DateTime.Now.AddMonths(-1);
+
+    private DateTime DateToDefault = DateTime.Now;
+
+    private IList<ProjectDTO> Projects { get; set; } = new List<ProjectDTO>();
+
+    private int ProjectId { get; set; } = 0;
+
+    private int PersonId { get; set; } = 0;
+
+    private StatUserModel? statUserModel;
+
+    private StatUserModel? statAllModel;
+
+    private List<FileDTO>? FileList;
+    private List<FileDTO>? FileListAll;
+
+    protected override async void OnInitialized()
+    {
+        var p = await PersonService.GetPersonsAsync();
+        Persons = p.ToList();
+
+        var pr = await ProjectService.GetProjectsListAsync();
+
+        Projects = pr.ToList();
+
+        var authState = await authenticationState;
+
+        CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+
+        StateHasChanged();
+    }
+
+    void OnChange(object value)
+    {
+
+        ProjectId = (int)value;
+    }
+    void OnChangePerson(object value)
+    {
+
+        PersonId = (int)value;
+
+    }
+
+    void OnChangeFrom()
+    {
+
+        DateFrom = DateFromDefault;
+    }
+
+    void OnChangeTo()
+    {
+        DateTo = DateToDefault;
+    }
+
+    private async Task Calculate()
+    {
+        if (PersonId == 0)
+        {
+            PersonId = CurrentPerson.Id;
+        }
+
+        if (ProjectId == 0)
+        {
+            statUserModel = await StatService.GetStatForPerson(PersonId, DateFrom, DateTo);
+            FileList = statUserModel.DevelopedFiles;
+        }
+        else
+        { 
+            statUserModel = await StatService.GetStatForPersonInProject(PersonId, ProjectId, DateFrom, DateTo);
+            FileList = statUserModel.DevelopedFiles;
+        }
+
+    }
+    private async Task CalculateAll()
+    {
+
+        if (ProjectId == 0)
+        {
+            statAllModel = await StatService.GetStatForAll(DateFrom, DateTo);
+            FileListAll = statAllModel.DevelopedFiles;
+        }
+        else
+        {
+            statAllModel = await StatService.GetStatForAllInProject(ProjectId, DateFrom, DateTo);
+            FileListAll = statAllModel.DevelopedFiles;
+        }
+
+    }
+
+}
