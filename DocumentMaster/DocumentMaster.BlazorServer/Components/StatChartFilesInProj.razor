@@ -8,18 +8,18 @@
                 <RadzenCheckBox @bind-Value="@showDataLabels" Name="dataLabels"></RadzenCheckBox>
                 <RadzenLabel Text="Подробности" Component="dataLabels" Style="margin-left: 30px; vertical-align: middle;" />
             </RadzenCard>
-            <RadzenChart>
-                <RadzenDonutSeries Data="@Projects" CategoryProperty="Name" ValueProperty="CountDrawings">
-                    <ChildContent>
-                        <RadzenSeriesDataLabels Visible="@showDataLabels" />
-                    </ChildContent>
-                    <TitleTemplate>
-                        <div class="rz-donut-content">
-                            <div>По проектам</div>
-                        </div>
-                    </TitleTemplate>
-                </RadzenDonutSeries>
-            </RadzenChart>
+                <RadzenChart>
+                    <RadzenDonutSeries Data="@Projects" CategoryProperty="Name" ValueProperty="CountDrawings">
+                        <ChildContent>
+                            <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                        </ChildContent>
+                        <TitleTemplate>
+                            <div class="rz-donut-content">
+                                <div>По проектам</div>
+                            </div>
+                        </TitleTemplate>
+                    </RadzenDonutSeries>
+                </RadzenChart>
         </div>
     </div>
 </div>
