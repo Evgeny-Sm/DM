@@ -11,7 +11,78 @@
 
 <AuthorizeView Roles="user,head">
     <Authorized>
+        <div class="row">
+            <h3> Статистика </h3>
+            <br />
+            <br />
+            <div class="col-6">
 
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <RadzenLabel Text="Проект" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenDropDownDataGrid Name="Project" TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                                Data=@(Projects) Style="width: 100%" AllowColumnResize="true"
+                                                TextProperty="Name" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
+                                                Change=@(args => OnChange(args))>
+                            <Columns>
+                                <RadzenDropDownDataGridColumn Property="Id" Title="ID" Width="100px" />
+                                <RadzenDropDownDataGridColumn Property="Name" Title="Name" Width="200px" />
+                            </Columns>
+                        </RadzenDropDownDataGrid>
+
+                    </div>
+                </div>
+                <br />
+                <br />
+                <div class="row">
+                    <div class="col-md-6">
+                        <RadzenCard>
+                            <RadzenLabel Text="Начало периода" />
+                            <RadzenDatePicker @bind-Value=@DateFromDefault DateFormat="d" Change="@OnChangeFrom" Class="w-100" />
+                        </RadzenCard>
+                    </div>
+                    <div class="col-md-6">
+                        <RadzenCard>
+                            <RadzenLabel Text="Конец периода" />
+                            <RadzenDatePicker @bind-Value=@DateToDefault DateFormat="d" Change="@OnChangeTo" Class="w-100" />
+                        </RadzenCard>
+                    </div>
+                </div>
+
+                <br />
+                <br />
+
+                <div class="row">
+                    <div class="col-3">
+                        <RadzenButton Text="Рассчитать" ButtonStyle="ButtonStyle.Secondary"
+                                      Click=@Calculate />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-3">
+                <StatUserCard StatModel="@statUserModel" />
+            </div>
+        </div>
+        <div class="row">
+
+            @if (FileList is not null)
+            {
+                <div class="col-4">
+                    <StatChartFilesNumbers Files="@FileList" />
+                </div>
+                <div class="col-4">
+                    <StatChartFilesInProj Files="@FileList" />
+                </div>
+                <div class="col-4">
+                    <StatFileSect Files="@FileList" />
+                </div>
+            }
+        </div>
+        
     </Authorized>
 </AuthorizeView>
 
