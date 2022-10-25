@@ -1,0 +1,88 @@
+﻿@using DM.BLL.Services
+@using Models
+
+@inject PersonService PersonService
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-12 my-5">
+            <RadzenCard Class="w-100 mb-4 d-inline-block">
+                <RadzenCheckBox @bind-Value="@showDataLabels" Name="dataLabels"></RadzenCheckBox>
+                <RadzenLabel Text="Подробности" Component="dataLabels" Style="margin-left: 30px; vertical-align: middle;" />
+            </RadzenCard>
+            <RadzenChart>
+                <RadzenDonutSeries Data="@Rates" CategoryProperty="Name" ValueProperty="RateDev">
+                    <ChildContent>
+                        <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                    </ChildContent>
+                    <TitleTemplate>
+                        <div class="rz-donut-content">
+                            <div>По спецам</div>
+                        </div>
+                    </TitleTemplate>
+                </RadzenDonutSeries>
+            </RadzenChart>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public StatUserModel? StatModel { get; set; }
+
+    private List<UserRateVM>? Rates { get; set; }
+
+    bool showDataLabels = false;
+
+    private List<PersonDTO> Persons { get; set; } 
+
+    protected override async Task OnInitializedAsync()
+    {
+        var p = await PersonService.GetPersonsAsync();
+        Persons = p.ToList();
+    }
+
+
+
+    protected override void OnParametersSet()
+    {
+        if (StatModel is null)
+        {
+            return;
+        }
+        
+        List<UserRateVM> userRates = new();
+
+        List<int> users = new();
+
+        foreach (var f in StatModel.DevelopedFiles)
+        {
+            users.Add(f.PersonId);
+        }
+        foreach (var c in StatModel.Controls)
+        {
+            users.Add(c.PersonId);
+        }
+        foreach (var p in users.Distinct())
+        {
+            UserRateVM userRateVM = new();
+
+            userRateVM.Name = Persons.Where(per => per.Id == p).FirstOrDefault().LastName;
+
+            userRateVM.RateDev = StatModel.DevelopedFiles.Where(pr=>pr.PersonId==p).Sum(f => f.NumbersDrawings);
+          
+            userRates.Add(userRateVM);
+        }
+        Rates = userRates;
+    }
+
+    private class UserRateVM
+    {
+        public string Name { get; set; }
+        public int RateDev { get; set; }
+
+    }
+
+}
