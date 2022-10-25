@@ -176,7 +176,7 @@
             using var context = contextFactory.CreateDbContext();
             files = await context.FileUnits.Where(f => f.IsDeleted == false).Include(p => p.Person).Include(p => p.Project).
             Where(f => f.Name.Contains(filteringString) || f.Description.Contains(filteringString) 
-            || f.Project.Name.Contains(filteringString)).
+            || f.Project.Name.Contains(filteringString) || f.Person.LastName.Contains(filteringString)).
             Include(d => d.Department).Include(p => p.Project).
             Include(s => s.Section).OrderByDescending(f => f.Id).ToArrayAsync();
 
@@ -184,7 +184,7 @@
         if (filteringString.Length > 2 && filteringString.Substring(0, 2) == RememberedString)
         {
             files = files.Where(f => f.Name.Contains(filteringString) || f.Description.Contains(filteringString)
-            || f.Project.Name.Contains(filteringString)).ToArray();
+            || f.Project.Name.Contains(filteringString) || f.Person.LastName.Contains(filteringString)).ToArray();
         }
     }
     private async Task SetAllFileList()
