@@ -32,7 +32,7 @@ namespace DM.BLL.Services
             var person = context.Persons.Find(personId);
             model.Person = _mapper.Map<PersonDTO>(person);
 
-            var files = await context.FileUnits.Where(f => f.PersonId == personId && f.Status == StatusFile.Archive)
+            var files = await context.FileUnits.Where(f => f.PersonId == personId && f.Status == StatusFile.Archive && f.IsDeleted==false)
                 .Include(c => c.Controls.Where(ch => ch.IsConfirmed))
                 .Where(f => dateFrom < f.Controls.First().DateTime && dateTo > f.Controls.First().DateTime)
                 .Include(p=>p.Project)
@@ -61,7 +61,7 @@ namespace DM.BLL.Services
 
             using var context = _contextFactory.CreateDbContext();
 
-            var files = await context.FileUnits.Where(f => f.Status == StatusFile.Archive)
+            var files = await context.FileUnits.Where(f => f.Status == StatusFile.Archive && f.IsDeleted == false)
                 .Include(c => c.Controls.Where(ch => ch.IsConfirmed))
                 .Where(f => dateFrom < f.Controls.First().DateTime && dateTo > f.Controls.First().DateTime)
                 .Include(p => p.Project)
@@ -96,7 +96,7 @@ namespace DM.BLL.Services
             var project = context.Projects.Find(projectId);
             model.Project = _mapper.Map<ProjectDTO>(project);
 
-            var files = await context.FileUnits.Where(f => f.ProjectId==projectId && f.PersonId == personId && f.Status == StatusFile.Archive )
+            var files = await context.FileUnits.Where(f => f.ProjectId==projectId && f.PersonId == personId && f.Status == StatusFile.Archive && f.IsDeleted == false)
                 .Include(c => c.Controls.Where(ch => ch.IsConfirmed))
                 .Where(f => dateFrom < f.Controls.First().DateTime && dateTo > f.Controls.First().DateTime)
                 .Include(p => p.Project)
@@ -127,7 +127,7 @@ namespace DM.BLL.Services
             var project = context.Projects.Find(projectId);
             model.Project = _mapper.Map<ProjectDTO>(project);
 
-            var files = await context.FileUnits.Where(f => f.ProjectId == projectId  && f.Status == StatusFile.Archive)
+            var files = await context.FileUnits.Where(f => f.ProjectId == projectId  && f.Status == StatusFile.Archive && f.IsDeleted == false)
                 .Include(c => c.Controls.Where(ch => ch.IsConfirmed))
                 .Where(f => dateFrom < f.Controls.First().DateTime && dateTo > f.Controls.First().DateTime)
                 .Include(p => p.Project)
