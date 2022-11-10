@@ -30,6 +30,26 @@
             </div>
         </div>
 
+        <div class="row mb-5">
+            <div class="col-md-4">
+                <RadzenLabel Text="Количество листов(в А4)" />
+            </div>
+            <div class="col-md-6">
+                <RadzenTextBox style="width: 100%;" @bind-Value="NumbersDrawings" Name="NumbDr" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <RadzenLabel Text="Время на разработку, в часах " />
+            </div>
+            <div class="col-md-6">
+                <RadzenTextBox style="width: 100%;" @bind-Value="TimeToDevelop" Name="TimeToDev" />
+            </div>
+        </div>
+        <br />
+
+
         <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Submit"></RadzenButton>
         <RadzenButton Click="@((args) => DialogService.Close())" ButtonStyle="ButtonStyle.Danger" Text="Cancel" Style="width: 120px" />
     </RadzenTemplateForm>
@@ -48,19 +68,43 @@
 
     private FileDTO FileDTOForSave { get; set; }
 
+    private string TimeToDevelop { get; set; } = string.Empty;
+    private string NumbersDrawings { get; set; } = string.Empty;
 
-    protected override async void OnInitialized()
+
+    protected override async Task OnInitializedAsync()
     {
         var p = await PersonService.GetPersonsAsync();
         Persons = p.ToList();
 
         StateHasChanged();
     }
+    protected override void OnParametersSet()
+    {
+        TimeToDevelop = SelectedFile.TimeToCreate.ToString();
+        NumbersDrawings = SelectedFile.NumbersDrawings.ToString();
+    }
+
 
     private async void OnSubmit()
     {
         var f = await FileService.GetItemByIdAsync(SelectedFile.Id);  
         f.Status = StatusFile.Checking;
+
+        if (int.TryParse(NumbersDrawings, out int num))
+        {
+            f.NumbersDrawings = num;
+        }
+        else
+        {
+            f.NumbersDrawings = 0;
+        }
+
+        if (double.TryParse(TimeToDevelop, out double t))
+        {
+            f.TimeToCreate = t;
+        }
+
         await FileService.UpdateFileAsync(f);
 
         Control.FileUnitId = SelectedFile.Id;
