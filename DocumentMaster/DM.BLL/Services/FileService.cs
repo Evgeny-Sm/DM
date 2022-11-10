@@ -87,6 +87,7 @@ namespace DM.BLL.Services
                 PersonId=fileDTO.PersonId,
                 TimeToCreate= fileDTO.TimeToCreate,
                 CreateDate= fileDTO.CreateDate,
+                IsOldVersion=false
             };
             await context.FileUnits.AddAsync(element);
             await context.SaveChangesAsync();
@@ -113,6 +114,7 @@ namespace DM.BLL.Services
             element.Status= fileDTO.Status;
             element.TimeToCreate= fileDTO.TimeToCreate;
             element.CreateDate = fileDTO.CreateDate;
+            element.IsOldVersion = fileDTO.IsOldVersion;
             context.FileUnits.Update(element);
             
             return await context.SaveChangesAsync();
@@ -143,6 +145,21 @@ namespace DM.BLL.Services
                 throw new ArgumentNullException($"Unknown {element.GetType().Name}");
             }
             element.IsDeleted = true;
+            context.FileUnits.Update(element);
+
+            await context.SaveChangesAsync();
+
+        }
+        public async Task SetFileOldAsync(int id, bool val)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var element = await context.FileUnits.FindAsync(id);
+            if (element is null)
+            {
+                element = new FileUnit();
+                throw new ArgumentNullException($"Unknown {element.GetType().Name}");
+            }
+            element.IsOldVersion = val;
             context.FileUnits.Update(element);
 
             await context.SaveChangesAsync();

@@ -48,21 +48,27 @@
                     <div class="row">
                         <div class="col-md-6">
                             <InfoProject SelectedProjects="@SelectedProjects" />
+                                            <RadzenCard>
+                    <div class="d-inline-block">
+                        <RadzenCheckBox @bind-Value=@CheckBoxOldVersions Name="CheckBox2" TValue="bool" Change=@(args => OnChangeVers(args)) />
+                        <RadzenLabel Text="Не показывать старые" Component="CheckBox2" Style="margin-left: 8px; vertical-align: middle;" />
+                    </div>
+                </RadzenCard>
+
                         </div>
 
+
                         <div class="col-md-6">
-                            <InfoFile SelectedFiles="SelectedFiles" />
+                            <InfoFile SelectedFiles="@SelectedFiles" SetOldVersion="@SetVersionProperty" />
                         </div>
                     </div>
 
                     <FileList FilesGetCallBack="@SetSelectedFiles"
                           files="@_Files"> </FileList>
 
-
                 }
             </div>
         </div>
-
 
     </Authorized>
 </AuthorizeView>
@@ -76,6 +82,8 @@
     private IList<FileUnit> _Files { get; set; }
 
     private IEnumerable<ProjectDTO> _projects { get; set; }
+
+    private bool CheckBoxOldVersions = false;
 
 
     protected override async void OnInitialized()
@@ -95,15 +103,15 @@
             _Files = GetFilesInProject(projects.FirstOrDefault().Id).ToList();
             SelectedFiles = new List<FileUnit>();
         }
-        
+
 
     }
 
-        private void SetSelectedFiles(IList<FileUnit> fileUnit)
+    private void SetSelectedFiles(IList<FileUnit> fileUnits)
     {
-        if (fileUnit != null)
+        if (fileUnits != null)
         {
-            SelectedFiles = fileUnit;
+            SelectedFiles = fileUnits;
         }
     }
 
@@ -112,7 +120,29 @@
     {
         using var context = contextFactory.CreateDbContext();
         return context.FileUnits.Where(f => f.ProjectId == id).Include(p => p.Person).Include(d => d.Department).Include(p => p.Project).Include(s => s.Section).OrderByDescending(f => f.Id).ToArray();
-
     }
 
+    private void SetVersionProperty(bool val)
+    {
+        SelectedFiles.FirstOrDefault().IsOldVersion = val;
+    }
+    private void OnChangeVers(bool value)
+    {
+        if (_Files is not null)
+        {
+
+            if (CheckBoxOldVersions)
+            {
+                _Files = _Files.Where(t => t.IsOldVersion != true).OrderByDescending(f => f.Id).ToArray();
+                SelectedFiles = new List<FileUnit>();
+            }
+            else
+            {
+                _Files = GetFilesInProject(SelectedProjects.FirstOrDefault().Id).ToList();
+                SelectedFiles = new List<FileUnit>();
+
+            }
+        }
+
+    }
 }

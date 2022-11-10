@@ -42,6 +42,8 @@
                     <div class="d-inline-block">
                         <RadzenCheckBox @bind-Value=@CheckBoxUser Name="CheckBox1" TValue="bool" Change=@(args => OnChange(args)) />
                         <RadzenLabel Text="Только мои" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
+                        <RadzenCheckBox @bind-Value=@CheckBoxOldVersions Name="CheckBox2" TValue="bool" Change=@(args => OnChangeVers(args)) />
+                        <RadzenLabel Text="Не показывать старые" Component="CheckBox2" Style="margin-left: 8px; vertical-align: middle;" />
                     </div>
                 </RadzenCard>
                 <FileList files="@files"  FilesGetCallBack="@SetSelectedFiles"/>
@@ -61,7 +63,7 @@
                             <HideFileButton FileWasRemoved="@SetFiles" SelectedFiles="@SelectedFiles" />
                         }
                     </div>
-                    <InfoFile SelectedFiles="@SelectedFiles"/>
+                    <InfoFile SelectedFiles="@SelectedFiles" SetOldVersion="@SetVersionProperty"/>
                     <RecoverButton FileWasRecover="@SetFiles" SelectedFiles="@SelectedFiles" />
                 }
             </div>
@@ -80,6 +82,8 @@
     private IEnumerable<FileUnit>? filesFromBase { get; set; }
 
     private bool CheckBoxUser = false;
+
+    private bool CheckBoxOldVersions = false;
 
     private PersonDTO CurrentPerson { get; set; } = new();
 
@@ -140,8 +144,27 @@
             }
             else
             {
-
                 files = filesFromBase;
+                CheckBoxOldVersions = false;
+                InputString = string.Empty;
+            }
+        }
+
+    }
+    private void OnChangeVers(bool value)
+    {
+        if (files is not null)
+        {
+
+            if (CheckBoxOldVersions)
+            {
+                files = files.Where(t => t.IsOldVersion!=true).OrderByDescending(f => f.Id).ToArray();
+            }
+            else
+            {
+                files = filesFromBase;
+                CheckBoxUser = false;
+                InputString = string.Empty; 
             }
         }
 
@@ -191,10 +214,17 @@
     { 
         files = filesFromBase;
         InputString = string.Empty;
+        CheckBoxOldVersions = false;
+        CheckBoxUser = false;
     }
     private void SetFiles(int id)
     {
         files = files.Where(f => f.Id != id).ToArray();
+    }
+
+    private void SetVersionProperty(bool val)
+    {
+        SelectedFiles.FirstOrDefault().IsOldVersion = val;
     }
 
 }

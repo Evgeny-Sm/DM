@@ -10,6 +10,7 @@
 
 @inject PersonService PersonService
 @inject ControlService ControlService
+@inject FileService FileService
 
 
 <AuthorizeView Roles="user">
@@ -25,6 +26,12 @@
             <div>Количество листов в файле: @NumbersDrawing </div>
             <div>Описание: @Descriptoin </div>
             <br />
+            <div class="d-inline-block">
+                <RadzenCheckBox @bind-Value=@CheckBoxOld Name="CheckBox1" TValue="bool" Change=@(args => OnChange(args)) />
+                <RadzenLabel Text="Старая версия" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
+            </div>
+            <br />
+
             @if (Unit!=null && (Unit.PersonId==CurrentPerson.Id || IsController))
             {
                 @foreach (var c in Controls)
@@ -52,6 +59,13 @@
             <div>Затраты на разработку: @TimeToDev </div>
             <div>Затраты на проверку: @TimeToControl </div>
             <br />
+
+            <div class="d-inline-block">
+                <RadzenCheckBox @bind-Value=@CheckBoxOld Name="CheckBox1" TValue="bool" Change=@(args => OnChange(args)) />
+                <RadzenLabel Text="Старая версия" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
+            </div>
+            <br />
+
             @foreach (var c in Controls)
             {
                 <div>
@@ -66,6 +80,9 @@
 @code {
     [Parameter]
     public IList<FileUnit>? SelectedFiles { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> SetOldVersion { get; set; }
 
     [CascadingParameter]
     private Task<AuthenticationState> authenticationState { get; set; }
@@ -89,19 +106,32 @@
 
     private PersonDTO CurrentPerson { get; set; } = new();
 
+    private bool CheckBoxOld;
+
     protected override async void OnInitialized()
     {
         var authState = await authenticationState;
         CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
     }
 
-    protected override async void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
         Controls  = new List<ControlDTO>();
 
 
         if (SelectedFiles.Count == 0)
         {
+            Developer = string.Empty;
+            Controller = string.Empty;
+            DateToArhive = string.Empty;
+            DateToCreate = string.Empty;
+            Department = string.Empty;
+            ProjectName = string.Empty;
+            SectionProject = string.Empty;
+            NumbersDrawing = string.Empty;
+            TimeToDev = string.Empty;
+            TimeToControl = string.Empty;
+            Descriptoin = string.Empty;
             return;
         }
         Unit = SelectedFiles.FirstOrDefault();
@@ -136,9 +166,19 @@
         TimeToDev = Unit.TimeToCreate.ToString();
 
         Descriptoin = Unit.Description;
+
+        CheckBoxOld = SelectedFiles.FirstOrDefault().IsOldVersion;
+
         StateHasChanged();
 
     }
 
-
+    private async void OnChange(bool value)
+    {
+        if (SelectedFiles is not null && SelectedFiles.Count>0)
+        {
+            await FileService.SetFileOldAsync(SelectedFiles.FirstOrDefault().Id, value);
+            await SetOldVersion.InvokeAsync(value);
+        }
+    }
 }
