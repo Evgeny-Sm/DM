@@ -115,7 +115,6 @@
         }
     }
 
-
     private IEnumerable<FileUnit> GetFilesInProject(int id)
     {
         using var context = contextFactory.CreateDbContext();
@@ -140,7 +139,6 @@
             {
                 _Files = GetFilesInProject(SelectedProjects.FirstOrDefault().Id).ToList();
                 SelectedFiles = new List<FileUnit>();
-
             }
         }
 
