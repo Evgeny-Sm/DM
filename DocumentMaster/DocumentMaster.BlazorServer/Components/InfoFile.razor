@@ -34,6 +34,10 @@
 
             @if (Unit!=null && (Unit.PersonId==CurrentPerson.Id || IsController))
             {
+                <br />
+                <div>
+                    <span style="color:cadetblue">Проверки:</span>
+                </div>
                 @foreach (var c in Controls)
                 {
                     <div>
@@ -66,7 +70,10 @@
                 <RadzenLabel Text="Старая версия" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
             </div>
             <br />
-
+            <div>
+                <span style="color:cadetblue">Проверки:</span>
+            </div>
+            <br />
             @foreach (var c in Controls)
             {
                 <div>
@@ -143,6 +150,7 @@
         IsController = Controls.Select(c => c.PersonId).Contains(CurrentPerson.Id);
 
         var ctrl = Controls.Where(c => c.IsConfirmed == true).FirstOrDefault();
+
         if (ctrl != null)
         {
             Controller = ctrl.PersonName;
@@ -151,6 +159,7 @@
         else 
         {
             Controller = string.Empty;
+            DateToArhive = string.Empty;
         }
         DateToCreate = Unit.CreateDate.ToString("HH:mm|dd:MMM:yy");
 

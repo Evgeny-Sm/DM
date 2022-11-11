@@ -79,7 +79,7 @@
                     <RadzenLabel Text="Шифр" />
                 </div>
                 <div class="col">
-                    <RadzenTextArea Style="width:inherit" @bind-Value="FileToCreate.Description" Name="ProjectName" />
+                    <RadzenTextBox style="width: 100%;" @bind-Value="FileToCreate.ProjectCode" Name="ProjectCode" />
                 </div>
             </div>
 
@@ -113,7 +113,7 @@
                     <RadzenLabel Text="Описание" />
                 </div>
                 <div class="col">
-                    <RadzenTextArea Style="width:inherit" @bind-Value="FileToCreate.ProjectCode" Name="ProjectCode" />
+                    <RadzenTextArea Style="width:inherit" @bind-Value="FileToCreate.Description" Name="Description" />
                 </div>
             </div>
 
