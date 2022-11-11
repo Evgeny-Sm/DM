@@ -183,8 +183,8 @@
     {
         var authState = await authenticationState;
         InputString = args.Value.ToString();
-        string filteringString = args.Value.ToString();
-        if (filteringString == "Show-Removed" && authState.User.IsInRole("admin"))
+        string filteringString = args.Value.ToString().ToLower();
+        if (filteringString == "show-removed" && authState.User.IsInRole("admin"))
         { 
             using var context = contextFactory.CreateDbContext();
             files = await context.FileUnits.Where(f => f.IsDeleted == true).Include(p => p.Person).Include(p => p.Project).
@@ -198,16 +198,16 @@
             RememberedString = filteringString.Substring(0, 2);
             using var context = contextFactory.CreateDbContext();
             files = await context.FileUnits.Where(f => f.IsDeleted == false).Include(p => p.Person).Include(p => p.Project).
-            Where(f => f.Name.Contains(filteringString) || f.Description.Contains(filteringString) 
-            || f.Project.Name.Contains(filteringString) || f.Person.LastName.Contains(filteringString)).
+            Where(f => f.Name.ToLower().Contains(filteringString) || f.Description.ToLower().Contains(filteringString)
+            || f.Project.Name.ToLower().Contains(filteringString) || f.Person.LastName.ToLower().Contains(filteringString)).
             Include(d => d.Department).Include(p => p.Project).
             Include(s => s.Section).OrderByDescending(f => f.Id).ToArrayAsync();
 
         }
         if (filteringString.Length > 2 && filteringString.Substring(0, 2) == RememberedString)
         {
-            files = files.Where(f => f.Name.Contains(filteringString) || f.Description.Contains(filteringString)
-            || f.Project.Name.Contains(filteringString) || f.Person.LastName.Contains(filteringString)).ToArray();
+            files = files.Where(f => f.Name.ToLower().Contains(filteringString) || f.Description.ToLower().Contains(filteringString)
+            || f.Project.Name.ToLower().Contains(filteringString) || f.Person.LastName.ToLower().Contains(filteringString)).ToArray();
         }
     }
     private async Task SetAllFileList()
