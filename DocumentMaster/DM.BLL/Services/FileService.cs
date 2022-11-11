@@ -87,7 +87,8 @@ namespace DM.BLL.Services
                 PersonId=fileDTO.PersonId,
                 TimeToCreate= fileDTO.TimeToCreate,
                 CreateDate= fileDTO.CreateDate,
-                IsOldVersion=false
+                IsOldVersion=false,
+                ProjectCode=fileDTO.ProjectCode
             };
             await context.FileUnits.AddAsync(element);
             await context.SaveChangesAsync();
@@ -115,6 +116,7 @@ namespace DM.BLL.Services
             element.TimeToCreate= fileDTO.TimeToCreate;
             element.CreateDate = fileDTO.CreateDate;
             element.IsOldVersion = fileDTO.IsOldVersion;
+            element.ProjectCode = fileDTO.ProjectCode;
             context.FileUnits.Update(element);
             
             return await context.SaveChangesAsync();

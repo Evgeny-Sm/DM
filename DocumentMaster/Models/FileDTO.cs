@@ -34,6 +34,6 @@ namespace Models
         public int PersonId { get; set; }
         public DateTime CreateDate { get; set; }
         public bool IsOldVersion { get; set; }
-
+        public string ProjectCode { get; set; } = string.Empty;
     }
 }

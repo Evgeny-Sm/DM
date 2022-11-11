@@ -72,6 +72,16 @@
                     <InputFile OnChange="@LoadFiles" multiple />
                 </div>
             </div>
+            <br />
+            <br />
+            <div class="row">
+                <div class="col-md-4 align-items-center d-flex">
+                    <RadzenLabel Text="Шифр" />
+                </div>
+                <div class="col">
+                    <RadzenTextArea Style="width:inherit" @bind-Value="FileToCreate.Description" Name="ProjectName" />
+                </div>
+            </div>
 
             <br />
             <br />
@@ -103,7 +113,7 @@
                     <RadzenLabel Text="Описание" />
                 </div>
                 <div class="col">
-                    <RadzenTextArea Style="width:inherit" @bind-Value="FileToCreate.Description" Name="ProjectName" />
+                    <RadzenTextArea Style="width:inherit" @bind-Value="FileToCreate.ProjectCode" Name="ProjectCode" />
                 </div>
             </div>
 

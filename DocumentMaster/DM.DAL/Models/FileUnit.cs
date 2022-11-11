@@ -35,6 +35,8 @@ namespace DM.DAL.Models
         public DateTime CreateDate { get; set; }=DateTime.Now;
         public string Status { get; set; }
         public bool IsOldVersion { get; set; }
+        [StringLength(200)]
+        public string ProjectCode { get; set; } = string.Empty;
         public FileUnit()
         { 
             Controls = new List<Control>();

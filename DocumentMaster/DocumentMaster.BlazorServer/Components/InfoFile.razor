@@ -54,6 +54,7 @@
             <div>Отдел: @Department </div>
             <div>Проект: @ProjectName </div>
             <div>Раздел проекта: @SectionProject </div>
+            <div>Шифр: @ProjectCode </div>
             <div>Количество листов в файле: @NumbersDrawing </div>
             <div>Описание: @Descriptoin </div>
             <div>Затраты на разработку: @TimeToDev </div>
@@ -98,6 +99,7 @@
     private string TimeToDev { get; set; } = string.Empty;
     private string TimeToControl { get; set; } = string.Empty;
     private string Descriptoin { get; set; } = string.Empty;
+    private string ProjectCode { get; set; } = string.Empty;
     private FileUnit? Unit { get; set; }
 
     private bool IsController { get; set; } = false;
@@ -108,7 +110,7 @@
 
     private bool CheckBoxOld;
 
-    protected override async void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         var authState = await authenticationState;
         CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
@@ -132,6 +134,7 @@
             TimeToDev = string.Empty;
             TimeToControl = string.Empty;
             Descriptoin = string.Empty;
+            ProjectCode = string.Empty;
             return;
         }
         Unit = SelectedFiles.FirstOrDefault();
@@ -166,6 +169,7 @@
         TimeToDev = Unit.TimeToCreate.ToString();
 
         Descriptoin = Unit.Description;
+        ProjectCode = Unit.ProjectCode;
 
         CheckBoxOld = SelectedFiles.FirstOrDefault().IsOldVersion;
 

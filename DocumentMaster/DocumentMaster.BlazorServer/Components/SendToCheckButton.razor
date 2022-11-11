@@ -40,7 +40,7 @@ Click=@OpenSendToCheckDialog />
 
         await DialogService.OpenAsync<SendToCheckDialog>($"На проверку",
               new Dictionary<string, object>() { { "SelectedFile", SelectedFiles.First() } },
-              new DialogOptions() { Width = "700px", Height = "470px", Resizable = true, Draggable = false, CloseDialogOnOverlayClick = true });
+              new DialogOptions() { Width = "700px", Height = "550px", Resizable = true, Draggable = false, CloseDialogOnOverlayClick = true });
     }
     protected override void OnParametersSet()
     {

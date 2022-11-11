@@ -29,7 +29,17 @@
                 </RadzenDropDownDataGrid>
             </div>
         </div>
-
+       
+        <br />
+        <div class="row mb-5">
+            <div class="col-md-4 align-items-center d-flex">
+                <RadzenLabel Text="Шифр" />
+            </div>
+            <div class="col">
+                <RadzenTextBox style="width: 100%;" @bind-Value="Code" Name="NumbDr" />
+            </div>
+        </div>
+        
         <div class="row mb-5">
             <div class="col-md-4">
                 <RadzenLabel Text="Количество листов(в А4)" />
@@ -39,7 +49,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row mb-5">
             <div class="col-md-4">
                 <RadzenLabel Text="Время на разработку, в часах " />
             </div>
@@ -70,6 +80,7 @@
 
     private string TimeToDevelop { get; set; } = string.Empty;
     private string NumbersDrawings { get; set; } = string.Empty;
+    private string Code { get; set; } = string.Empty;
 
 
     protected override async Task OnInitializedAsync()
@@ -83,6 +94,7 @@
     {
         TimeToDevelop = SelectedFile.TimeToCreate.ToString();
         NumbersDrawings = SelectedFile.NumbersDrawings.ToString();
+        Code = SelectedFile.ProjectCode;
     }
 
 
@@ -104,6 +116,8 @@
         {
             f.TimeToCreate = t;
         }
+        f.ProjectCode = Code;
+
 
         await FileService.UpdateFileAsync(f);
 
