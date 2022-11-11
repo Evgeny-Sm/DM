@@ -27,7 +27,7 @@
 
     private async Task OpenReloadDialog()
     {
-        await DialogService.OpenAsync<ReloadFileDialog>($"На проверку",
+        await DialogService.OpenAsync<ReloadFileDialog>($"Заменить файл",
               new Dictionary<string, object>() { { "SelectedFiles", SelectedFiles } },
               new DialogOptions() { Width = "500px", Height = "300px", Resizable = true,
               Draggable = false, CloseDialogOnOverlayClick = true });
