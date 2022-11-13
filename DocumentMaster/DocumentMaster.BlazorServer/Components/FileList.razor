@@ -18,8 +18,9 @@
             <Columns>
                 <RadzenDataGridColumn TItem="FileUnit" Property="Id" Title="Id" Width="50px" />
                 <RadzenDataGridColumn TItem="FileUnit" Property="Name" Title="Название" Width="200px" />
-                <RadzenDataGridColumn TItem="FileUnit" Property="Status" Title="Статус" Width="80px" />
-                <RadzenDataGridColumn TItem="FileUnit"  Title="Разработчик" Width="60px">
+                <RadzenDataGridColumn TItem="FileUnit" Property="ProjectCode" Title="Шифр" Width="100px" />
+                <RadzenDataGridColumn TItem="FileUnit" Property="Status" Title="Статус" Width="50px" />
+                <RadzenDataGridColumn TItem="FileUnit"  Title="Разраб." Width="60px">
                     <Template Context="file">
                         <RadzenLabel Text="@GetName(file)"/>
                     </Template>

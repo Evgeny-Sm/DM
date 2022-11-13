@@ -10,6 +10,7 @@
 
 @inject PersonService PersonService
 @inject ControlService ControlService
+@inject FileService FileService
 
 
 <AuthorizeView Roles="user">
@@ -25,8 +26,18 @@
             <div>Количество листов в файле: @NumbersDrawing </div>
             <div>Описание: @Descriptoin </div>
             <br />
+            <div class="d-inline-block">
+                <RadzenCheckBox @bind-Value=@CheckBoxOld Name="CheckBox1" TValue="bool" Change=@(args => OnChange(args)) />
+                <RadzenLabel Text="Старая версия" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
+            </div>
+            <br />
+
             @if (Unit!=null && (Unit.PersonId==CurrentPerson.Id || IsController))
             {
+                <br />
+                <div>
+                    <span style="color:cadetblue">Проверки:</span>
+                </div>
                 @foreach (var c in Controls)
                 {
                     <div>
@@ -47,10 +58,21 @@
             <div>Отдел: @Department </div>
             <div>Проект: @ProjectName </div>
             <div>Раздел проекта: @SectionProject </div>
+            <div>Шифр: @ProjectCode </div>
             <div>Количество листов в файле: @NumbersDrawing </div>
             <div>Описание: @Descriptoin </div>
             <div>Затраты на разработку: @TimeToDev </div>
             <div>Затраты на проверку: @TimeToControl </div>
+            <br />
+
+            <div class="d-inline-block">
+                <RadzenCheckBox @bind-Value=@CheckBoxOld Name="CheckBox1" TValue="bool" Change=@(args => OnChange(args)) />
+                <RadzenLabel Text="Старая версия" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
+            </div>
+            <br />
+            <div>
+                <span style="color:cadetblue">Проверки:</span>
+            </div>
             <br />
             @foreach (var c in Controls)
             {
@@ -67,6 +89,9 @@
     [Parameter]
     public IList<FileUnit>? SelectedFiles { get; set; }
 
+    [Parameter]
+    public EventCallback<bool> SetOldVersion { get; set; }
+
     [CascadingParameter]
     private Task<AuthenticationState> authenticationState { get; set; }
 
@@ -81,6 +106,7 @@
     private string TimeToDev { get; set; } = string.Empty;
     private string TimeToControl { get; set; } = string.Empty;
     private string Descriptoin { get; set; } = string.Empty;
+    private string ProjectCode { get; set; } = string.Empty;
     private FileUnit? Unit { get; set; }
 
     private bool IsController { get; set; } = false;
@@ -89,19 +115,33 @@
 
     private PersonDTO CurrentPerson { get; set; } = new();
 
-    protected override async void OnInitialized()
+    private bool CheckBoxOld;
+
+    protected override async Task OnInitializedAsync()
     {
         var authState = await authenticationState;
         CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
     }
 
-    protected override async void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
         Controls  = new List<ControlDTO>();
 
 
         if (SelectedFiles.Count == 0)
         {
+            Developer = string.Empty;
+            Controller = string.Empty;
+            DateToArhive = string.Empty;
+            DateToCreate = string.Empty;
+            Department = string.Empty;
+            ProjectName = string.Empty;
+            SectionProject = string.Empty;
+            NumbersDrawing = string.Empty;
+            TimeToDev = string.Empty;
+            TimeToControl = string.Empty;
+            Descriptoin = string.Empty;
+            ProjectCode = string.Empty;
             return;
         }
         Unit = SelectedFiles.FirstOrDefault();
@@ -110,6 +150,7 @@
         IsController = Controls.Select(c => c.PersonId).Contains(CurrentPerson.Id);
 
         var ctrl = Controls.Where(c => c.IsConfirmed == true).FirstOrDefault();
+
         if (ctrl != null)
         {
             Controller = ctrl.PersonName;
@@ -118,6 +159,7 @@
         else 
         {
             Controller = string.Empty;
+            DateToArhive = string.Empty;
         }
         DateToCreate = Unit.CreateDate.ToString("HH:mm|dd:MMM:yy");
 
@@ -136,9 +178,20 @@
         TimeToDev = Unit.TimeToCreate.ToString();
 
         Descriptoin = Unit.Description;
+        ProjectCode = Unit.ProjectCode;
+
+        CheckBoxOld = SelectedFiles.FirstOrDefault().IsOldVersion;
+
         StateHasChanged();
 
     }
 
-
+    private async void OnChange(bool value)
+    {
+        if (SelectedFiles is not null && SelectedFiles.Count>0)
+        {
+            await FileService.SetFileOldAsync(SelectedFiles.FirstOrDefault().Id, value);
+            await SetOldVersion.InvokeAsync(value);
+        }
+    }
 }

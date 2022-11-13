@@ -42,6 +42,8 @@
                     <div class="d-inline-block">
                         <RadzenCheckBox @bind-Value=@CheckBoxUser Name="CheckBox1" TValue="bool" Change=@(args => OnChange(args)) />
                         <RadzenLabel Text="Только мои" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
+                        <RadzenCheckBox @bind-Value=@CheckBoxOldVersions Name="CheckBox2" TValue="bool" Change=@(args => OnChangeVers(args)) />
+                        <RadzenLabel Text="Не показывать старые" Component="CheckBox2" Style="margin-left: 8px; vertical-align: middle;" />
                     </div>
                 </RadzenCard>
                 <FileList files="@files"  FilesGetCallBack="@SetSelectedFiles"/>
@@ -61,7 +63,7 @@
                             <HideFileButton FileWasRemoved="@SetFiles" SelectedFiles="@SelectedFiles" />
                         }
                     </div>
-                    <InfoFile SelectedFiles="@SelectedFiles"/>
+                    <InfoFile SelectedFiles="@SelectedFiles" SetOldVersion="@SetVersionProperty"/>
                     <RecoverButton FileWasRecover="@SetFiles" SelectedFiles="@SelectedFiles" />
                 }
             </div>
@@ -80,6 +82,8 @@
     private IEnumerable<FileUnit>? filesFromBase { get; set; }
 
     private bool CheckBoxUser = false;
+
+    private bool CheckBoxOldVersions = false;
 
     private PersonDTO CurrentPerson { get; set; } = new();
 
@@ -140,8 +144,27 @@
             }
             else
             {
-
                 files = filesFromBase;
+                CheckBoxOldVersions = false;
+                InputString = string.Empty;
+            }
+        }
+
+    }
+    private void OnChangeVers(bool value)
+    {
+        if (files is not null)
+        {
+
+            if (CheckBoxOldVersions)
+            {
+                files = files.Where(t => t.IsOldVersion!=true).OrderByDescending(f => f.Id).ToArray();
+            }
+            else
+            {
+                files = filesFromBase;
+                CheckBoxUser = false;
+                InputString = string.Empty; 
             }
         }
 
@@ -160,8 +183,8 @@
     {
         var authState = await authenticationState;
         InputString = args.Value.ToString();
-        string filteringString = args.Value.ToString();
-        if (filteringString == "Show-Removed" && authState.User.IsInRole("admin"))
+        string filteringString = args.Value.ToString().ToLower();
+        if (filteringString == "show-removed" && authState.User.IsInRole("admin"))
         { 
             using var context = contextFactory.CreateDbContext();
             files = await context.FileUnits.Where(f => f.IsDeleted == true).Include(p => p.Person).Include(p => p.Project).
@@ -175,26 +198,33 @@
             RememberedString = filteringString.Substring(0, 2);
             using var context = contextFactory.CreateDbContext();
             files = await context.FileUnits.Where(f => f.IsDeleted == false).Include(p => p.Person).Include(p => p.Project).
-            Where(f => f.Name.Contains(filteringString) || f.Description.Contains(filteringString) 
-            || f.Project.Name.Contains(filteringString) || f.Person.LastName.Contains(filteringString)).
+            Where(f => f.Name.ToLower().Contains(filteringString) || f.Description.ToLower().Contains(filteringString)
+            || f.Project.Name.ToLower().Contains(filteringString) || f.Person.LastName.ToLower().Contains(filteringString)).
             Include(d => d.Department).Include(p => p.Project).
             Include(s => s.Section).OrderByDescending(f => f.Id).ToArrayAsync();
 
         }
         if (filteringString.Length > 2 && filteringString.Substring(0, 2) == RememberedString)
         {
-            files = files.Where(f => f.Name.Contains(filteringString) || f.Description.Contains(filteringString)
-            || f.Project.Name.Contains(filteringString) || f.Person.LastName.Contains(filteringString)).ToArray();
+            files = files.Where(f => f.Name.ToLower().Contains(filteringString) || f.Description.ToLower().Contains(filteringString)
+            || f.Project.Name.ToLower().Contains(filteringString) || f.Person.LastName.ToLower().Contains(filteringString)).ToArray();
         }
     }
     private async Task SetAllFileList()
     { 
         files = filesFromBase;
         InputString = string.Empty;
+        CheckBoxOldVersions = false;
+        CheckBoxUser = false;
     }
     private void SetFiles(int id)
     {
         files = files.Where(f => f.Id != id).ToArray();
+    }
+
+    private void SetVersionProperty(bool val)
+    {
+        SelectedFiles.FirstOrDefault().IsOldVersion = val;
     }
 
 }

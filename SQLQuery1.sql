@@ -3,7 +3,8 @@ select * from FileUnits
 select * from Projects
 select * from UserProfiles
 select * from Departments
-select * from UserActions
+select * from Controls
+
 
 
 truncate table Persons
@@ -21,6 +22,7 @@ delete from Controls
 
 delete Departments where Name='CO'
 
+delete Controls where Id=91
 
 
 truncate table FileUnits
