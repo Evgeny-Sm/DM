@@ -1,0 +1,40 @@
+﻿@using DM.BLL.Services
+@using DM.DAL.Models
+@using Models
+
+@inject FileService FileService
+
+<AuthorizeView Roles="admin">
+    <Authorized>
+        @if (Status is not null && Status!=StatusFile.Work)
+        {
+            <RadzenButton Text="Сбросить" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Success"
+                      Click=@ResetFile />
+        }
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public IList<FileUnit> SelectedFiles { get; set; }
+    [Parameter]
+    public EventCallback<int> FileWasReset { get; set; }
+
+    private string Status { get; set; }
+    private FileUnit UserFile { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        UserFile = SelectedFiles.FirstOrDefault();
+        if (UserFile is not null)
+            Status = UserFile.Status;
+    }
+
+    private async void ResetFile()
+    {
+        await FileService.ResetFileAsync(UserFile.Id);
+        await FileWasReset.InvokeAsync(UserFile.Id);
+
+    }
+
+}
