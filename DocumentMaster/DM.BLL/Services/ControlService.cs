@@ -122,8 +122,7 @@ namespace DM.BLL.Services
             if (element != null)
             {
                 context.Controls.Remove(element);
-                await context.SaveChangesAsync();
-              
+                await context.SaveChangesAsync();              
             }
         }
 

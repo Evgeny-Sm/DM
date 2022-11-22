@@ -182,10 +182,10 @@ namespace DM.BLL.Services
 
         }
 
-        public async Task ResetFileAsync(int id)
+        public async Task ResetFileAsync(int id, int adminId)
         {
             using var context = _contextFactory.CreateDbContext();
-            var element = await context.FileUnits.Where(f => f.Id == id).Include(c => c.Controls).FirstOrDefaultAsync(); ;
+            var element = await context.FileUnits.Where(f => f.Id == id).Include(c => c.Controls).FirstOrDefaultAsync();
             if (element is null)
             {
                 element = new FileUnit();
@@ -197,10 +197,21 @@ namespace DM.BLL.Services
                 c.IsConfirmed= false;
                 c.IsInAction = false;
             }
+
             context.FileUnits.Update(element);
+            var control = new Control
+            {
+                FileUnitId = id,
+                PersonId = adminId,
+                IsConfirmed = false,
+                IsInAction = false,
+                TimeForChecking = 0,
+                Description = "file returned to develop",
+                DateTime = DateTime.Now
+            };
+            context.Controls.Add(control);
 
             await context.SaveChangesAsync();
-
         }
 
 
