@@ -40,19 +40,22 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var p = await PersonService.GetPersonsAsync();
-        Persons = p.ToList();
+
     }
 
 
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
+        var pr = await PersonService.GetPersonsAsync();
+
+        Persons = pr.ToList();
+
         if (StatModel is null)
         {
             return;
         }
-        
+
         List<UserRateVM> userRates = new();
 
         List<int> users = new();
@@ -72,7 +75,7 @@
             userRateVM.Name = Persons.Where(per => per.Id == p).FirstOrDefault().LastName;
 
             userRateVM.RateDev = StatModel.DevelopedFiles.Where(pr=>pr.PersonId==p).Sum(f => f.NumbersDrawings);
-          
+
             userRates.Add(userRateVM);
         }
         Rates = userRates;
@@ -80,7 +83,7 @@
 
     private class UserRateVM
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         public int RateDev { get; set; }
 
     }
