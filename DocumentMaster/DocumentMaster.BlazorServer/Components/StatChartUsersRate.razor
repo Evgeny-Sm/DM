@@ -40,16 +40,14 @@
 
     protected override async Task OnInitializedAsync()
     {
-
-    }
-
-
-
-    protected override async Task OnParametersSetAsync()
-    {
-        var pr = await PersonService.GetPersonsAsync();
+        var pr = await PersonService.GetAllPersonsAsync();
 
         Persons = pr.ToList();
+    }
+
+    protected override void OnParametersSet()
+    {
+
 
         if (StatModel is null)
         {
