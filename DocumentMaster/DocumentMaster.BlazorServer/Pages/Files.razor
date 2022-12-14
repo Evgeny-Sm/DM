@@ -65,6 +65,7 @@
                     </div>
                     <InfoFile SelectedFiles="@SelectedFiles" SetOldVersion="@SetVersionProperty"/>
                     <RecoverButton FileWasRecover="@SetFiles" SelectedFiles="@SelectedFiles" />
+                    <ResetFileButton FileWasReset="@SetFiles" SelectedFiles="@SelectedFiles" />
                 }
             </div>
         </div>
@@ -220,6 +221,7 @@
     private void SetFiles(int id)
     {
         files = files.Where(f => f.Id != id).ToArray();
+        SelectedFiles = new List<FileUnit>();
     }
 
     private void SetVersionProperty(bool val)

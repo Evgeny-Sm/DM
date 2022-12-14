@@ -86,7 +86,7 @@
     protected override async void OnInitialized()
     {
         var authState = await authenticationState;
-        PersonDTOs = await PersonService.GetPersonsAsync();
+        PersonDTOs = await PersonService.GetAllPersonsAsync();
         CurrentPerson = PersonDTOs.Where(p=>p.UserName==(authState.User.Identity.Name)).Single();
 
         ProjectDTOs = await ProjectService.GetProjectsListAsync();
