@@ -4,7 +4,14 @@ select * from Projects
 select * from UserProfiles
 select * from Departments
 select * from UserActions
+select * from Controls
 
+Update Controls set IsInAction=0 where id=140
+
+
+Update FileUnits set Status='Work' where id=137
+
+Update Projects set Name='Санаторий Волна.Литер В' where id=3
 
 truncate table Persons
 truncate table FileUnits
