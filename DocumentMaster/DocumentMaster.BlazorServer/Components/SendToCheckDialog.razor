@@ -31,33 +31,7 @@
         </div>
        
         <br />
-        <div class="row mb-5">
-            <div class="col-md-4 align-items-center d-flex">
-                <RadzenLabel Text="Шифр" />
-            </div>
-            <div class="col">
-                <RadzenTextBox style="width: 100%;" @bind-Value="Code" Name="NumbDr" />
-            </div>
-        </div>
-        
-        <div class="row mb-5">
-            <div class="col-md-4">
-                <RadzenLabel Text="Количество листов(в А4)" />
-            </div>
-            <div class="col-md-6">
-                <RadzenTextBox style="width: 100%;" @bind-Value="NumbersDrawings" Name="NumbDr" />
-            </div>
-        </div>
 
-        <div class="row mb-5">
-            <div class="col-md-4">
-                <RadzenLabel Text="Время на разработку, в часах " />
-            </div>
-            <div class="col-md-6">
-                <RadzenTextBox style="width: 100%;" @bind-Value="TimeToDevelop" Name="TimeToDev" />
-            </div>
-        </div>
-        <br />
 
 
         <RadzenButton ButtonType="ButtonType.Submit" Disabled=@IsSubmitting ButtonStyle="ButtonStyle.Secondary" Text="Submit"></RadzenButton>
@@ -78,9 +52,7 @@
 
     private FileDTO FileDTOForSave { get; set; }
 
-    private string TimeToDevelop { get; set; } = string.Empty;
-    private string NumbersDrawings { get; set; } = string.Empty;
-    private string Code { get; set; } = string.Empty;
+
     private bool IsSubmitting;
 
     protected override async Task OnInitializedAsync()
@@ -90,12 +62,7 @@
 
         StateHasChanged();
     }
-    protected override void OnParametersSet()
-    {
-        TimeToDevelop = SelectedFile.TimeToCreate.ToString();
-        NumbersDrawings = SelectedFile.NumbersDrawings.ToString();
-        Code = SelectedFile.ProjectCode;
-    }
+
 
 
     private async void OnSubmit()
@@ -109,21 +76,6 @@
             IsSubmitting = true;
         var f = await FileService.GetItemByIdAsync(SelectedFile.Id);  
         f.Status = StatusFile.Checking;
-
-        if (int.TryParse(NumbersDrawings, out int num))
-        {
-            f.NumbersDrawings = num;
-        }
-        else
-        {
-            f.NumbersDrawings = 0;
-        }
-
-        if (double.TryParse(TimeToDevelop, out double t))
-        {
-            f.TimeToCreate = t;
-        }
-        f.ProjectCode = Code;
 
 
         await FileService.UpdateFileAsync(f);

@@ -160,8 +160,7 @@
             else
             {             
                 System.IO.File.Move($"{WebHostEnvironment.WebRootPath}\\{Configuration.GetRequiredSection("ProjectRootDir").Value}\\{SelectedFiles.FirstOrDefault().PathFile}",
-                $"{WebHostEnvironment.WebRootPath}\\{Configuration.GetRequiredSection("ProjectRootDir").Value}\\{CurrentFile.PathFile}");          
-                
+                $"{WebHostEnvironment.WebRootPath}\\{Configuration.GetRequiredSection("ProjectRootDir").Value}\\{CurrentFile.PathFile}");                        
             }
 
             await FileService.UpdateFileAsync(CurrentFile);
