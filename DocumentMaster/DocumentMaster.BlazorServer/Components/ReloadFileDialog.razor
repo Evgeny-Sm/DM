@@ -17,13 +17,43 @@
                   <br />
                   <br />
     <div class="row">
-        <div class="col-md-4 align-items-center d-flex">
-            <RadzenLabel Text="Время на доработку(часов)" />
+        <div class="row mb-5">
+            <div class="col-md-4 align-items-center d-flex">
+                <RadzenLabel Text="Имя файла" />
+            </div>
+            <div class="col">
+                <RadzenTextBox style="width: 100%;" @bind-Value="FileName" Name="NumbDr" />
+            </div>
         </div>
 
-        <div class="col-md-8">
-            <RadzenTextBox style="width: 100%;" @bind-Value="AdditionalTime" Name="AddTime" />
+        <div class="row mb-5">
+            <div class="col-md-4">
+                <RadzenLabel Text="Время на доработку(часов)" />
+            </div>
+
+            <div class="col-md-6">
+                <RadzenTextBox style="width: 100%;" @bind-Value="AdditionalTime" Name="AddTime" />
+            </div>
         </div>
+
+        <div class="row mb-5">
+            <div class="col-md-4">
+                <RadzenLabel Text="Количество листов(в А4)" />
+            </div>
+            <div class="col-md-6">
+                <RadzenTextBox style="width: 100%;" @bind-Value="NumbersDrawings" Name="NumbDr" />
+            </div>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-md-4 align-items-center d-flex">
+                <RadzenLabel Text="Шифр" />
+            </div>
+            <div class="col">
+                <RadzenTextBox style="width: 100%;" @bind-Value="Code" Name="NumbDr" />
+            </div>
+        </div>
+
     </div>
     <div>
         <RadzenButton Size="Radzen.ButtonSize.Small" Disabled=@IsSubmitting ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Ok" Click=@(args => UploadFile()) />
@@ -41,7 +71,13 @@
 
     private string Path { get; set; } = string.Empty;
 
+    private string NumbersDrawings { get; set; } = string.Empty;
+
+    private string Code { get; set; } = string.Empty;
+
     private string AdditionalTime { get; set; } = "0";
+
+    private string IndexFile { get; set; } = string.Empty;
 
     private FileDTO CurrentFile { get; set; } = new FileDTO();
 
@@ -57,9 +93,11 @@
     {
         if (SelectedFiles != null)
         {
-            FileName = SelectedFiles.FirstOrDefault().Name;
-            Path = SelectedFiles.FirstOrDefault().PathFile;
+            FileName = SelectedFiles.FirstOrDefault().Name.Substring(7);
+            IndexFile = SelectedFiles.FirstOrDefault().Name.Remove(6);
             CurrentFile = await FileService.GetItemByIdAsync(SelectedFiles.FirstOrDefault().Id);
+            NumbersDrawings = SelectedFiles.FirstOrDefault().NumbersDrawings.ToString();
+            Code = SelectedFiles.FirstOrDefault().ProjectCode;
         }
     }
     void OnChangeUpload(UploadChangeEventArgs args)
@@ -81,14 +119,26 @@
         {
             return;
         }
+
         try
         {
             IsSubmitting = true;
-            if (!FileReadyToUpload)
+
+            CurrentFile.ProjectCode = Code;
+
+            CurrentFile.Name = IndexFile+"_"+FileName;
+
+            CurrentFile.PathFile = $"{CurrentFile.ProjectId}/{IndexFile}_{FileName}";
+
+            if (int.TryParse(NumbersDrawings, out int num))
             {
-                await JS.InvokeVoidAsync("alert", "Выберите файл");
-                return;
+                CurrentFile.NumbersDrawings = num;
             }
+            else
+            {
+                CurrentFile.NumbersDrawings = 0;
+            }
+
             if (double.TryParse(AdditionalTime, out double t))
             {
                 CurrentFile.TimeToCreate += t;
@@ -98,11 +148,21 @@
                 await JS.InvokeVoidAsync("alert", "Введите время на доработку в часах или 0");
                 return;
             }
-            var fullPath = $"{WebHostEnvironment.WebRootPath}\\{Configuration.GetRequiredSection("ProjectRootDir").Value}\\{Path}";
 
-            await using FileStream fs = new(fullPath, FileMode.Create);
+            if (FileReadyToUpload)
+            {
+                var fullPath = $"{WebHostEnvironment.WebRootPath}\\{Configuration.GetRequiredSection("ProjectRootDir").Value}\\{CurrentFile.PathFile}";
 
-            await BrowserFile.OpenReadStream(maxAllowedSize: 100000000).CopyToAsync(fs);
+                await using FileStream fs = new(fullPath, FileMode.Create);
+
+                await BrowserFile.OpenReadStream(maxAllowedSize: 100000000).CopyToAsync(fs);
+            }
+            else
+            {             
+                System.IO.File.Move($"{WebHostEnvironment.WebRootPath}\\{Configuration.GetRequiredSection("ProjectRootDir").Value}\\{SelectedFiles.FirstOrDefault().PathFile}",
+                $"{WebHostEnvironment.WebRootPath}\\{Configuration.GetRequiredSection("ProjectRootDir").Value}\\{CurrentFile.PathFile}");          
+                
+            }
 
             await FileService.UpdateFileAsync(CurrentFile);
 
@@ -125,5 +185,6 @@
 
         FileReadyToUpload = true;
         BrowserFile = e.File;
+        CurrentFile.Name = BrowserFile.Name;
     }
 }
