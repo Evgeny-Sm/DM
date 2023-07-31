@@ -26,13 +26,22 @@
             <div>Количество листов в файле: @NumbersDrawing </div>
             <div>Описание: @Descriptoin </div>
             <br />
-            <div class="d-inline-block">
-                <RadzenCheckBox @bind-Value=@CheckBoxOld Name="CheckBox1" TValue="bool" Change=@(args => OnChange(args)) />
-                <RadzenLabel Text="Старая версия" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
+            <div class="row">
+                <div class="col-6">
+                    <div class="d-inline-block">
+                        <RadzenCheckBox @bind-Value=@CheckBoxOld Name="CheckBox1" TValue="bool" Change=@(args => OnChange(args)) />
+                        <RadzenLabel Text="Старая версия" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
+                    </div>
+                </div>
+                <div class="col-6">
+                    <NavLink class="nav-link" href="Questions/15"  Match="NavLinkMatch.All">
+                        <span style="color:darkslateblue"></span> Обсуждение
+                    </NavLink>
+                </div>
             </div>
             <br />
 
-            @if (Unit!=null && (Unit.PersonId==CurrentPerson.Id || IsController))
+            @if (Unit != null && (Unit.PersonId == CurrentPerson.Id || IsController))
             {
                 <br />
                 <div>
@@ -109,6 +118,8 @@
     private string ProjectCode { get; set; } = string.Empty;
     private FileUnit? Unit { get; set; }
 
+
+
     private bool IsController { get; set; } = false;
 
     private IEnumerable<ControlDTO> Controls { get; set; } = new List<ControlDTO>();
@@ -119,13 +130,17 @@
 
     protected override async Task OnInitializedAsync()
     {
+
+
         var authState = await authenticationState;
         CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        Controls  = new List<ControlDTO>();
+
+        Controls = new List<ControlDTO>();
 
 
         if (SelectedFiles.Count == 0)
@@ -156,7 +171,7 @@
             Controller = ctrl.PersonName;
             DateToArhive = ctrl.DateTime.ToString("HH:mm|dd:MMM:yy");
         }
-        else 
+        else
         {
             Controller = string.Empty;
             DateToArhive = string.Empty;
@@ -188,7 +203,7 @@
 
     private async void OnChange(bool value)
     {
-        if (SelectedFiles is not null && SelectedFiles.Count>0)
+        if (SelectedFiles is not null && SelectedFiles.Count > 0)
         {
             await FileService.SetFileOldAsync(SelectedFiles.FirstOrDefault().Id, value);
             await SetOldVersion.InvokeAsync(value);

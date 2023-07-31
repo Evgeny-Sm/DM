@@ -1,4 +1,4 @@
-﻿@page "/Questions"
+﻿@page "/Questions/{id:int?}"
 
 @attribute [Authorize]
 
@@ -81,6 +81,9 @@
     [CascadingParameter]
     private Task<AuthenticationState> authenticationState { get; set; }
 
+    [Parameter]
+    public int id { get; set; }
+
     public IEnumerable<QuestionDTO> QuestionDTOs { get; set; } = new List<QuestionDTO>();
     public IEnumerable<QuestionDTO> QuestionToView { get; set; } = new List<QuestionDTO>();
     public IEnumerable<QuestionDTO> FindedQuestions { get; set; } = new List<QuestionDTO>();
@@ -100,7 +103,16 @@
 
         CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
 
-        QuestionDTOs = await QuestionService.GetAllAsync();
+        if (id==0)
+        {
+            QuestionDTOs = await QuestionService.GetAllAsync();
+        }
+        else
+        {
+            var quest = await QuestionService.GetItemByIdAsync(id);
+            QuestionDTOs=QuestionDTOs.Append(quest);
+            SelectedQuestion = QuestionDTOs.FirstOrDefault();
+        }
 
         foreach (var q in QuestionDTOs)
         {
@@ -109,7 +121,7 @@
         }
 
         QuestionToView = QuestionDTOs.OrderByDescending(q=>q.Id);
-   
+
         StateHasChanged();
     }
 
