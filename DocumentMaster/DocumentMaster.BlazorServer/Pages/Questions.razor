@@ -1,4 +1,4 @@
-﻿@page "/Questions/{id:int?}"
+﻿@page "/Questions/{id?}"
 
 @attribute [Authorize]
 
@@ -82,7 +82,7 @@
     private Task<AuthenticationState> authenticationState { get; set; }
 
     [Parameter]
-    public int id { get; set; }
+    public string id { get; set; }
 
     public IEnumerable<QuestionDTO> QuestionDTOs { get; set; } = new List<QuestionDTO>();
     public IEnumerable<QuestionDTO> QuestionToView { get; set; } = new List<QuestionDTO>();
@@ -91,6 +91,8 @@
     private PersonDTO CurrentPerson { get; set; } = new();
 
     private QuestionDTO SelectedQuestion { get; set; }
+
+    private QuestionDTO CurrQuest { get; set; }
 
     private string RememberedString { get; set; } = string.Empty;
     private string InputString { get; set; } = string.Empty;
@@ -103,24 +105,32 @@
 
         CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
 
-        if (id==0)
+        if (id is null)
         {
-            QuestionDTOs = await QuestionService.GetAllAsync();
+            QuestionDTOs = await QuestionService.GetAllAsync();         
         }
         else
         {
-            var quest = await QuestionService.GetItemByIdAsync(id);
-            QuestionDTOs=QuestionDTOs.Append(quest);
-            SelectedQuestion = QuestionDTOs.FirstOrDefault();
+            CurrQuest =  await QuestionService.GetItemByIdAsync(int.Parse(id));
+            if (CurrQuest is not null)
+            {
+                QuestionDTOs = QuestionDTOs.Append(CurrQuest);
+            }
         }
 
-        foreach (var q in QuestionDTOs)
+        
+
+        if (QuestionDTOs is not null)
         {
-            var i = await QuestionService.GetCountUnreaded(CurrentPerson.Id, q.Id);
-            q.UnreadedCount = i.ToString();
-        }
+            foreach (var q in QuestionDTOs)
+            {
+                var i = await QuestionService.GetCountUnreaded(CurrentPerson.Id, q.Id);
+                q.UnreadedCount = i.ToString();
+            }
 
-        QuestionToView = QuestionDTOs.OrderByDescending(q=>q.Id);
+            QuestionToView = QuestionDTOs.OrderByDescending(q => q.Id);
+            SelectedQuestion = QuestionToView.FirstOrDefault();
+        }
 
         StateHasChanged();
     }

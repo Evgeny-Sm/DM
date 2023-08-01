@@ -38,17 +38,38 @@ namespace DM.BLL.Services
         public async Task<QuestionDTO> GetItemByIdAsync(int id)
         {
             using var context = _contextFactory.CreateDbContext();
+            var checkItem = await context.Questions.FindAsync(id);
+            if (checkItem == null)
+            {
+                return null;
+            }
             var item = await context.Questions.Where(c => c.Id == id)
                 .Include(p => p.Persons)
                 .Include(n => n.Notes).ThenInclude(p => p.Persons)
                 .Include(f => f.FileUnits)
                 .Include(p => p.Project).SingleAsync();
-            if (item == null)
+            
+            var result = _mapper.Map<QuestionDTO>(item);
+            return result;
+        }
+        public async Task<QuestionDTO> GetItemByNameContainsStringAsync(string fileNumber)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            try
+            {
+                var item = await context.Questions.Where(c => c.Title.Contains(fileNumber))
+                    .Include(p => p.Persons)
+                    .Include(n => n.Notes).ThenInclude(p => p.Persons)
+                    .Include(f => f.FileUnits)
+                    .Include(p => p.Project).SingleAsync();
+
+                var result = _mapper.Map<QuestionDTO>(item);
+                return result;
+            }
+            catch
             {
                 return null;
             }
-            var result = _mapper.Map<QuestionDTO>(item);
-            return result;
         }
         public async Task<int> GetCountUnreaded(int personId, int questId)
         {

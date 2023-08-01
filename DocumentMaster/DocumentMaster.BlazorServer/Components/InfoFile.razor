@@ -11,6 +11,7 @@
 @inject PersonService PersonService
 @inject ControlService ControlService
 @inject FileService FileService
+@inject NavigationManager navManager
 
 
 <AuthorizeView Roles="user">
@@ -34,9 +35,7 @@
                     </div>
                 </div>
                 <div class="col-6">
-                    <NavLink class="nav-link" href="Questions/15"  Match="NavLinkMatch.All">
-                        <span style="color:darkslateblue"></span> Обсуждение
-                    </NavLink>
+                    <a @onclick="RedirectToQuestions" href="javascript:void(0)">Обсуждение</a>
                 </div>
             </div>
             <br />
@@ -208,5 +207,11 @@
             await FileService.SetFileOldAsync(SelectedFiles.FirstOrDefault().Id, value);
             await SetOldVersion.InvokeAsync(value);
         }
+    }
+    private void RedirectToQuestions()
+    {
+        
+
+        navManager.NavigateTo("/Questions/15");
     }
 }
