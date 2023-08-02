@@ -125,11 +125,11 @@
             foreach (var q in QuestionDTOs)
             {
                 var i = await QuestionService.GetCountUnreaded(CurrentPerson.Id, q.Id);
-                q.UnreadedCount = i.ToString();
+                q.UnreadedCount = i;
             }
 
             QuestionToView = QuestionDTOs.OrderByDescending(q => q.Id);
-            SelectedQuestion = QuestionToView.FirstOrDefault();
+
         }
 
         StateHasChanged();

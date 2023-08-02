@@ -12,6 +12,7 @@
 @inject ControlService ControlService
 @inject FileService FileService
 @inject NavigationManager navManager
+@inject QuestionService QuestionService
 
 
 <AuthorizeView Roles="user">
@@ -73,9 +74,16 @@
             <div>Затраты на проверку: @TimeToControl </div>
             <br />
 
-            <div class="d-inline-block">
-                <RadzenCheckBox @bind-Value=@CheckBoxOld Name="CheckBox1" TValue="bool" Change=@(args => OnChange(args)) />
-                <RadzenLabel Text="Старая версия" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
+            <div class="row">
+                <div class="col-6">
+                    <div class="d-inline-block">
+                        <RadzenCheckBox @bind-Value=@CheckBoxOld Name="CheckBox1" TValue="bool" Change=@(args => OnChange(args)) />
+                        <RadzenLabel Text="Старая версия" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
+                    </div>
+                </div>
+                <div class="col-6">
+                    <a @onclick="RedirectToQuestions" href="javascript:void(0)">Обсуждение</a>
+                </div>
             </div>
             <br />
             <div>
@@ -208,10 +216,27 @@
             await SetOldVersion.InvokeAsync(value);
         }
     }
-    private void RedirectToQuestions()
+    private async void RedirectToQuestions()
     {
-        
+        if (SelectedFiles.FirstOrDefault() is null)
+        {
+            return;
+        }
+        var existingQuest = await QuestionService.CheckItemByNameContainsStringAsync(SelectedFiles.FirstOrDefault().Name.Substring(0, 6));
+        if (existingQuest is null)
+        {
+            QuestionDTO question = new QuestionDTO
+                {
+                    Title = $"обсуждение_{SelectedFiles.FirstOrDefault().Name.Substring(0, 6)}",
+                    CreatorId = Unit.Project.MainIng.Id,
+                    IsDeleted = false,
+                    ProjectId = Unit.ProjectId,
+                    PersonIds = new List<int>(Unit.Person.Id)
+                };
+            var newQuest=await QuestionService.AddItemAsync(question);
 
-        navManager.NavigateTo("/Questions/15");
+            existingQuest = newQuest.Id.ToString();
+        }
+        navManager.NavigateTo($"/Questions/{existingQuest}");
     }
 }
