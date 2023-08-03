@@ -43,7 +43,7 @@
                         <RadzenCheckBox @bind-Value=@CheckBoxUser Name="CheckBox1" TValue="bool" Change=@(args => OnChange(args)) />
                         <RadzenLabel Text="Только мои" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
                         <RadzenCheckBox @bind-Value=@CheckBoxOldVersions Name="CheckBox2" TValue="bool" Change=@(args => OnChangeVers(args)) />
-                        <RadzenLabel Text="Не показывать старые" Component="CheckBox2" Style="margin-left: 8px; vertical-align: middle;" />
+                        <RadzenLabel Text="Показать старые" Component="CheckBox2" Style="margin-left: 8px; vertical-align: middle;" />
                     </div>
                 </RadzenCard>
                 <FileList files="@files"  FilesGetCallBack="@SetSelectedFiles"/>
@@ -101,7 +101,7 @@
         filesFromBase = context.FileUnits.Where(f => f.IsDeleted == false).Include(d => d.Department)
         .Include(p => p.Person).Include(p => p.Project)
         .Include(s => s.Section).OrderByDescending(f => f.Id).ToArray();
-        files = filesFromBase;
+        files = filesFromBase.Where(t => t.IsOldVersion != true);
 
         SelectedFiles = new List<FileUnit>();
         var authState = await authenticationState;
@@ -159,11 +159,11 @@
 
             if (CheckBoxOldVersions)
             {
-                files = files.Where(t => t.IsOldVersion!=true).OrderByDescending(f => f.Id).ToArray();
+                files = filesFromBase;
             }
             else
             {
-                files = filesFromBase;
+                files = files.Where(t => t.IsOldVersion == false);
                 CheckBoxUser = false;
                 InputString = string.Empty; 
             }

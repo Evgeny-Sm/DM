@@ -11,7 +11,7 @@
 
 @inject PersonService PersonService
 @inject QuestionService QuestionService
-@inject DialogService DialogService
+@inject DialogService DialogServices
 
 
 
@@ -118,7 +118,7 @@
             }
         }
 
-        
+
 
         if (QuestionDTOs is not null)
         {
@@ -143,7 +143,7 @@
 
     private async Task OpenAddQuestDialog()
     { 
-        QuestionDTO data = await DialogService.OpenAsync<AddQuestDialog>("Добавить решение", new Dictionary<string, object>(),
+        QuestionDTO data = await DialogServices.OpenAsync<AddQuestDialog>("Добавить решение", new Dictionary<string, object>(),
               new DialogOptions()
                   {
                       Width = "800px",
@@ -215,15 +215,20 @@
     }
     private async Task RemoveQuestion()
     {
-        var authState = await authenticationState;
-        if (SelectedQuestion.CreatorId == CurrentPerson.Id || authState.User.IsInRole("admin"))
+        var res =await DialogServices.Confirm("Are you sure?", "Removing", new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+        if (res == true)
         {
-            int id = SelectedQuestion.Id;
-            await QuestionService.HideItem(SelectedQuestion.Id);
-            QuestionToView = QuestionToView.Where(q => q.Id != id);
-            QuestionDTOs = QuestionDTOs.Where(q => q.Id != id);
-            SelectedQuestion = new();
-            StateHasChanged();
+
+            var authState = await authenticationState;
+            if (SelectedQuestion.CreatorId == CurrentPerson.Id || authState.User.IsInRole("admin"))
+            {
+                int id = SelectedQuestion.Id;
+                await QuestionService.HideItem(SelectedQuestion.Id);
+                QuestionToView = QuestionToView.Where(q => q.Id != id);
+                QuestionDTOs = QuestionDTOs.Where(q => q.Id != id);
+                SelectedQuestion = new();
+                StateHasChanged();
+            }
         }
 
     }

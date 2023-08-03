@@ -2,6 +2,7 @@
 @using DM.DAL.Models
 
 @inject FileService FileService
+@inject DialogService DialogServices
 
 
         @if (!IsDeleted)
@@ -29,8 +30,12 @@
 
     private async Task Hide()
     {
-        await FileService.HideFile(UserFile.Id);
-        await FileWasRemoved.InvokeAsync(UserFile.Id);
+        var res = await DialogServices.Confirm("Are you sure?", "Removing", new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+        if (res == true)
+        {
+            await FileService.HideFile(UserFile.Id);
+            await FileWasRemoved.InvokeAsync(UserFile.Id);
+        }
 
     }
 
