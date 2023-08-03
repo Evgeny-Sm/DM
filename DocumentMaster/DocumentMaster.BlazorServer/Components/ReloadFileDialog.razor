@@ -53,6 +53,14 @@
                 <RadzenTextBox style="width: 100%;" @bind-Value="Code" Name="NumbDr" />
             </div>
         </div>
+        <div class="row mb-5">
+            <div class="col-md-4 align-items-center d-flex">
+                <RadzenLabel Text="Описание" />
+            </div>
+            <div class="col">
+                <RadzenTextArea Style="width:inherit" @bind-Value="Description" Name="Description" />
+            </div>
+        </div>
 
     </div>
     <div>
@@ -78,6 +86,7 @@
     private string AdditionalTime { get; set; } = "0";
 
     private string IndexFile { get; set; } = string.Empty;
+    private string Description { get; set; } = string.Empty;
 
     private FileDTO CurrentFile { get; set; } = new FileDTO();
 
@@ -98,6 +107,7 @@
             CurrentFile = await FileService.GetItemByIdAsync(SelectedFiles.FirstOrDefault().Id);
             NumbersDrawings = SelectedFiles.FirstOrDefault().NumbersDrawings.ToString();
             Code = SelectedFiles.FirstOrDefault().ProjectCode;
+            Description = SelectedFiles.FirstOrDefault().Description;
         }
     }
     void OnChangeUpload(UploadChangeEventArgs args)
@@ -125,6 +135,7 @@
             IsSubmitting = true;
 
             CurrentFile.ProjectCode = Code;
+            CurrentFile.Description = Description;
 
             CurrentFile.Name = IndexFile+"_"+FileName;
 

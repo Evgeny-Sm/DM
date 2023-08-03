@@ -1,4 +1,4 @@
-﻿@page "/Questions"
+﻿@page "/Questions/{id?}"
 
 @attribute [Authorize]
 
@@ -11,7 +11,7 @@
 
 @inject PersonService PersonService
 @inject QuestionService QuestionService
-@inject DialogService DialogService
+@inject DialogService DialogServices
 
 
 
@@ -81,6 +81,9 @@
     [CascadingParameter]
     private Task<AuthenticationState> authenticationState { get; set; }
 
+    [Parameter]
+    public string id { get; set; }
+
     public IEnumerable<QuestionDTO> QuestionDTOs { get; set; } = new List<QuestionDTO>();
     public IEnumerable<QuestionDTO> QuestionToView { get; set; } = new List<QuestionDTO>();
     public IEnumerable<QuestionDTO> FindedQuestions { get; set; } = new List<QuestionDTO>();
@@ -88,6 +91,8 @@
     private PersonDTO CurrentPerson { get; set; } = new();
 
     private QuestionDTO SelectedQuestion { get; set; }
+
+    private QuestionDTO CurrQuest { get; set; }
 
     private string RememberedString { get; set; } = string.Empty;
     private string InputString { get; set; } = string.Empty;
@@ -100,16 +105,33 @@
 
         CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
 
-        QuestionDTOs = await QuestionService.GetAllAsync();
-
-        foreach (var q in QuestionDTOs)
+        if (id is null)
         {
-            var i = await QuestionService.GetCountUnreaded(CurrentPerson.Id, q.Id);
-            q.UnreadedCount = i.ToString();
+            QuestionDTOs = await QuestionService.GetAllAsync();         
+        }
+        else
+        {
+            CurrQuest =  await QuestionService.GetItemByIdAsync(int.Parse(id));
+            if (CurrQuest is not null)
+            {
+                QuestionDTOs = QuestionDTOs.Append(CurrQuest);
+            }
         }
 
-        QuestionToView = QuestionDTOs.OrderByDescending(q=>q.Id);
-   
+
+
+        if (QuestionDTOs is not null)
+        {
+            foreach (var q in QuestionDTOs)
+            {
+                var i = await QuestionService.GetCountUnreaded(CurrentPerson.Id, q.Id);
+                q.UnreadedCount = i;
+            }
+
+            QuestionToView = QuestionDTOs.OrderByDescending(q => q.Id);
+
+        }
+
         StateHasChanged();
     }
 
@@ -121,7 +143,7 @@
 
     private async Task OpenAddQuestDialog()
     { 
-        QuestionDTO data = await DialogService.OpenAsync<AddQuestDialog>("Добавить решение", new Dictionary<string, object>(),
+        QuestionDTO data = await DialogServices.OpenAsync<AddQuestDialog>("Добавить решение", new Dictionary<string, object>(),
               new DialogOptions()
                   {
                       Width = "800px",
@@ -193,15 +215,20 @@
     }
     private async Task RemoveQuestion()
     {
-        var authState = await authenticationState;
-        if (SelectedQuestion.CreatorId == CurrentPerson.Id || authState.User.IsInRole("admin"))
+        var res =await DialogServices.Confirm("Are you sure?", "Removing", new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+        if (res == true)
         {
-            int id = SelectedQuestion.Id;
-            await QuestionService.HideItem(SelectedQuestion.Id);
-            QuestionToView = QuestionToView.Where(q => q.Id != id);
-            QuestionDTOs = QuestionDTOs.Where(q => q.Id != id);
-            SelectedQuestion = new();
-            StateHasChanged();
+
+            var authState = await authenticationState;
+            if (SelectedQuestion.CreatorId == CurrentPerson.Id || authState.User.IsInRole("admin"))
+            {
+                int id = SelectedQuestion.Id;
+                await QuestionService.HideItem(SelectedQuestion.Id);
+                QuestionToView = QuestionToView.Where(q => q.Id != id);
+                QuestionDTOs = QuestionDTOs.Where(q => q.Id != id);
+                SelectedQuestion = new();
+                StateHasChanged();
+            }
         }
 
     }

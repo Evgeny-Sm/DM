@@ -28,9 +28,9 @@ namespace DM.BLL.Services
         {
             using var context = _contextFactory.CreateDbContext();
             var quests = await context.Questions.Where(p => p.IsDeleted == false).Include(p => p.Persons)
-                .Include(n=>n.Notes).ThenInclude(p=>p.Persons)
+                .Include(n => n.Notes).ThenInclude(p => p.Persons)
                 .Include(f => f.FileUnits)
-                .Include(p=>p.Project).ToListAsync();
+                .Include(p => p.Project).ToListAsync();
             var result = _mapper.Map<IEnumerable<QuestionDTO>>(quests);
             return result;
         }
@@ -38,17 +38,37 @@ namespace DM.BLL.Services
         public async Task<QuestionDTO> GetItemByIdAsync(int id)
         {
             using var context = _contextFactory.CreateDbContext();
+            var checkItem = await context.Questions.FindAsync(id);
+            if (checkItem == null)
+            {
+                return null;
+            }
             var item = await context.Questions.Where(c => c.Id == id)
                 .Include(p => p.Persons)
                 .Include(n => n.Notes).ThenInclude(p => p.Persons)
                 .Include(f => f.FileUnits)
                 .Include(p => p.Project).SingleAsync();
-            if (item == null)
+
+            var result = _mapper.Map<QuestionDTO>(item);
+            return result;
+        }
+        public async Task<string> CheckItemByNameContainsStringAsync(string fileNumber)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            try
+            {
+                var item = await context.Questions.Where(c => c.Title.Contains(fileNumber) && c.IsDeleted == false)
+                .FirstOrDefaultAsync();
+                if (item == null)
+                {
+                    return null;
+                }
+                return item.Id.ToString();
+            }
+            catch
             {
                 return null;
             }
-            var result = _mapper.Map<QuestionDTO>(item);
-            return result;
         }
         public async Task<int> GetCountUnreaded(int personId, int questId)
         {
@@ -56,8 +76,33 @@ namespace DM.BLL.Services
             var item = await context.Questions.Where(c => c.Id == questId)
                 .Include(n => n.Notes).ThenInclude(p => p.Persons)
                 .SingleAsync();
-            var count = item.Notes.Select(n => n.Persons.Select(p => p.Id)).Where(t=>!t.Contains(personId)).Count();
+            var count = item.Notes.Select(n => n.Persons.Select(p => p.Id)).Where(t => !t.Contains(personId)).Count();
             return count;
+        }
+
+        public async Task<int> GetCountUnreaded(int personId)
+        {
+            int countUnreaded = 0;
+            using var context = _contextFactory.CreateDbContext();
+            try
+            {
+                var item = await context.Questions.Where(q=>q.IsDeleted==false)
+                    .Include(n => n.Notes).ThenInclude(p => p.Persons)
+                    .ToListAsync();
+
+                foreach (var q in item)
+                {
+                    var count = q.Notes.Select(n => n.Persons.Select(p => p.Id)).Where(t => !t.Contains(personId)).Count();
+                    countUnreaded += count;
+                }
+
+                return countUnreaded;
+            }
+            catch
+            {
+                return 0;
+            };
+          
         }
 
         public async Task<QuestionDTO> AddItemAsync(QuestionDTO questionDTO)
@@ -66,12 +111,12 @@ namespace DM.BLL.Services
             Question question = new Question
             {
                 Title = questionDTO.Title,
-                DateTime= DateTime.Now,              
+                DateTime = DateTime.Now,
                 CreatorId = questionDTO.CreatorId,
                 IsDeleted = questionDTO.IsDeleted,
                 ProjectId = questionDTO.ProjectId,
                 Persons = await context.Persons.Where(p => questionDTO.PersonIds.Contains(p.Id)).ToListAsync(),
-                FileUnits=await context.FileUnits.Where(p => questionDTO.FileUnitsId.Contains(p.Id)).ToListAsync(),
+                FileUnits = await context.FileUnits.Where(p => questionDTO.FileUnitsId.Contains(p.Id)).ToListAsync(),
             };
             await context.Questions.AddAsync(question);
             await context.SaveChangesAsync();
@@ -92,7 +137,7 @@ namespace DM.BLL.Services
         {
             using var context = _contextFactory.CreateDbContext();
 
-            var element =await context.Questions.Where(p => p.Id == questionDTO.Id).Include(a => a.Persons)
+            var element = await context.Questions.Where(p => p.Id == questionDTO.Id).Include(a => a.Persons)
                 .Include(a => a.FileUnits).SingleAsync();
             if (element is null)
             {
@@ -101,7 +146,7 @@ namespace DM.BLL.Services
             }
             element.Title = questionDTO.Title;
             element.IsDeleted = questionDTO.IsDeleted;
-            
+
             element.Persons = await context.Persons.Where(p => questionDTO.PersonIds.Contains(p.Id)).ToListAsync();
             element.FileUnits = await context.FileUnits.Where(p => questionDTO.FileUnitsId.Contains(p.Id)).ToListAsync();
 

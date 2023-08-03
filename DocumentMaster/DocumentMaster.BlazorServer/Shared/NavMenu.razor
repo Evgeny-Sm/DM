@@ -1,8 +1,14 @@
-﻿
+﻿@inject PersonService PersonService
+@inject QuestionService QuestionService
+
+@using DM.BLL.Services
+@using DocumentMaster.BlazorServer.Authentication
+@using Models
+
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">DM</a>
+        <a class="navbar-brand" href="">DM v.1.09</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -30,8 +36,8 @@
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Questions" Match="NavLinkMatch.All">
-                        <span class="oi oi-box" aria-hidden="true"></span> Решения
+                    <NavLink class="nav-link" href="Questions"   Match="NavLinkMatch.All">
+                        <span class="oi oi-box" aria-hidden="true"></span> Обсуждения(@UnreadedCount)
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
@@ -61,6 +67,13 @@
 </div>
 
 @code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+    private PersonDTO CurrentPerson { get; set; } = new PersonDTO();
+
+    private int UnreadedCount { get; set; }
+
     private bool collapseNavMenu = true;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
@@ -68,5 +81,19 @@
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    protected override async void OnInitialized()
+    {
+        var authState = await authenticationState;
+        if (authState.User.Identities.FirstOrDefault().IsAuthenticated)
+        {
+            CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+
+            UnreadedCount = await QuestionService.GetCountUnreaded(CurrentPerson.Id);
+
+            StateHasChanged();
+        }
+
     }
 }

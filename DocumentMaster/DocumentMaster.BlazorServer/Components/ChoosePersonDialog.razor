@@ -1,0 +1,93 @@
+﻿@using DM.BLL.Services
+@using DM.DAL.Models
+@using Models
+@using Microsoft.EntityFrameworkCore;
+
+@inject DialogService DialogService
+@inject PersonService PersonService
+@inject FileService FileService
+@inject ControlService ControlService
+
+
+
+
+<RadzenCard Style="width: 100%; overflow: hidden;">
+    <RadzenTemplateForm TItem="PersonDTO" Data="NewPerson" Submit="@OnSubmit" InvalidSubmit=@OnInvalidSubmit>
+        <div class="row mb-5">
+            <div class="col-md-4" style="align-self: center;">
+                <RadzenLabel Text="Выберите спеца" />
+            </div>
+            <div class="col-md-4" style="align-content:center">
+                <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                        Data=@(Persons) Style="width: 200%" AllowColumnResize="true"
+                                        TextProperty="LastName" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
+                                        Change=@(args => OnChangePerson(args))>
+                    <Columns>
+                        <RadzenDropDownDataGridColumn Property="FirstName" Title="FirstName" Width="120px" />
+                        <RadzenDropDownDataGridColumn Property="LastName" Title="LastName" Width="120px" />
+                    </Columns>
+                </RadzenDropDownDataGrid>
+            </div>
+        </div>
+
+        <br />
+
+
+
+        <RadzenButton ButtonType="ButtonType.Submit" Disabled=@IsSubmitting ButtonStyle="ButtonStyle.Secondary" Text="Submit"></RadzenButton>
+        <RadzenButton Click="@((args) => DialogService.Close())" ButtonStyle="ButtonStyle.Danger" Text="Cancel" Style="width: 120px" />
+    </RadzenTemplateForm>
+
+</RadzenCard>
+
+
+
+@code {
+
+    private IList<PersonDTO> Persons { get; set; }
+
+    private PersonDTO NewPerson { get; set; } = new PersonDTO();
+
+    private bool IsSubmitting;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var p = await PersonService.GetPersonsAsync();
+        Persons = p.ToList();
+
+        StateHasChanged();
+    }
+
+
+
+    private async void OnSubmit()
+    {
+        if (IsSubmitting)
+        {
+            return;
+        }
+        try
+        {
+            IsSubmitting = true;
+            
+        }
+        finally
+        {
+            IsSubmitting = false;
+        }
+
+        DialogService.Close(NewPerson);
+
+    }
+
+    void OnChangePerson(object value)
+    {
+        NewPerson.Id = (int)value;
+
+    }
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+
+    }
+
+}

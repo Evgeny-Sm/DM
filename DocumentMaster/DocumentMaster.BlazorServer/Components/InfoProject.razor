@@ -6,14 +6,26 @@
 @using System.Text.Json
 
 
+@implements IDisposable
 
-
+@inject DialogService DialogService
 @inject PersonService personService
 @inject ProjectService projectService
 
-<AuthorizeView>
+<AuthorizeView Roles="admin">
     <Authorized>
         <RadzenCard Style="margin-bottom:20px">
+            <div>
+                <a @onclick="ChangeMainIng" href="javascript:void(0)">@Developer</a>
+            </div>
+            <div> Файлов в проекте: @CountFiles </div>
+        </RadzenCard>
+    </Authorized>
+</AuthorizeView>
+
+<AuthorizeView Roles="user,head">
+    <Authorized>
+        <RadzenCard Style="margin-bottom:20px">   
             <b>ГИП: @Developer   </b>
             <div> Файлов в проекте: @CountFiles </div>
         </RadzenCard>
@@ -60,6 +72,44 @@
         var model=await projectService.GetProjectByIdAsync(SelectedProjects.FirstOrDefault().Id);
         return model.FilesCount;
 
+    }
+    private async Task ChangeMainIng()
+    {
+        PersonDTO pers = await DialogService.OpenAsync<ChoosePersonDialog>($"Сотрудники",
+              new Dictionary<string, object>() { },
+              new DialogOptions() { Width = "700px", Height = "550px", Resizable = true, 
+              Draggable = false, CloseDialogOnOverlayClick = true });
+        if (pers is null)
+        {
+            return;
+        }
+        var currentProject = SelectedProjects.FirstOrDefault();
+
+        currentProject.MainIngId = pers.Id;
+
+        await projectService.UpdateProjectAsync(currentProject);
+
+        StateHasChanged();
+
+
+
+    }
+    void Open(string title, Type type, Dictionary<string, object> parameters, DialogOptions options)
+    {
+
+    }
+
+    void Close(dynamic result)
+    {
+
+        Dispose();
+    }
+
+    public void Dispose()
+    {
+        // The DialogService is a singleton so it is advisable to unsubscribe.
+        DialogService.OnOpen -= Open;
+        DialogService.OnClose -= Close;
     }
 
 
