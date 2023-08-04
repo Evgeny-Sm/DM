@@ -13,11 +13,11 @@
 <AuthorizeView>
     <Authorized>
         <RadzenDataGrid Data="@files" TItem="FileUnit" ValueChanged="@(args=>ValueChanged(args))" AllowVirtualization="true" Style="height:600px"
-                        AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.Or"
-                        AllowSorting="true">
+                        AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.And"
+                        AllowSorting="true" >
             <Columns>
-                <RadzenDataGridColumn TItem="FileUnit" Property="Id" Title="Id" Width="50px" />
-                <RadzenDataGridColumn TItem="FileUnit" Property="Name" Title="Название" Width="200px" />
+                <RadzenDataGridColumn TItem="FileUnit" Property="Id" Title="Id" Width="40px" />
+                <RadzenDataGridColumn TItem="FileUnit" Property="Name" Title="Название" Width="180px" />
                 <RadzenDataGridColumn TItem="FileUnit" Property="ProjectCode" Title="Шифр" Width="100px" />
                 <RadzenDataGridColumn TItem="FileUnit" Property="Status" Title="Статус" Width="50px" />
                 <RadzenDataGridColumn TItem="FileUnit"  Title="Разраб." Width="60px">
@@ -25,6 +25,9 @@
                         <RadzenLabel Text="@GetName(file)"/>
                     </Template>
                 </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="FileUnit" Property="IsOldVersion"  Title="Старый" Width="50px" 
+                Type="typeof(bool)" FilterOperator="FilterOperator.Equals"/> 
+ 
                 <RadzenDataGridColumn TItem="FileUnit" Property="ProjectId" Title="Проект" Width="60px" />
             </Columns>
         </RadzenDataGrid>
@@ -48,6 +51,8 @@
     private PersonDTO CurrentPerson { get; set; }
 
     private IList<PersonDTO> Persons { get; set; }
+
+
 
 
 
@@ -82,6 +87,9 @@
         return string.Empty;
     }
 
+    private void OnSelectedValChange(bool value)
+    { 
+    }
 
     private void OnChange(bool value)
     {
