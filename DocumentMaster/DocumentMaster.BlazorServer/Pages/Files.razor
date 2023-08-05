@@ -42,8 +42,7 @@
                     <div class="d-inline-block">
                         <RadzenCheckBox @bind-Value=@CheckBoxUser Name="CheckBox1" TValue="bool" Change=@(args => OnChange(args)) />
                         <RadzenLabel Text="Только мои" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
-                        <RadzenCheckBox @bind-Value=@CheckBoxOldVersions Name="CheckBox2" TValue="bool" Change=@(args => OnChangeVers(args)) />
-                        <RadzenLabel Text="Показать старые" Component="CheckBox2" Style="margin-left: 8px; vertical-align: middle;" />
+                       
                     </div>
                 </RadzenCard>
                 <FileList files="@files"  FilesGetCallBack="@SetSelectedFiles"/>
@@ -101,7 +100,7 @@
         filesFromBase = context.FileUnits.Where(f => f.IsDeleted == false).Include(d => d.Department)
         .Include(p => p.Person).Include(p => p.Project)
         .Include(s => s.Section).OrderByDescending(f => f.Id).ToArray();
-        files = filesFromBase.Where(t => t.IsOldVersion != true);
+        files = filesFromBase;
 
         SelectedFiles = new List<FileUnit>();
         var authState = await authenticationState;
@@ -152,24 +151,7 @@
         }
 
     }
-    private void OnChangeVers(bool value)
-    {
-        if (files is not null)
-        {
 
-            if (CheckBoxOldVersions)
-            {
-                files = filesFromBase;
-            }
-            else
-            {
-                files = files.Where(t => t.IsOldVersion == false);
-                CheckBoxUser = false;
-                InputString = string.Empty; 
-            }
-        }
-
-    }
 
     private void SetSendedStatus(bool statusFromDialog)
     {
