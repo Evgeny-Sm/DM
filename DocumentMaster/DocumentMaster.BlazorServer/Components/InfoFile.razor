@@ -225,13 +225,20 @@
         var existingQuest = await QuestionService.CheckItemByNameContainsStringAsync(SelectedFiles.FirstOrDefault().Name.Substring(0, 6));
         if (existingQuest is null)
         {
+            List<int> ids = new List<int>
+            {
+                Unit.Person.Id,
+                Unit.Project.MainIng.Id
+            };
+
+
             QuestionDTO question = new QuestionDTO
                 {
                     Title = $"обсуждение_{SelectedFiles.FirstOrDefault().Name.Substring(0, 6)}",
                     CreatorId = Unit.Project.MainIng.Id,
                     IsDeleted = false,
                     ProjectId = Unit.ProjectId,
-                    PersonIds = new List<int>(Unit.Person.Id)
+                    PersonIds = ids
                 };
             var newQuest=await QuestionService.AddItemAsync(question);
 

@@ -86,7 +86,7 @@ namespace DM.BLL.Services
             using var context = _contextFactory.CreateDbContext();
             try
             {
-                var item = await context.Questions.Where(q=>q.IsDeleted==false)
+                var item = await context.Questions.Where(q=>q.IsDeleted==false && q.Persons.Select(p=>p.Id).Contains(personId))
                     .Include(n => n.Notes).ThenInclude(p => p.Persons)
                     .ToListAsync();
 
