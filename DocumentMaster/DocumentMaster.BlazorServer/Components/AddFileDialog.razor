@@ -14,7 +14,7 @@
 @inject IJSRuntime JS
 @inject IWebHostEnvironment WebHostEnvironment
 @inject IConfiguration Configuration
-
+@inject ILogger<AddFileDialog> Logger
 
 <RadzenTemplateForm Context="Context1" Data="@FileToCreate" Submit="@((FileDTO args) => { Submit(args);})">
     <RadzenFieldset class="text-secondary">
@@ -132,10 +132,13 @@
 
 
 @code {
+
     [CascadingParameter]
     private Task<AuthenticationState> authenticationState { get; set; }
 
     private FileDTO FileToCreate { get; set; } = new FileDTO();
+
+    private readonly ILogger _logger;
 
     private IList<ProjectDTO> Projects { get; set; }
 
@@ -239,6 +242,7 @@
             await using FileStream fs = new(fullPath, FileMode.Create);
 
             await BrowserFile.OpenReadStream(maxAllowedSize: 100000000).CopyToAsync(fs);
+            Logger.LogInformation($"{result.Name}");
             DialogService.Close();
         }
         finally

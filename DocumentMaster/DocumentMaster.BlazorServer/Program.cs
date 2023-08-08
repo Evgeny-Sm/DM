@@ -5,6 +5,7 @@ using DM.BLL.Services;
 using DM.DAL.Models;
 using DocumentMaster.BlazorServer.Authentication;
 using DocumentMaster.BlazorServer.Hubs;
+using DocumentMaster.BlazorServer.Logging;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -90,6 +91,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("Open", builder => builder.AllowAnyOrigin().AllowAnyHeader());
 });
+
+builder.Logging.ClearProviders();
+builder.Logging.AddFile(Path.Combine(Directory.GetCurrentDirectory(), "logger.txt"));
+
 
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
