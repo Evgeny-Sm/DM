@@ -149,12 +149,20 @@
         {
             if (int.TryParse(args, out int t))
             {
-                var exist = await FileService.Exist(t);
-                if (exist)
+                if (CurrentQuestion.FileUnitsId.Contains(t))
                 {
-                    CurrentQuestion.FileUnitsId.Add(t);
+                    CurrentQuestion.FileUnitsId.Remove(t);
                     await QuestionService.UpdateItemAsync(CurrentQuestion);
+                }
+                else
+                {
+                    var exist = await FileService.Exist(t);
+                    if (exist)
+                    {
+                        CurrentQuestion.FileUnitsId.Add(t);
+                        await QuestionService.UpdateItemAsync(CurrentQuestion);
 
+                    }
                 }
             }
         }

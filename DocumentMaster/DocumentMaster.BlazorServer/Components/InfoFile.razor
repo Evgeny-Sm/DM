@@ -228,14 +228,14 @@
             List<int> ids = new List<int>
             {
                 Unit.Person.Id,
-                Unit.Project.MainIng.Id
+                Unit.Project.PersonId
             };
 
 
             QuestionDTO question = new QuestionDTO
                 {
                     Title = $"обсуждение_{SelectedFiles.FirstOrDefault().Name.Substring(0, 6)}",
-                    CreatorId = Unit.Project.MainIng.Id,
+                    CreatorId = Unit.Project.PersonId,
                     IsDeleted = false,
                     ProjectId = Unit.ProjectId,
                     PersonIds = ids
