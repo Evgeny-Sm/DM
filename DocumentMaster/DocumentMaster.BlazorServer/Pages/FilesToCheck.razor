@@ -44,9 +44,9 @@
     [CascadingParameter]
     private Task<AuthenticationState> authenticationState { get; set; }
 
-    private IList<FileUnit> SelectedFiles { get; set; }=new List<FileUnit>();
+    private IList<FileUnit> SelectedFiles { get; set; } = new List<FileUnit>();
 
-    public IList<FileUnit>? files { get; set; }
+    public IEnumerable<FileUnit>? files { get; set; }
 
     private double AddTime { get; set; }
 
@@ -56,7 +56,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-
+        
         var authState = await authenticationState;
 
         CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
@@ -67,10 +67,10 @@
         var fileNumbers = controls.Select(a => a.FileUnitId);
 
         using var context = contextFactory.CreateDbContext();
-        files = context.FileUnits.Where(f => f.Status == StatusFile.Checking && fileNumbers.Contains(f.Id)).Include(p => p.Person).Include(d => d.Department).
+        files = context.FileUnits.Where(f => f.Status == StatusFile.Checking && fileNumbers.Contains(f.Id)).Include(d => d.Department).Include(p => p.Person).
         Include(p => p.Project).Include(s => s.Section).Include(c=>c.Controls)
-        .ToList();
-
+        .ToArray();
+        
         StateHasChanged();
 
     }
@@ -119,11 +119,11 @@
         }
         await FileService.UpdateFileAsync(f);
 
-        files.Remove(SelectedFiles.First());
+        files=files.Where(f=>f.Id!=SelectedFiles.First().Id);
 
         SelectedFiles = new List<FileUnit>();
 
-        if (files.Count == 0)
+        if (files.Count() == 0)
         {
             NavigatetoToFiles();
         }
