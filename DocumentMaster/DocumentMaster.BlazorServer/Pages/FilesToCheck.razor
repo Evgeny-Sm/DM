@@ -26,7 +26,7 @@
                 <FileList files="@files" FilesGetCallBack="@SetSelectedFiles" />
             </div>
             <div class="col-md-4">
-                @if (SelectedFiles.Count != 0)
+                @if (SelectedFiles!=null&&SelectedFiles.Count != 0)
                 {
                     <div class="d-inline-block">
                         <DownloadFile SelectedFiles="@SelectedFiles" />
@@ -44,9 +44,9 @@
     [CascadingParameter]
     private Task<AuthenticationState> authenticationState { get; set; }
 
-    private IList<FileUnit> SelectedFiles { get; set; } = new List<FileUnit>();
+    private IList<FileUnit> SelectedFiles { get; set; }
 
-    public IEnumerable<FileUnit>? files { get; set; }
+    public IList<FileUnit>? files { get; set; }
 
     private double AddTime { get; set; }
 
@@ -60,7 +60,7 @@
         var authState = await authenticationState;
 
         CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
-        SelectedFiles = new List<FileUnit>();
+       
 
         var controls =await ControlService.GetControlsToCheckAsync(CurrentPerson.Id);
 
@@ -69,7 +69,7 @@
         using var context = contextFactory.CreateDbContext();
         files = context.FileUnits.Where(f => f.Status == StatusFile.Checking && fileNumbers.Contains(f.Id)).Include(d => d.Department).Include(p => p.Person).
         Include(p => p.Project).Include(s => s.Section).Include(c=>c.Controls)
-        .ToArray();
+        .ToList();
         
         StateHasChanged();
 
@@ -119,7 +119,7 @@
         }
         await FileService.UpdateFileAsync(f);
 
-        files=files.Where(f=>f.Id!=SelectedFiles.First().Id);
+        files.Remove(SelectedFiles.First());
 
         SelectedFiles = new List<FileUnit>();
 
@@ -127,8 +127,9 @@
         {
             NavigatetoToFiles();
         }
-
+        
         StateHasChanged();
+
     }
 
     private void NavigatetoToFiles()
