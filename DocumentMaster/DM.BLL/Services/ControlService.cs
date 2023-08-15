@@ -48,7 +48,7 @@ namespace DM.BLL.Services
         {
             using var context = _contextFactory.CreateDbContext();
             Control element = await context.Controls.Where
-                (c=>c.FileUnitId==fileId && c.PersonId==personId && c.IsInAction==true).SingleAsync();
+                (c=>c.FileUnitId==fileId && c.PersonId==personId && c.IsInAction==true).FirstOrDefaultAsync();
             if (element == null)
             {
                 return null;
