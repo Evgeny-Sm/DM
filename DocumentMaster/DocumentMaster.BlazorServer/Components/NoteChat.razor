@@ -10,12 +10,14 @@
 @inject NoteService NoteService
 @inject IConfiguration configuration
 @inject IWebHostEnvironment env
+@inject ContextMenuService ContextMenuService
 
 @implements IAsyncDisposable
 
 
 <AuthorizeView>
     <Authorized>
+
         <div class="container overflow-auto shadow-sm p-3 mb-5 bg-white rounded" id="chatContainer" style="height:550px">
             @if (!userMessages.Any())
             {
@@ -43,7 +45,9 @@
                 }
                 else
                 {
+
                     <div class="row mb-3 d-flex @(userMessage.IsCurrentUser? "justify-content-end":"")">
+                        <RadzenCard Class="rz-background-color-primary-light rz-shadow-0 border-0 rz-p-8" Style="width: 250px" ContextMenu=@(args => ShowContextMenuWithItems(args, userMessage))>
                         <div class="card shadow @(userMessage.IsCurrentUser? "color-green mr-5":"color-cornflowerblue mr-5")" style="width: 12rem;font-size:small">
                         <div class="card-header">
                             @(userMessage.IsCurrentUser ? "Я" : @userMessage.UserName)
@@ -57,9 +61,12 @@
                             <span class="small justify-content-end">@userMessage.DateTime.ToString("HH:mm| MMM:dd")</span>
                         </div>
                     </div>
+                        </RadzenCard>
                 </div>
                     <br />
+
                 }
+
             }
             <div style="vertical-align:bottom; position:static">
                 <Dropzone CurrentPerson="@CurrentPerson" QuestionId="@CurrentQuestion.Id" PathLoadedCallBack="@SetPath" />
@@ -164,7 +171,30 @@
     {
         if(!String.IsNullOrEmpty(fileName))
 
-        await hubConnection.SendAsync("SendMessage", CurrentQuestion.Id, CurrentPerson.UserName, string.Empty, fileName);
-       
+            await hubConnection.SendAsync("SendMessage", CurrentQuestion.Id, CurrentPerson.UserName, string.Empty, fileName);
+
     }
+    void someVoid()
+    { 
+    }
+
+    void ShowContextMenuWithItems(MouseEventArgs args, object note)
+    {
+        ContextMenuService.Open(args,
+            new List<ContextMenuItem> {
+                new ContextMenuItem(){ Text = "Context menu item 1", Value = 1 },
+                new ContextMenuItem(){ Text = "Context menu item 2", Value = 2 },
+                new ContextMenuItem(){ Text = "Context menu item 3", Value = 3 },
+             }, OnMenuItemClick);
+    }
+
+    void OnMenuItemClick(MenuItemEventArgs args)
+    {
+
+        if (!args.Value.Equals(3) && !args.Value.Equals(4))
+        {
+            ContextMenuService.Close();
+        }
+    }
+
 }
