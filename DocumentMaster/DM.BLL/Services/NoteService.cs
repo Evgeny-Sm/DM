@@ -84,5 +84,17 @@ namespace DM.BLL.Services
 
         }
 
+        public async Task RemoveItemAsync(int id)
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            var element = context.Notes.Find(id);
+            if (element != null)
+            {
+                context.Notes.Remove(element);
+                await context.SaveChangesAsync();
+            }
+        }
+
     }
 }

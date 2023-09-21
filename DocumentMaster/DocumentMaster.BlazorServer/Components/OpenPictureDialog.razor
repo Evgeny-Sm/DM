@@ -1,0 +1,27 @@
+﻿@using DM.BLL.Services
+@using DM.DAL.Models
+@using Models
+@using Microsoft.EntityFrameworkCore;
+
+@inject DialogService DialogService
+@inject IJSRuntime JS
+
+
+
+
+
+<RadzenCard Style="width: 100%; overflow: hidden;">
+    <br />
+    <div class="row">
+        <div>
+            <RadzenImage Path="@Path" Style="width:1000px; height:auto" />
+        </div>
+    </div>
+</RadzenCard>
+
+@code {
+    [Parameter]
+    public string Path { get; set; } = string.Empty;
+
+}
+
