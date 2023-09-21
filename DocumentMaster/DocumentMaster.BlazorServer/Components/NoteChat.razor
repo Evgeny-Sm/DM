@@ -10,12 +10,15 @@
 @inject NoteService NoteService
 @inject IConfiguration configuration
 @inject IWebHostEnvironment env
+@inject ContextMenuService ContextMenuService
+@inject DialogService DialogService
 
 @implements IAsyncDisposable
 
 
 <AuthorizeView>
     <Authorized>
+
         <div class="container overflow-auto shadow-sm p-3 mb-5 bg-white rounded" id="chatContainer" style="height:550px">
             @if (!userMessages.Any())
             {
@@ -25,41 +28,46 @@
             {
                 @if (userMessage.HasFile)
                 {
-                    
+                    <RadzenCard Class="rz-background-color-primary-light rz-shadow-0 border-0 rz-p-8" Style="width: 250px" ContextMenu=@(args => ShowContextMenuWithItems(args, userMessage))>
                         <div class="card shadow @(userMessage.IsCurrentUser? "color-green mr-5":"color-blue mr-5")" style="width: 12rem;font-size:small">
                             <div class="card-header justify-content-end">
                                 @(userMessage.IsCurrentUser ? "Я" : @userMessage.UserName)
                             </div>
                             <div>
-                                <RadzenImage Path="@userMessage.Path"  Style="width:500px; height:auto" />
+                                <RadzenImage Path="@userMessage.Path" Style="width:500px; height:auto" />
                             </div>
                             <div class="card-footer">
                                 <span class="small justify-content-end">@userMessage.DateTime.ToString("HH:mm| MMM:dd")</span>
                             </div>
                         </div>
-
+                    </RadzenCard>
                     <br />
 
                 }
                 else
                 {
+
                     <div class="row mb-3 d-flex @(userMessage.IsCurrentUser? "justify-content-end":"")">
-                        <div class="card shadow @(userMessage.IsCurrentUser? "color-green mr-5":"color-cornflowerblue mr-5")" style="width: 12rem;font-size:small">
-                        <div class="card-header">
-                            @(userMessage.IsCurrentUser ? "Я" : @userMessage.UserName)
-                        </div>
-                        <ul class="list-group">
-                            <li class="list-group-item @(userMessage.IsCurrentUser? "color-green":"color-cornflowerblue")">
-                                @userMessage.Content
-                            </li>
-                        </ul>
-                        <div class="card-footer">
-                            <span class="small justify-content-end">@userMessage.DateTime.ToString("HH:mm| MMM:dd")</span>
-                        </div>
+                        <RadzenCard Class="rz-background-color-primary-light rz-shadow-0 border-0 rz-p-8" Style="width: 250px" ContextMenu=@(args => ShowContextMenuWithItems(args, userMessage))>
+                            <div class="card shadow @(userMessage.IsCurrentUser? "color-green mr-5":"color-cornflowerblue mr-5")" style="width: 12rem;font-size:small">
+                                <div class="card-header">
+                                    @(userMessage.IsCurrentUser ? "Я" : @userMessage.UserName)
+                                </div>
+                                <ul class="list-group">
+                                    <li class="list-group-item @(userMessage.IsCurrentUser? "color-green":"color-cornflowerblue")">
+                                        @userMessage.Content
+                                    </li>
+                                </ul>
+                                <div class="card-footer">
+                                    <span class="small justify-content-end">@userMessage.DateTime.ToString("HH:mm| MMM:dd")</span>
+                                </div>
+                            </div>
+                        </RadzenCard>
                     </div>
-                </div>
                     <br />
+
                 }
+
             }
             <div style="vertical-align:bottom; position:static">
                 <Dropzone CurrentPerson="@CurrentPerson" QuestionId="@CurrentQuestion.Id" PathLoadedCallBack="@SetPath" />
@@ -95,47 +103,60 @@
 
     protected override async Task OnInitializedAsync()
     {
+        DialogService.OnOpen += Open;
+        DialogService.OnClose += Close;
+
         var authState = await authenticationState;
         CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
         hubConnection = new HubConnectionBuilder().WithUrl(Navigation.ToAbsoluteUri("/notehub"))
        .Build();
-        hubConnection.On<int, string, string, string>("ReceiveNote", (questId, user, message, fileName) =>
+        hubConnection.On<int, string, string, string, int>("ReceiveNote", (questId, user, message, fileName, noteId) =>
      {
          if (questId == CurrentQuestion.Id)
          {
              userMessages.Add(new NoteDTO
                  {
+                     Id = noteId,
                      UserName = user,
                      Content = message,
                      IsCurrentUser = user == CurrentPerson.UserName,
                      DateTime = DateTime.Now,
                      Path = $"/{configuration.GetRequiredSection("PathToQuestPictures").Value}/{questId.ToString()}/{fileName}",
-                     HasFile=!string.IsNullOrEmpty(fileName)
+                     HasFile = !string.IsNullOrEmpty(fileName)
                  });
              InvokeAsync(StateHasChanged);
          }
 
      });
+
+        hubConnection.On<int,int>("RemoveNote", (questId,noteId) =>
+        {
+            if (questId == CurrentQuestion.Id)
+            {
+                userMessages.Remove(userMessages.Where(n => n.Id == noteId).Single());
+                InvokeAsync(StateHasChanged);
+            }
+        }
+        );
+
         await hubConnection.StartAsync();
+
 
     }
     protected override async Task OnParametersSetAsync()
     {
-        await CompareMes();            
+        await CompareMes();
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await JS.InvokeAsync<string>("ScrollToBottom", "chatContainer");
-    }
 
     private async Task Send()
     {
         if (!string.IsNullOrEmpty(messageInput))
         {
-            await hubConnection.SendAsync("SendMessage", CurrentQuestion.Id, CurrentPerson.UserName, messageInput,string.Empty);
+            await hubConnection.SendAsync("SendMessage", CurrentQuestion.Id, CurrentPerson.UserName, messageInput, string.Empty);
             messageInput = string.Empty;
         }
+        await JS.InvokeAsync<string>("ScrollToBottom", "chatContainer");
     }
     public async ValueTask DisposeAsync()
     {
@@ -162,9 +183,99 @@
     }
     private async Task SetPath(string fileName)
     {
-        if(!String.IsNullOrEmpty(fileName))
+        if (!String.IsNullOrEmpty(fileName))
 
-        await hubConnection.SendAsync("SendMessage", CurrentQuestion.Id, CurrentPerson.UserName, string.Empty, fileName);
-       
+            await hubConnection.SendAsync("SendMessage", CurrentQuestion.Id, CurrentPerson.UserName, string.Empty, fileName);
+
     }
+    void someVoid()
+    {
+    }
+
+    void ShowContextMenuWithItems(MouseEventArgs args, object note)
+    {
+        NoteDTO currentNote = (NoteDTO)note;
+
+        if (currentNote.IsCurrentUser && !currentNote.HasFile)
+            ContextMenuService.Open(args,
+                new List<ContextMenuItem> {
+                new ContextMenuItem(){ Text = "Remove", Value = new ContextMenuItemDTO(1,currentNote.Id) },
+                     }, OnMenuItemClick);
+
+        if (currentNote.IsCurrentUser && currentNote.HasFile)
+            ContextMenuService.Open(args,
+                new List<ContextMenuItem> {
+                new ContextMenuItem(){ Text = "Open", Value = new ContextMenuItemDTO(2,currentNote.Id) },
+                new ContextMenuItem(){ Text = "Remove", Value = new ContextMenuItemDTO(1,currentNote.Id) },
+                     }, OnMenuItemClick);
+
+        if (!currentNote.IsCurrentUser && currentNote.HasFile)
+            ContextMenuService.Open(args,
+                new List<ContextMenuItem> {
+                new ContextMenuItem(){ Text = "Open", Value = new ContextMenuItemDTO(2,currentNote.Id) },               
+                         }, OnMenuItemClick);
+    }
+
+    void OnMenuItemClick(MenuItemEventArgs args)
+    {
+        ContextMenuItemDTO menuItem = (ContextMenuItemDTO)args.Value;
+        if (menuItem.menuNumber.Equals(1))
+        {
+            hubConnection.SendAsync("RemoveMessage", menuItem.noteId);
+            ContextMenuService.Close();
+            
+        }
+
+        if (menuItem.menuNumber.Equals(2))
+        {
+            OpenPictureDialog(userMessages.Where(n => n.Id == menuItem.noteId).Single().Path);
+            ContextMenuService.Close();
+
+        }
+    }
+
+    private async Task OpenPictureDialog(string path)
+    {
+        await DialogService.OpenAsync<OpenPictureDialog>($"picture",
+              new Dictionary<string, object>() { { "Path", path } },
+              new DialogOptions()
+                  {
+                      Width = "1000px",
+                      Height = "1000px",
+                      Resizable = true,
+                      Draggable = false,
+                      CloseDialogOnOverlayClick = true
+                  });
+    }
+
+    void Open(string title, Type type, Dictionary<string, object> parameters, DialogOptions options)
+    {
+
+    }
+
+    void Close(dynamic result)
+    {
+
+        Dispose();
+    }
+
+    public void Dispose()
+    {
+        // The DialogService is a singleton so it is advisable to unsubscribe.
+        DialogService.OnOpen -= Open;
+        DialogService.OnClose -= Close;
+    }
+
+    private struct ContextMenuItemDTO
+    {
+        public int menuNumber;
+        public int noteId;
+        public ContextMenuItemDTO(int num, int id)
+        {
+            menuNumber = num;
+            noteId = id;
+        }
+
+    }
+
 }
