@@ -128,6 +128,17 @@
          }
 
      });
+
+        hubConnection.On<int,int>("RemoveNote", (questId,noteId) =>
+        {
+            if (questId == CurrentQuestion.Id)
+            {
+                userMessages.Remove(userMessages.Where(n => n.Id == noteId).Single());
+                InvokeAsync(StateHasChanged);
+            }
+        }
+        );
+
         await hubConnection.StartAsync();
 
 
@@ -210,10 +221,9 @@
         ContextMenuItemDTO menuItem = (ContextMenuItemDTO)args.Value;
         if (menuItem.menuNumber.Equals(1))
         {
-            NoteService.RemoveItemAsync(menuItem.noteId);
+            hubConnection.SendAsync("RemoveMessage", menuItem.noteId);
             ContextMenuService.Close();
-            userMessages.Remove(userMessages.Where(n => n.Id == menuItem.noteId).Single());
-            StateHasChanged();
+            
         }
 
         if (menuItem.menuNumber.Equals(2))

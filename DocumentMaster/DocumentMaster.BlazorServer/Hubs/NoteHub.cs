@@ -24,7 +24,16 @@ namespace DocumentMaster.BlazorServer.Hubs
                 Path = fileName
             });
 
-            await Clients.All.SendAsync("ReceiveNote", questId, user, message, fileName,noteDTO.Id);
+            await Clients.All.SendAsync("ReceiveNote", questId, user, message, fileName, noteDTO.Id);
+
+
+        }
+        public async Task RemoveMessage(int noteId)
+        {
+            var noteDTO = await _noteService.GetItemByIdAsync(noteId);
+            await _noteService.RemoveItemAsync(noteId);
+
+            await Clients.All.SendAsync("RemoveNote", noteDTO.QuestionId, noteDTO.Id);
 
 
         }
