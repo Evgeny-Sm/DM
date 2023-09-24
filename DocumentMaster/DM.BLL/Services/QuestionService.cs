@@ -104,6 +104,60 @@ namespace DM.BLL.Services
             };
           
         }
+        public async Task<int> GetCountToDo(int personId, int questId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var item = await context.QuestionsToDo.Where(c => c.QuestinId == questId && c.PersonId==personId && c.IsDoing).SingleAsync();
+            if (item is not null)
+            {
+                var notesToDo = await context.NotesToDo.Where(n=>n.Note != null && n.Note.QuestionId==item.QuestinId && n.PersonId==personId && n.IsDoing).ToListAsync();
+                if (notesToDo is not null)
+                {
+                    return notesToDo.Count;
+                }
+                return 0;
+            }          
+            return 0;
+        }
+        public async Task ChangeToDoStatusAsync(bool currentStatus, int questId, int personId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var item = await context.QuestionsToDo.Where(c => c.QuestinId == questId && c.PersonId == personId).SingleAsync();
+            if (item is not null)
+            {
+                item.IsDoing = currentStatus;
+                context.QuestionsToDo.Update(item);
+                await context.SaveChangesAsync();
+                return;
+            }
+            else
+            {
+                QuestionsToDo questionsToDo = new QuestionsToDo
+                {
+                    QuestinId = questId,
+                    PersonId = personId,
+                    IsDoing = currentStatus
+                };
+                await context.QuestionsToDo.AddAsync(questionsToDo);
+                await context.SaveChangesAsync();            
+            }
+        }
+
+        public async Task<bool> IsQuestionDoing(int questId, int personId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var item = await context.QuestionsToDo.Where(c => c.QuestinId == questId && c.PersonId == personId).SingleAsync();
+            if (item is not null)
+            {
+                return item.IsDoing;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
 
         public async Task<QuestionDTO> AddItemAsync(QuestionDTO questionDTO)
         {

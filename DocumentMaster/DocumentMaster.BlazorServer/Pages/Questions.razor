@@ -52,7 +52,8 @@
                                         AllowSorting="true">
                             <Columns>
                                 <RadzenDataGridColumn TItem="QuestionDTO" Property="Id" Title="Id" Width="20px" />
-                                <RadzenDataGridColumn TItem="QuestionDTO" Property="Title" Title="Тема" Width="80px" />
+                                <RadzenDataGridColumn TItem="QuestionDTO" Property="Title" Title="Тема" Width="60px" />
+                                <RadzenDataGridColumn TItem="QuestionDTO" Property="ToDoCount" Title="Не снято" Width="20px" />
                                 <RadzenDataGridColumn TItem="QuestionDTO" Property="UnreadedCount" Title="Непрочитано" Width="20px" />
 
                             </Columns>
@@ -125,7 +126,9 @@
             foreach (var q in QuestionDTOs)
             {
                 var i = await QuestionService.GetCountUnreaded(CurrentPerson.Id, q.Id);
+                var k = await QuestionService.GetCountToDo(CurrentPerson.Id, q.Id);
                 q.UnreadedCount = i;
+                q.ToDoCount = k;
             }
 
             QuestionToView = QuestionDTOs.OrderByDescending(q => q.Id);
