@@ -20,5 +20,7 @@ namespace Models
         public int ProjectId { get; set; }
         public string ProjectName { get; set; }=string.Empty;
         public int UnreadedCount { get; set; }
+        public int ToDoCount { get; set; }
+        public bool IsDoing { get; set; }
     }
 }
