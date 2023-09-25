@@ -161,10 +161,10 @@ namespace DM.BLL.Services
             await context.SaveChangesAsync();
         }
 
-        public async Task<bool> IsQuestionDoing(int questId, int personId)
+        public bool IsQuestionDoing(int questId, int personId)
         {
             using var context = _contextFactory.CreateDbContext();
-            var item = await context.QuestionsToDo.Where(c => c.QuestionId == questId && c.PersonId == personId).ToListAsync();
+            var item = context.QuestionsToDo.Where(c => c.QuestionId == questId && c.PersonId == personId).ToList();
             if (item.Count!=0)
             {
                 return item.FirstOrDefault().IsDoing;

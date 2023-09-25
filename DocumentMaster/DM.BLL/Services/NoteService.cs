@@ -101,6 +101,26 @@ namespace DM.BLL.Services
 
         }
 
+        public async Task AddToDoNoteAsync(int noteId, int personId)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                NoteToDo ntD = new NoteToDo
+                {
+                    PersonId = personId,
+                    NoteId = noteId,
+                    IsDoing = false
+                };
+                await context.NotesToDo.AddAsync(ntD);
+                await context.SaveChangesAsync();
+            }
+            catch
+            {
+                return;
+            }
+        }
+
         public async Task RemoveItemAsync(int id)
         {
             using var context = _contextFactory.CreateDbContext();

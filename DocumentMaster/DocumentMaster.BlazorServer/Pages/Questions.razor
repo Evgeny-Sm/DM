@@ -138,12 +138,11 @@
         StateHasChanged();
     }
 
-    private async void ValueChanged(IList<QuestionDTO> args)
+    private void ValueChanged(IList<QuestionDTO> args)
     {
         SelectedQuestion = args.FirstOrDefault();
-        SelectedQuestion.IsDoing= await QuestionService.IsQuestionDoing(SelectedQuestion.Id, CurrentPerson.Id);
+        SelectedQuestion.IsDoing= QuestionService.IsQuestionDoing(SelectedQuestion.Id, CurrentPerson.Id);
         
-        StateHasChanged();
     }
 
     private async Task OpenAddQuestDialog()
