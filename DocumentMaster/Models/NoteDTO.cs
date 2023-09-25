@@ -18,6 +18,7 @@ namespace Models
         public bool HasFile { get; set; }
         public string Path { get; set; } = string.Empty;
         public bool IsCurrentUser { get; set; }
+        public bool IsDone { get; set; }
 
     }
 }

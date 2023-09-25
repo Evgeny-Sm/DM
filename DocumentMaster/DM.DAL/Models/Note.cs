@@ -23,6 +23,11 @@ namespace DM.DAL.Models
         public bool HasFile { get; set; }
         [StringLength(200)]
         public string Path { get; set; } = string.Empty;
+        public ICollection<NoteToDo> NoteToDos { get; set; }
+        public Note()
+        { 
+            NoteToDos=new List<NoteToDo>();
+        }
 
     }
 }

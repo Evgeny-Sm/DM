@@ -15,7 +15,7 @@ namespace DM.DAL.Models
         public Person? Person { get; set; }
         public int PersonId { get; set; }
         public Question? Question { get; set; }
-        public int QuestinId { get; set; }
+        public int QuestionId { get; set; }
         public bool IsDoing { get; set; }
     }
 }

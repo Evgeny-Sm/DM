@@ -24,14 +24,18 @@
                 </div>
                 @if (CurrentQuestion is not null)
                 {
-                    <div class="col-6">
-                        <div class="row d-inline-block">
-                            <RadzenCheckBox @bind-Value=@CheckBox Name="CheckBox1" TValue="bool" Change=@(args => OnChangeCheckBox(args)) />
-                            <RadzenLabel Text="Отслеживать" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
+                    <div class="col-6 d-inline-block">
+                        <div class="row">
+                            <div class="col-6 d-inline-block">
+                                <RadzenCheckBox @bind-Value=@CheckBox Name="CheckBox1" TValue="bool" Change=@(args => OnChangeCheckBox(args)) />
+                                <RadzenLabel Text="Отслеживать" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
+                            </div>
                         </div>
-                        <div class="row d-inline-block">
-                            <RadzenCheckBox @bind-Value=@CheckBoxToDo Name="CheckBox2" TValue="bool" Change=@(args => OnChangeCheckBoxToDo(args)) />
-                            <RadzenLabel Text="В работу" Component="CheckBox2" Style="margin-left: 8px; vertical-align: middle;" />
+                        <div class="row">
+                            <div class="col-6 d-inline-block">
+                                <RadzenCheckBox @bind-Value=@CheckBoxToDo Name="CheckBox2" TValue="bool" Change=@(args => OnChangeCheckBoxToDo(args)) />
+                                <RadzenLabel Text="В работу" Component="CheckBox2" Style="margin-left: 8px; vertical-align: middle;" />
+                            </div>
                         </div>
 
                     </div>
@@ -71,6 +75,8 @@
 
     [Parameter]
     public QuestionDTO CurrentQuestion { get; set; }
+    [Parameter]
+    public EventCallback<bool> ToDoStatus { get; set; }
 
     private PersonDTO CurrentPerson { get; set; } = new();
 
@@ -101,7 +107,7 @@
 
     }
 
-    protected override async void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
         if (CurrentQuestion is not null && !string.IsNullOrEmpty(CurrentQuestion.Title))
         {
@@ -113,7 +119,7 @@
             Participants = PersonDTOs.Where(p => CurrentQuestion.PersonIds.Contains(p.Id) || p.Id == CurrentQuestion.CreatorId).ToList();
             Files = CurrentQuestion.FileUnitsId;
             CheckBox = CurrentQuestion.PersonIds.Contains(CurrentPerson.Id);
-            CheckBoxToDo= await QuestionService.IsQuestionDoing(CurrentQuestion.Id, CurrentPerson.Id);
+            CheckBoxToDo = CurrentQuestion.IsDoing;
         }
 
 
@@ -155,6 +161,7 @@
     private async Task OnChangeCheckBoxToDo(bool args)
     {
         await QuestionService.ChangeToDoStatusAsync(args, CurrentQuestion.Id, CurrentPerson.Id);
+        await ToDoStatus.InvokeAsync(args);
     }
 
     private async Task Find(string args)

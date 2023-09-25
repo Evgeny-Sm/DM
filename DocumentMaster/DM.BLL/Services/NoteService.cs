@@ -40,11 +40,11 @@ namespace DM.BLL.Services
             var result = _mapper.Map<NoteDTO>(item);
             return result;
         }
-        public async Task<IEnumerable<NoteDTO>> GetItemsByQuestionIdAsync(int id)
+        public async Task<IEnumerable<NoteDTO>> GetItemsByQuestionIdForUserIdAsync(int questId, int userId)
         {
             using var context = _contextFactory.CreateDbContext();
-            var quests = await context.Notes.Include(n => n.Question).Where(n=>n.QuestionId==id)
-                .Include(p => p.Persons)
+            var quests = await context.Notes.Include(n => n.Question).Where(n=>n.QuestionId==questId)
+                .Include(p => p.Persons).Include(nt=>nt.NoteToDos.Where(ntd=>ntd.PersonId==userId))
                 .ToListAsync();
             var result = _mapper.Map<IEnumerable<NoteDTO>>(quests);
             return result;
@@ -81,6 +81,23 @@ namespace DM.BLL.Services
             context.Notes.Update(element);
 
             await context.SaveChangesAsync();
+
+        }
+        public async Task UpdateNoteStateAsync(bool currstate,int noteid, int userid)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                var item = await context.Notes.Where(c => c.Id == noteid).Include(p => p.NoteToDos.Where(nt => nt.PersonId == userid))
+                    .SingleAsync();
+                item.NoteToDos.Single().IsDoing = currstate;
+                context.NotesToDo.Update(item.NoteToDos.Single());
+                await context.SaveChangesAsync();
+            }
+            catch
+            {
+                return;
+            }
 
         }
 
