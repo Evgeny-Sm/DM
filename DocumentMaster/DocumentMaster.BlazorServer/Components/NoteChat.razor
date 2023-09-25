@@ -168,11 +168,11 @@
         CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
         hubConnection = new HubConnectionBuilder().WithUrl(Navigation.ToAbsoluteUri("/notehub"))
        .Build();
-        hubConnection.On<int, string, string, string, int>("ReceiveNote", (questId, user, message, fileName, noteId) =>
+        hubConnection.On<int, string, string, string, int>("ReceiveNote", async (questId, user, message, fileName, noteId) =>
      {
          if (questId == CurrentQuestion.Id)
          {
-             userMessages.Add(new NoteDTO
+             var inputMes=new NoteDTO
                  {
                      Id = noteId,
                      UserName = user,
@@ -182,7 +182,12 @@
                      Path = $"/{configuration.GetRequiredSection("PathToQuestPictures").Value}/{questId.ToString()}/{fileName}",
                      HasFile = !string.IsNullOrEmpty(fileName),
                      IsDone=false
-                 });
+                 };
+             userMessages.Add(inputMes);
+             if (CurrentQuestion.IsDoing)
+             {
+                 await NoteService.AddToDoNoteAsync(noteId,CurrentPerson.Id);
+             }
              InvokeAsync(StateHasChanged);
          }
 
