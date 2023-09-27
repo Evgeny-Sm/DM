@@ -3,6 +3,7 @@
 @using Models
 @using DM.BLL.Services
 
+@implements IDisposable
 
 @inject PersonService PersonService
 @inject ProjectService ProjectService
@@ -11,62 +12,127 @@
 @inject IWebHostEnvironment WebHostInvironment
 @inject IConfiguration Configuration
 @inject IJSRuntime JS
+@inject DialogService DialogServices
 
 
-<RadzenTabs SelectedIndex="0">
-    <Tabs>
-        <RadzenTabsItem Text="Данные">
-            <div class="row">
-                <div class="col-6">
-                    <b>Создал: @Developer   </b>
-                    <div>Дата создания: @DateToCreate</div>
-                    <div>Проект: @ProjectName</div>
-                </div>
-                @if (CurrentQuestion is not null)
-                {
-                    <div class="col-6 d-inline-block">
-                        <div class="row">
-                            <div class="col-6 d-inline-block">
-                                <RadzenCheckBox @bind-Value=@CheckBox Name="CheckBox1" TValue="bool" Change=@(args => OnChangeCheckBox(args)) />
-                                <RadzenLabel Text="Отслеживать" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
-                            </div>
+<AuthorizeView Roles="user">
+    <Authorized>
+        <RadzenTabs SelectedIndex="0">
+            <Tabs>
+                <RadzenTabsItem Text="Данные">
+                    <div class="row">
+                        <div class="col-6">
+                            <b>Создал: @Developer   </b>
+                            <div>Дата создания: @DateToCreate</div>
+                            <div>Проект: @ProjectName</div>
                         </div>
-                        <div class="row">
+                        @if (CurrentQuestion is not null)
+                        {
                             <div class="col-6 d-inline-block">
-                                <RadzenCheckBox @bind-Value=@CheckBoxToDo Name="CheckBox2" TValue="bool" Change=@(args => OnChangeCheckBoxToDo(args)) />
-                                <RadzenLabel Text="В работу" Component="CheckBox2" Style="margin-left: 8px; vertical-align: middle;" />
-                            </div>
-                        </div>
+                                <div class="row">
+                                    <div class="col-6 d-inline-block">
+                                        <RadzenCheckBox @bind-Value=@CheckBox Name="CheckBox1" TValue="bool" Change=@(args => OnChangeCheckBox(args)) />
+                                        <RadzenLabel Text="Отслеживать" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6 d-inline-block">
+                                        <RadzenCheckBox @bind-Value=@CheckBoxToDo Name="CheckBox2" TValue="bool" Change=@(args => OnChangeCheckBoxToDo(args)) />
+                                        <RadzenLabel Text="В работу" Component="CheckBox2" Style="margin-left: 8px; vertical-align: middle;" />
+                                    </div>
+                                </div>
 
+                            </div>
+                        }
                     </div>
-                }
-            </div>
-        </RadzenTabsItem>
+                </RadzenTabsItem>
 
-        <RadzenTabsItem Text="Участники">
-            @foreach (var p in Participants)
-            {
-                <span style="color:cornflowerblue"> @p.LastName @p.FirstName.Substring(0,1) | </span>
-            }
-        </RadzenTabsItem>
-
-        <RadzenTabsItem Text="Файлы">
-
-            <div class="row">
-                <div class="col-md-9">
-                    @foreach (var f in Files)
+                <RadzenTabsItem Text="Участники">
+                    @foreach (var p in Participants)
                     {
-                        <RadzenButton Variant="Variant.Text" Click=@(args => OnClickToFile(f)) Text="@f.ToString()" ButtonStyle="ButtonStyle.Secondary" />
+                        <span style="color:cornflowerblue"> @p.LastName @p.FirstName.Substring(0,1) | </span>
                     }
-                </div>
-                <div class="col-md-3">
-                    <RadzenTextBox Style="width:100%" Placeholder="..номер файла" Change="@((args)=>Find(args))" Name="Text" />
-                </div>
-            </div>
+                </RadzenTabsItem>
 
-        </RadzenTabsItem>
-    </Tabs>
-</RadzenTabs>
+                <RadzenTabsItem Text="Файлы">
+
+                    <div class="row">
+                        <div class="col-md-9">
+                            @foreach (var f in Files)
+                            {
+                                <RadzenButton Variant="Variant.Text" Click=@(args => OnClickToFile(f)) Text="@f.ToString()" ButtonStyle="ButtonStyle.Secondary" />
+                            }
+                        </div>
+                        <div class="col-md-3">
+                            <RadzenTextBox Style="width:100%" Placeholder="..номер файла" Change="@((args)=>Find(args))" Name="Text" />
+                        </div>
+                    </div>
+
+                </RadzenTabsItem>
+            </Tabs>
+        </RadzenTabs>
+    </Authorized>
+</AuthorizeView>
+
+<AuthorizeView Roles="admin,head">
+    <Authorized>
+        <RadzenTabs SelectedIndex="0">
+            <Tabs>
+                <RadzenTabsItem Text="Данные">
+                    <div class="row">
+                        <div class="col-6">
+                            <b>Создал: @Developer   </b>
+                            <div>Дата создания: @DateToCreate</div>
+                            <div>Проект: @ProjectName</div>
+                        </div>
+                        @if (CurrentQuestion is not null)
+                        {
+                            <div class="col-6">
+                                <div class="row">
+                                    <div class="col-6 d-inline-block">
+                                        <RadzenCheckBox @bind-Value=@CheckBox Name="CheckBox1" TValue="bool" Change=@(args => OnChangeCheckBox(args)) />
+                                        <RadzenLabel Text="Отслеживать" Component="CheckBox1" Style="margin-left: 8px; vertical-align: middle;" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6 d-inline-block">
+                                        <RadzenCheckBox @bind-Value=@CheckBoxToDo Name="CheckBox2" TValue="bool" Change=@(args => OnChangeCheckBoxToDo(args)) />
+                                        <RadzenLabel Text="В работу" Component="CheckBox2" Style="margin-left: 8px; vertical-align: middle;" />
+                                        <RadzenButton Style="position:absolute; right:1px" Click=@(args => OnClickAddToDo()) Icon="add_circle_outline" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Secondary" />
+                                    </div>
+                                </div>
+
+                            </div>
+                        }
+                    </div>
+                </RadzenTabsItem>
+
+                <RadzenTabsItem Text="Участники">
+                    @foreach (var p in Participants)
+                    {
+                        <span style="color:cornflowerblue"> @p.LastName @p.FirstName.Substring(0,1) | </span>
+                    }
+                </RadzenTabsItem>
+
+                <RadzenTabsItem Text="Файлы">
+
+                    <div class="row">
+                        <div class="col-md-9">
+                            @foreach (var f in Files)
+                            {
+                                <RadzenButton Variant="Variant.Text" Click=@(args => OnClickToFile(f)) Text="@f.ToString()" ButtonStyle="ButtonStyle.Secondary" />
+                            }
+                        </div>
+                        <div class="col-md-3">
+                            <RadzenTextBox Style="width:100%" Placeholder="..номер файла" Change="@((args)=>Find(args))" Name="Text" />
+                        </div>
+                    </div>
+
+                </RadzenTabsItem>
+            </Tabs>
+        </RadzenTabs>
+    </Authorized>
+</AuthorizeView>
 
 
 @code {
@@ -104,6 +170,8 @@
         CurrentPerson = PersonDTOs.Where(p => p.UserName == (authState.User.Identity.Name)).Single();
 
         ProjectDTOs = await ProjectService.GetProjectsListAsync();
+        DialogServices.OnOpen += Open;
+        DialogServices.OnClose += Close;
 
     }
 
@@ -131,7 +199,7 @@
         {
             var name = file.Name;
             var downloadPath = WebHostInvironment.WebRootPath + Configuration.GetRequiredSection("ProjectRootDir").Value
-                                + $"\\{file.ProjectId}" + $"\\{name}";
+            + $"\\{file.ProjectId}" + $"\\{name}";
 
             var fileStream = File.OpenRead(@$"{downloadPath}");
 
@@ -188,5 +256,41 @@
             }
         }
 
+    }
+    private async Task OnClickAddToDo()
+    { 
+        IList<PersonDTO> data = await DialogServices.OpenAsync<AddPersonsToWorkDialog>("Add another person", new Dictionary<string, object>(),
+      new DialogOptions()
+          {
+              Width = "400px",
+              Height = "300px",
+              Resizable = true,
+              Draggable = false,
+              CloseDialogOnOverlayClick = false
+          });
+
+        if (data!=null && data.Count>0)
+        {
+            foreach (var p in data)
+            { 
+                await QuestionService.ChangeToDoStatusAsync(true, CurrentQuestion.Id, p.Id);
+            }
+        }
+    }
+    void Open(string title, Type type, Dictionary<string, object> parameters, DialogOptions options)
+    {
+
+    }
+
+    void Close(dynamic result)
+    {
+        Dispose();
+    }
+
+    public void Dispose()
+    {
+        // The DialogService is a singleton so it is advisable to unsubscribe.
+        DialogServices.OnOpen -= Open;
+        DialogServices.OnClose -= Close;
     }
 }

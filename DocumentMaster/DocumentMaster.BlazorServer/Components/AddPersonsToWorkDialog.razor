@@ -1,0 +1,83 @@
+﻿@using DM.BLL.Services
+@using Models
+
+@inject DialogService DialogService
+@inject PersonService PersonService
+
+<div class="container">
+    <div class="row justify-content-start g-1">
+        <div class="col-md-8">
+            <RadzenDropDownDataGrid TValue="int" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                                    Data=@(Persons) Style="width: 100%" AllowColumnResize="true"
+                                    TextProperty="LastName" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
+                                    Change=@(args => OnChangePerson(args))>
+                <Columns>
+                    <RadzenDropDownDataGridColumn Property="FirstName" Title="FirstName" Width="80px" />
+                    <RadzenDropDownDataGridColumn Property="LastName" Title="LastName" Width="80px" />
+                </Columns>
+            </RadzenDropDownDataGrid>
+        </div>
+
+    </div>
+
+    @foreach (var p in ChoosenPersons)
+    {
+        <div>
+            <span style="color:cornflowerblue"> @p.LastName @p.FirstName </span>
+            <button type="button" @onclick=@(args=>RemoveFromChallenge(p)) class="btn-close"></button>
+        </div>
+    }
+
+</div>
+<RadzenTemplateForm TItem="IList<PersonDTO>" Data="@ChoosenPersons" Submit=@OnSubmit>
+
+    <div class="col-md-8 d-flex align-items-md-start justify-content-center" style="position:absolute; bottom: 5px; ">
+        <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Save" />
+    </div>
+
+</RadzenTemplateForm>
+
+
+
+@code {
+
+    private IEnumerable<PersonDTO> Persons = new List<PersonDTO>();
+
+    private IList<PersonDTO> ChoosenPersons = new List<PersonDTO>();
+
+    private int ChoosenPersonId { get; set; }
+
+    private bool choose = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Persons = await PersonService.GetPersonsAsync();
+        StateHasChanged();
+    }
+
+    protected override void OnParametersSet()
+    {
+
+    }
+
+    private void OnSubmit(IList<PersonDTO> persons)
+    {
+
+        DialogService.Close(persons);
+    }
+
+    private void OnChangePerson(object value)
+    {
+        ChoosenPersonId = (int)value;
+        if (ChoosenPersonId != 0)
+        {      
+            ChoosenPersons.Add(Persons.Where(p => p.Id == ChoosenPersonId).Single());
+        }
+    }
+
+    private void RemoveFromChallenge(PersonDTO person)
+    {
+        ChoosenPersons.Remove(person);
+    }
+
+}
