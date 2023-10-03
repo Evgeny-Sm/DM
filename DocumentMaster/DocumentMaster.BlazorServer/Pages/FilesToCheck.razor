@@ -83,7 +83,7 @@
         }
     }
 
-    private async void CheckingComplete()
+    private async Task CheckingComplete()
     {
         ResultCheck res= await DialogService.OpenAsync<ResultCheckDialog>($"Результат проверки",
         new Dictionary<string, object>(),

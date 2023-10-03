@@ -125,8 +125,14 @@ namespace DM.BLL.Services
             var item = await context.QuestionsToDo.Where(c => c.QuestionId == questId && c.PersonId == personId).ToListAsync();
             if (item.Count!=0)
             {
+                if (item.FirstOrDefault().IsDoing == currentStatus)
+                { 
+                    return;
+                }
+
                 item.FirstOrDefault().IsDoing = currentStatus;
                 context.QuestionsToDo.Update(item.FirstOrDefault());
+                await context.SaveChangesAsync();
             }
             else
             {
@@ -137,28 +143,37 @@ namespace DM.BLL.Services
                     IsDoing = currentStatus
                 };
                 await context.QuestionsToDo.AddAsync(questionsToDo);
-         
+                await context.SaveChangesAsync();
             }
-            var notes=await context.Notes.Where(n=>n.QuestionId==questId).Include(t=>t.NoteToDos).ToListAsync();
-            if (notes.Count!=0)
-            {
-                    foreach (var note in notes)
-                    {
-                        if (note.NoteToDos.Where(n=>n.PersonId==personId).ToList().Count==0)
-                        {
-                            NoteToDo ntD = new NoteToDo
-                            {
-                                PersonId = personId,
-                                NoteId = note.Id,
-                                IsDoing = false
-                            };
-                            await context.NotesToDo.AddAsync(ntD);
-                        }
 
+            await CreateNoteToDOsAsync(questId, personId);
+
+        }
+
+        private async Task CreateNoteToDOsAsync(int questId, int personId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var notes = await context.Notes.Where(n => n.QuestionId == questId).Include(t => t.NoteToDos).ToListAsync();
+            if (notes.Count != 0)
+            {
+                foreach (var note in notes)
+                {
+                    if (note.NoteToDos.Where(n => n.PersonId == personId).ToList().Count == 0)
+                    {
+                        NoteToDo ntD = new NoteToDo
+                        {
+                            PersonId = personId,
+                            NoteId = note.Id,
+                            IsDoing = false
+                        };
+                        await context.NotesToDo.AddAsync(ntD);
+                        await context.SaveChangesAsync();
                     }
 
+                }
+
             }
-            await context.SaveChangesAsync();
+            
         }
 
         public bool IsQuestionDoing(int questId, int personId)
