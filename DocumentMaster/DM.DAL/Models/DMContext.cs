@@ -26,5 +26,6 @@ namespace DM.DAL.Models
         public DbSet<Note>? Notes { get; set; }
         public DbSet<NoteToDo>? NotesToDo { get; set; }
         public DbSet<QuestionsToDo>? QuestionsToDo { get; set; }
+        public DbSet<Release>? Releases { get; set; }
     }
 }

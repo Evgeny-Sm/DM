@@ -1,0 +1,94 @@
+﻿@using DM.BLL.Services
+@using DM.DAL.Models
+@using DocumentMaster.BlazorServer.Pages
+@using Microsoft.EntityFrameworkCore
+@using Models
+
+@inject PersonService PersonService
+@inject ReleaseService ReleaseService
+@implements IDisposable
+@inject DialogService DialogService
+
+<AuthorizeView>
+    <Authorized>
+        <RadzenDataGrid Data="@Releases" TItem="ReleaseDTO" ValueChanged="@(args=>ValueChanged(args))" AllowVirtualization="true" Style="height:600px"
+                        AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.And"
+                        AllowSorting="true">
+            <Columns>
+                <RadzenDataGridColumn TItem="ReleaseDTO" Property="Id" Title="Id" Width="20px" />
+                <RadzenDataGridColumn TItem="ReleaseDTO" Property="ProjectCode" Title="шифр" Width="60px" />
+                <RadzenDataGridColumn TItem="ReleaseDTO" Property="PersonName" Title="создал" Width="60px" />
+                <RadzenDataGridColumn TItem="ReleaseDTO" Property="CreateDate" Title="дата" Width="50px" />
+                <RadzenDataGridColumn TItem="ReleaseDTO" Title="файлы" Width="40px">
+                    <Template Context="release">
+                        <RadzenButton Text="files" ButtonStyle="ButtonStyle.Secondary" Click=@(()=>SelectFilesDialog(release)) />
+                    </Template>
+                </RadzenDataGridColumn>
+
+            </Columns>
+        </RadzenDataGrid>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+    [Parameter]
+    public IEnumerable<ReleaseDTO>? Releases { get; set; }
+    private PersonDTO CurrentPerson { get; set; } = new();
+    private int CurrentReleaseId { get; set; }
+    private bool DataChanged { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authenticationState;
+
+        CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+        DialogService.OnOpen += Open;
+        DialogService.OnClose += Close;
+    }
+
+    private void ValueChanged(IList<ReleaseDTO> args)
+    {
+
+    }
+    private string GetName()
+    {
+        return string.Empty;
+    }
+    private async Task SelectFilesDialog(ReleaseDTO release)
+    {
+        List<int> ids = await DialogService.OpenAsync<SelectFilesDialog>($"Файлы на выпуск",
+              new Dictionary<string, object>() { { "Release", release } },
+              new DialogOptions()
+                  {
+                      Width = "800px",
+                      Height = "600px",
+                      Resizable = true,
+                      Draggable = false,
+                      CloseDialogOnOverlayClick = true
+                  });
+        if (ids.Count != 0)
+        {
+            release.FilesIds = ids;
+            DataChanged = true;
+        }
+    }
+
+    void Open(string title, Type type, Dictionary<string, object> parameters, DialogOptions options)
+    {
+
+    }
+    void Close(dynamic result)
+    {
+
+        Dispose();
+    }
+
+    public void Dispose()
+    {
+        // The DialogService is a singleton so it is advisable to unsubscribe.
+        DialogService.OnOpen -= Open;
+        DialogService.OnClose -= Close;
+    }
+}

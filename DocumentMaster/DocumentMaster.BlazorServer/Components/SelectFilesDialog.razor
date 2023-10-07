@@ -1,0 +1,98 @@
+﻿@using DM.BLL.Services
+@using DM.DAL.Models
+@using Models
+@using Microsoft.EntityFrameworkCore
+
+@inject PersonService PersonService
+@inject FileService FileService
+@inject DialogService DialogService
+
+<AuthorizeView>
+    <Authorized Context="Auth">
+        <RadzenDataGrid Data="@files" TItem="FileDTO" AllowVirtualization="true" Style="height:600px"
+                        AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.And"
+                        AllowSorting="true" >
+
+            <Columns>
+
+                <RadzenDataGridColumn TItem="FileDTO" Property="Id" Title="Id" Width="40px" />
+                <RadzenDataGridColumn TItem="FileDTO" Property="Name" Title="Название" Width="180px" />
+                <RadzenDataGridColumn TItem="FileDTO" Property="ProjectCode" Title="Шифр" Width="100px" />
+                <RadzenDataGridColumn TItem="FileDTO" Property="IsOldVersion" Title="Old_vers." Width="50px"
+                                      Type="typeof(bool)" FilterOperator="FilterOperator.Equals" />
+                <RadzenDataGridColumn TItem="FileDTO" Property="ProjectId" Title="Проект" Width="60px" />
+                @if (Release != null && !Release.IsLocked)
+                {
+                    <RadzenDataGridColumn TItem="FileDTO" Title="выпуск" Width="40px">
+
+                        <Template Context ="rel">
+                            <RadzenCheckBox @bind-Value=rel.IsInRelease Name="CheckBox1" TValue="bool" Change="@DataChange" />
+                        </Template>
+                    </RadzenDataGridColumn>
+                }
+            </Columns>
+        </RadzenDataGrid>
+        @if (Release != null && !Release.IsLocked)
+        {
+                <div class="col-md-8 d-flex align-items-md-start justify-content-center" style="position:absolute; bottom: 5px; ">
+                    <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Close" Click="@Submit" />
+                </div>
+        }
+    </Authorized>
+
+</AuthorizeView>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+    [Parameter]
+    public ReleaseDTO? Release { get; set; }
+
+    private PersonDTO CurrentPerson { get; set; }
+
+    private IEnumerable<FileDTO>? files { get; set; } = new List<FileDTO>();
+
+    private bool DataChanged { get; set; } = false;
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authenticationState;
+
+        CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Release is not null)
+        {
+            files = await FileService.GetFilesToRealeaseAsync(Release.ProjectId);
+            foreach (var file in files)
+            {
+                if (Release.FilesIds.Count > 0 && Release.FilesIds.Contains(file.Id))
+                {
+                    file.IsInRelease = true;
+                }
+            }
+        }
+    }
+
+    private void Submit()
+    {
+        List<int> numbers = new List<int>();
+
+        if (DataChanged)
+        {
+            numbers = files.Where(f => f.IsInRelease == true).Select(t => t.Id).ToList();
+        }
+
+        DialogService.Close(numbers);
+    }
+
+    private void DataChange()
+    {
+        DataChanged = true;
+    }
+
+
+}

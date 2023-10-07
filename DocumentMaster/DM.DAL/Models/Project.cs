@@ -23,10 +23,12 @@ namespace DM.DAL.Models
         public int PersonId { get; set; }
         public ICollection<FileUnit>? FileUnits { get; set; }
         public ICollection<Question>? Questions { get; set; }
+        public ICollection<Release>? Releases { get; set; }
         public Project()
         { 
             FileUnits = new List<FileUnit>();
             Questions = new List<Question>();
+            Releases = new List<Release>();
         }
     }
 }
