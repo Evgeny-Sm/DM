@@ -6,38 +6,48 @@
 @inject PersonService PersonService
 @inject FileService FileService
 @inject DialogService DialogService
+@inject IConfiguration Configuration
+@inject IJSRuntime JS
+@inject IWebHostEnvironment WebHostInvironment
 
 <AuthorizeView>
     <Authorized Context="Auth">
-        <RadzenDataGrid Data="@files" TItem="FileDTO" AllowVirtualization="true" Style="height:600px"
-                        AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.And"
-                        AllowSorting="true" >
+        <div class="row">
+            <RadzenDataGrid Data="@files" TItem="FileDTO" AllowVirtualization="true" Style="height:600px"
+                            AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.And"
+                            AllowSorting="true">
 
-            <Columns>
+                <Columns>
 
-                <RadzenDataGridColumn TItem="FileDTO" Property="Id" Title="Id" Width="40px" />
-                <RadzenDataGridColumn TItem="FileDTO" Property="Name" Title="Название" Width="180px" />
-                <RadzenDataGridColumn TItem="FileDTO" Property="ProjectCode" Title="Шифр" Width="100px" />
-                <RadzenDataGridColumn TItem="FileDTO" Property="IsOldVersion" Title="Old_vers." Width="50px"
-                                      Type="typeof(bool)" FilterOperator="FilterOperator.Equals" />
-                <RadzenDataGridColumn TItem="FileDTO" Property="ProjectId" Title="Проект" Width="60px" />
-                @if (Release != null && !Release.IsLocked)
-                {
-                    <RadzenDataGridColumn TItem="FileDTO" Title="выпуск" Width="40px">
-
-                        <Template Context ="rel">
-                            <RadzenCheckBox @bind-Value=rel.IsInRelease Name="CheckBox1" TValue="bool" Change="@DataChange" />
-                        </Template>
-                    </RadzenDataGridColumn>
-                }
-            </Columns>
-        </RadzenDataGrid>
-        @if (Release != null && !Release.IsLocked)
-        {
-                <div class="col-md-8 d-flex align-items-md-start justify-content-center" style="position:absolute; bottom: 5px; ">
-                    <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Close" Click="@Submit" />
+                    <RadzenDataGridColumn TItem="FileDTO" Property="Id" Title="Id" Width="40px" />
+                    <RadzenDataGridColumn TItem="FileDTO" Property="Name" Title="Название" Width="250px" />
+                    <RadzenDataGridColumn TItem="FileDTO" Property="ProjectCode" Title="Шифр" Width="100px" />
+                    <RadzenDataGridColumn TItem="FileDTO" Property="IsOldVersion" Title="Old_vers." Width="65px"
+                                          Type="typeof(bool)" FilterOperator="FilterOperator.Equals" />
+                    <RadzenDataGridColumn TItem="FileDTO" Property="ProjectId" Title="Проект" Width="60px" />
+                    @if (Release != null && !Release.IsLocked)
+                    {
+                        <RadzenDataGridColumn TItem="FileDTO" Title="выпуск" Width="40px">
+                            <Template Context="rel">
+                                <RadzenCheckBox @bind-Value=rel.IsInRelease Name="CheckBox1" TValue="bool" Change="@DataChange" />
+                            </Template>
+                        </RadzenDataGridColumn>
+                    }
+                </Columns>
+            </RadzenDataGrid>
+        </div>
+        <br />
+        <div class="row">
+            @if (Release != null && !Release.IsLocked)
+            {
+                <div class="col-md-6 d-flex align-items-md-start justify-content-center">
+                    <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Save" Click="@Submit" />
                 </div>
-        }
+            }
+            <div class="col-md-6 d-flex align-items-md-start justify-content-center">
+                <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Скачать" Click="@DownloadFileFromStream" />
+            </div>
+        </div>
     </Authorized>
 
 </AuthorizeView>
@@ -66,15 +76,23 @@
     {
         if (Release is not null)
         {
-            files = await FileService.GetFilesToRealeaseAsync(Release.ProjectId);
-            foreach (var file in files)
+            if (!Release.IsLocked)
             {
-                if (Release.FilesIds.Count > 0 && Release.FilesIds.Contains(file.Id))
+                files = await FileService.GetFilesInProjectAsync(Release.ProjectId);
+                foreach (var file in files)
                 {
-                    file.IsInRelease = true;
+                    if (Release.FilesIds.Count > 0 && Release.FilesIds.Contains(file.Id))
+                    {
+                        file.IsInRelease = true;
+                    }
                 }
             }
+            else
+            {
+                files = await FileService.GetFilesInReleaseAsync(Release.Id);
+            }
         }
+
     }
 
     private void Submit()
@@ -94,5 +112,44 @@
         DataChanged = true;
     }
 
+    private async Task DownloadFileFromStream()
+    {
+        if (files != null)
+        {
+            if (!Release.IsLocked)
+            {
+                foreach (var f in files)
+                {
+                    if (f.IsInRelease)
+                    {
+                        var name = f.Name;
+                        var downloadPath = WebHostInvironment.WebRootPath + Configuration.GetRequiredSection("ProjectRootDir").Value
+                                            + $"\\{f.ProjectId}" + $"\\{name}";
+
+                        var fileStream = File.OpenRead(@$"{downloadPath}");
+
+                        using var streamRef = new DotNetStreamReference(stream: fileStream);
+                        await JS.InvokeVoidAsync("downloadFileFromStream", name, streamRef);
+                    }
+                }
+            }
+            else
+            {
+                foreach (var f in files)
+                {
+
+                    var name = f.Name;
+                    var downloadPath = WebHostInvironment.WebRootPath + Configuration.GetRequiredSection("ProjectRootDir").Value
+                                        + $"\\{f.ProjectId}" + $"\\{name}";
+
+                    var fileStream = File.OpenRead(@$"{downloadPath}");
+
+                    using var streamRef = new DotNetStreamReference(stream: fileStream);
+                    await JS.InvokeVoidAsync("downloadFileFromStream", name, streamRef);
+
+                }
+            }
+        }
+    }
 
 }

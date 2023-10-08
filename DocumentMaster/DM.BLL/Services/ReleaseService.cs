@@ -25,7 +25,7 @@ namespace DM.BLL.Services
         public async Task<IEnumerable<ReleaseDTO>> GetAllAsync()
         {
             using var context = _contextFactory.CreateDbContext();
-            var releases = await context.Releases.Include(p => p.FileUnits).ToListAsync();
+            var releases = await context.Releases.Include(p => p.FileUnits).Include(t=>t.Creator).ToListAsync();
             var result = _mapper.Map<IEnumerable<ReleaseDTO>>(releases);
             return result;
         }
@@ -34,12 +34,22 @@ namespace DM.BLL.Services
         {
             using var context = _contextFactory.CreateDbContext();
             var item = await context.Releases.Where(c => c.Id == id)
-                .Include(p => p.FileUnits).SingleAsync();
+                .Include(p => p.FileUnits).Include(t => t.Creator).SingleAsync();
             if (item == null)
             {
                 return null;
             }
             var result = _mapper.Map<ReleaseDTO>(item);
+            return result;
+        }
+        public async Task<IEnumerable<ReleaseDTO>> GetItemByProjIdAsync(int id)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var items = await context.Releases.Where(c => c.ProjectId == id)
+                .Include(p => p.FileUnits).Include(t => t.Creator)
+                .Include(k => k.Project).ToListAsync();
+
+            var result = _mapper.Map<IEnumerable<ReleaseDTO>>(items); ;
             return result;
         }
         public async Task<ReleaseDTO> AddItemAsync(ReleaseDTO relDTO)
@@ -78,6 +88,7 @@ namespace DM.BLL.Services
             }
 
             var element = await context.Releases.Where(p => p.Id == relDTO.Id).Include(a => a.FileUnits)
+                .Include(t => t.Creator)
                 .SingleAsync();
             if (element is null)
             {
@@ -104,6 +115,7 @@ namespace DM.BLL.Services
                 throw new ArgumentNullException($"Unknown {element.GetType().Name}");
             }
             element.IsLocked = relDTO.IsLocked;
+            element.CreateDate = DateTime.Now;
 
             context.Releases.Update(element);
             await context.SaveChangesAsync();

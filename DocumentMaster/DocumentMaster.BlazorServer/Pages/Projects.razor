@@ -13,6 +13,7 @@
 @inject NavigationManager Navigation
 @inject PersonService personService
 @inject ProjectService projectService
+@inject ReleaseService ReleaseService
 
 @inject IDbContextFactory<DMContext> contextFactory
 
@@ -20,46 +21,61 @@
 
 
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-4">
 
-                <AddProjectButton/>
+        <AddProjectButton />
 
     </div>
-    <div class="col-md-6">
-        @if (SelectedFiles.Count != 0)
-        {
-            <DownloadFile SelectedFiles="@SelectedFiles" />
-        }
-    </div>
+
 
 </div>
 
 <AuthorizeView>
     <Authorized>
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <ProjectList ProjectsGetCallBack="@SetSelectedProjects" />
             </div>
 
 
-            <div class="col-md-6">
+            <div class="col-md-8">
                 @if (SelectedProjects.Count != 0)
                 {
                     <div class="row">
-                        <div class="col-md-6">
-                            <InfoProject SelectedProjects="@SelectedProjects" />
+                        <div class="col-md-8">
+                            <div class="row">
+                                <InfoProject SelectedProjects="@SelectedProjects" />
+                            </div>
+
+                            <div class="row">
+                                <ReleaseList Releases="@Releases" ProjectId="@CurrProjId" />
+                            </div>
 
                         </div>
+                        @if (SelectedFiles.Count > 0)
+                        {
+                            <div class="col-md-4">
+                                <InfoFile SelectedFiles="@SelectedFiles" SetOldVersion="@SetVersionProperty" />
+                            </div>
+                        }
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
 
-
-                        <div class="col-md-6">
-                            <InfoFile SelectedFiles="@SelectedFiles" SetOldVersion="@SetVersionProperty" />
+                            @if (SelectedFiles.Count != 0)
+                            {
+                                <div class="row">
+                                    <div>
+                                        <DownloadFile SelectedFiles="@SelectedFiles" />
+                                    </div>
+                                </div>
+                            }
+                            <div class="row">
+                                <FileList FilesGetCallBack="@SetSelectedFiles"
+                                      files="@_Files"> </FileList>
+                            </div>
                         </div>
                     </div>
-
-                    <FileList FilesGetCallBack="@SetSelectedFiles"
-                          files="@_Files"> </FileList>
-
                 }
             </div>
         </div>
@@ -77,6 +93,9 @@
 
     private IEnumerable<ProjectDTO> _projects { get; set; }
 
+    private List<ReleaseDTO> Releases { get; set; }
+    private int CurrProjId { get; set; }
+
     private bool CheckBoxOldVersions = false;
 
 
@@ -89,12 +108,16 @@
 
 
 
-    private void SetSelectedProjects(IList<ProjectDTO> projects)
+    private async Task SetSelectedProjects(IList<ProjectDTO> projects)
     {
         if (projects != null)
         {
             SelectedProjects = projects;
+            CurrProjId = projects.FirstOrDefault().Id;
             _Files = GetFilesInProject(projects.FirstOrDefault().Id).ToList();
+            var rel = await ReleaseService.GetItemByProjIdAsync(CurrProjId);
+            Releases = rel.ToList();
+
             SelectedFiles = new List<FileUnit>();
         }
 

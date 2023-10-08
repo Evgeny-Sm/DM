@@ -167,6 +167,10 @@
             return;
         }
         Unit = SelectedFiles.FirstOrDefault();
+        if (Unit is null)
+        {
+            return;
+        }
         Controls = await ControlService.GetControlsByFileIdAsync(Unit.Id);
 
         IsController = Controls.Select(c => c.PersonId).Contains(CurrentPerson.Id);
@@ -202,7 +206,7 @@
         Descriptoin = Unit.Description;
         ProjectCode = Unit.ProjectCode;
 
-        CheckBoxOld = SelectedFiles.FirstOrDefault().IsOldVersion;
+        CheckBoxOld = Unit.IsOldVersion;
 
         StateHasChanged();
 

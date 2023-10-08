@@ -6,11 +6,7 @@
 @using System.Text.Json
 
 @inject IConfiguration Configuration
-@inject NavigationManager Navigation
 @inject IJSRuntime JS
-@inject FileService fileService
-@inject PersonService personService
-@inject DMContext db
 @inject IWebHostEnvironment WebHostInvironment
 
 <RadzenButton Click=@(args => DownloadFileFromStream())  ButtonStyle="ButtonStyle.Secondary" Text="Скачать"  />
