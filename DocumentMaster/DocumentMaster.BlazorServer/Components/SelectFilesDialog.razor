@@ -1,4 +1,6 @@
-﻿@using DM.BLL.Services
+﻿@attribute [Authorize]
+
+@using DM.BLL.Services
 @using DM.DAL.Models
 @using Models
 @using Microsoft.EntityFrameworkCore
@@ -10,7 +12,7 @@
 @inject IJSRuntime JS
 @inject IWebHostEnvironment WebHostInvironment
 
-<AuthorizeView>
+<AuthorizeView Roles="user,head">
     <Authorized Context="Auth">
         <div class="row">
             <RadzenDataGrid Data="@files" TItem="FileDTO" AllowVirtualization="true" Style="height:600px"
@@ -38,18 +40,58 @@
         </div>
         <br />
         <div class="row">
-            @if (Release != null && !Release.IsLocked)
-            {
-                <div class="col-md-6 d-flex align-items-md-start justify-content-center">
-                    <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Save" Click="@Submit" />
-                </div>
-            }
             <div class="col-md-6 d-flex align-items-md-start justify-content-center">
-                <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Скачать" Click="@DownloadFileFromStream" />
+                @if (Release != null && !Release.IsLocked && Release.PersonId == CurrentPerson.Id)
+                {
+                    <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Save" Click="@Submit" />
+                }
+            </div>
+            <div class="col-md-6 d-flex align-items-md-start justify-content-center">
+                <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Light" Text="Скачать" Click="@DownloadFileFromStream" />
             </div>
         </div>
     </Authorized>
+</AuthorizeView>
 
+<AuthorizeView Roles="admin">
+    <Authorized Context="Auth">
+        <div class="row">
+            <RadzenDataGrid Data="@files" TItem="FileDTO" AllowVirtualization="true" Style="height:600px"
+                            AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.And"
+                            AllowSorting="true">
+
+                <Columns>
+
+                    <RadzenDataGridColumn TItem="FileDTO" Property="Id" Title="Id" Width="40px" />
+                    <RadzenDataGridColumn TItem="FileDTO" Property="Name" Title="Название" Width="250px" />
+                    <RadzenDataGridColumn TItem="FileDTO" Property="ProjectCode" Title="Шифр" Width="100px" />
+                    <RadzenDataGridColumn TItem="FileDTO" Property="IsOldVersion" Title="Old_vers." Width="65px"
+                                          Type="typeof(bool)" FilterOperator="FilterOperator.Equals" />
+                    <RadzenDataGridColumn TItem="FileDTO" Property="ProjectId" Title="Проект" Width="60px" />
+                    @if (Release != null && !Release.IsLocked)
+                    {
+                        <RadzenDataGridColumn TItem="FileDTO" Title="выпуск" Width="40px">
+                            <Template Context="rel">
+                                <RadzenCheckBox @bind-Value=rel.IsInRelease Name="CheckBox1" TValue="bool" Change="@DataChange" />
+                            </Template>
+                        </RadzenDataGridColumn>
+                    }
+                </Columns>
+            </RadzenDataGrid>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-6 d-flex align-items-md-start justify-content-center">
+                @if (Release != null && !Release.IsLocked)
+                {
+                    <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Save" Click="@Submit" />
+                }
+            </div>
+            <div class="col-md-6 d-flex align-items-md-start justify-content-center">
+                <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Light" Text="Скачать" Click="@DownloadFileFromStream" />
+            </div>
+        </div>
+    </Authorized>
 </AuthorizeView>
 
 @code {
@@ -58,7 +100,7 @@
     [Parameter]
     public ReleaseDTO? Release { get; set; }
 
-    private PersonDTO CurrentPerson { get; set; }
+    private PersonDTO CurrentPerson { get; set; } = new();
 
     private IEnumerable<FileDTO>? files { get; set; } = new List<FileDTO>();
 

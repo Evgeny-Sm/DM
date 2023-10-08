@@ -8,6 +8,8 @@
 @inject ReleaseService ReleaseService
 @implements IDisposable
 @inject DialogService DialogService
+@inject ContextMenuService ContextMenuService
+
 
 <AuthorizeView>
     <Authorized>
@@ -15,7 +17,7 @@
             <RadzenButton Icon="add_circle_outline" ButtonStyle="ButtonStyle.Secondary" Text="Добавить"
                           Click="@InsertRelease" />
         </div>
-        <RadzenDataGrid Data="@Releases" TItem="ReleaseDTO" ValueChanged="@(args=>ValueChanged(args))" AllowVirtualization="true" Style="height:300px"
+        <RadzenDataGrid Data="@Releases"  CellContextMenu="@ShowContextMenuWithItems" TItem="ReleaseDTO" ValueChanged="@(args=>ValueChanged(args))" AllowVirtualization="true" Style="height:350px"
                         AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.And"
                         AllowSorting="true">
             <Columns>
@@ -53,7 +55,7 @@
     [Parameter]
     public List<ReleaseDTO> Releases { get; set; } = new List<ReleaseDTO>();
     [Parameter]
-    public int ProjectId { get; set; }
+    public ProjectDTO Project { get; set; }
     private PersonDTO CurrentPerson { get; set; } = new();
     private int CurrentReleaseId { get; set; }
     private bool DataChanged { get; set; }
@@ -101,7 +103,7 @@
 
     private async Task LockRelease(ReleaseDTO release)
     {
-        if (release.MainIngId == CurrentPerson.Id)
+        if (release.MainIngId == CurrentPerson.Id || CurrentPerson.Role=="admin")
         {
             release.IsLocked = !release.IsLocked;
             await ReleaseService.LockUnlockItem(release);
@@ -120,10 +122,14 @@
                       Draggable = false,
                       CloseDialogOnOverlayClick = true
                   });
-        releaseToInsert.PersonId = CurrentPerson.Id;
-        releaseToInsert.ProjectId = ProjectId;
-        var rel = await ReleaseService.AddItemAsync(releaseToInsert);
-        Releases.Add(rel);
+        if (releaseToInsert is not null)
+        {
+            releaseToInsert.PersonId = CurrentPerson.Id;
+            releaseToInsert.ProjectId = Project.Id;
+            releaseToInsert.MainIngId = Project.MainIngId;
+            var rel = await ReleaseService.AddItemAsync(releaseToInsert);
+            Releases.Add(rel);
+        }
 
 
 
@@ -144,5 +150,41 @@
         // The DialogService is a singleton so it is advisable to unsubscribe.
         DialogService.OnOpen -= Open;
         DialogService.OnClose -= Close;
+    }
+    void ShowContextMenuWithItems(DataGridCellMouseEventArgs<ReleaseDTO> args)
+    {
+        ReleaseDTO selectedRelease = args.Data;
+
+        if (!selectedRelease.IsLocked && (CurrentPerson.Role=="admin"|| CurrentPerson.Id==selectedRelease.MainIngId))
+            ContextMenuService.Open(args,
+                new List<ContextMenuItem> {
+                new ContextMenuItem(){ Text = "Remove", Value = new ContextMenuItemDTO(1,selectedRelease) },
+                         }, OnMenuItemClick);
+
+    }
+
+    void OnMenuItemClick(MenuItemEventArgs args)
+    {
+        ContextMenuItemDTO menuItem = (ContextMenuItemDTO)args.Value;
+        if (menuItem.menuNumber.Equals(1))
+        {
+            ReleaseService.HideItemAsync(menuItem.Rel.Id);
+            Releases.Remove(menuItem.Rel);
+            StateHasChanged();
+            ContextMenuService.Close();
+        }
+    }
+    
+
+    private struct ContextMenuItemDTO
+    {
+        public int menuNumber;
+        public ReleaseDTO Rel;
+        public ContextMenuItemDTO(int num, ReleaseDTO rel)
+        {
+            menuNumber = num;
+            Rel = rel;
+        }
+
     }
 }

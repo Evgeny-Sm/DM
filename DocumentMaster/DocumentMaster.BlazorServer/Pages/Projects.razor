@@ -48,7 +48,7 @@
                             </div>
 
                             <div class="row">
-                                <ReleaseList Releases="@Releases" ProjectId="@CurrProjId" />
+                                <ReleaseList Releases="@Releases" Project="@CurrProj" />
                             </div>
 
                         </div>
@@ -94,7 +94,7 @@
     private IEnumerable<ProjectDTO> _projects { get; set; }
 
     private List<ReleaseDTO> Releases { get; set; }
-    private int CurrProjId { get; set; }
+    private ProjectDTO CurrProj { get; set; } = new();
 
     private bool CheckBoxOldVersions = false;
 
@@ -113,9 +113,9 @@
         if (projects != null)
         {
             SelectedProjects = projects;
-            CurrProjId = projects.FirstOrDefault().Id;
+            CurrProj = projects.FirstOrDefault();
             _Files = GetFilesInProject(projects.FirstOrDefault().Id).ToList();
-            var rel = await ReleaseService.GetItemByProjIdAsync(CurrProjId);
+            var rel = await ReleaseService.GetItemByProjIdAsync(CurrProj.Id);
             Releases = rel.ToList();
 
             SelectedFiles = new List<FileUnit>();

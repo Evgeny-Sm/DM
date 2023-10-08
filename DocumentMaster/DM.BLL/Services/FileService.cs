@@ -46,7 +46,9 @@ namespace DM.BLL.Services
         {
             using var context = _contextFactory.CreateDbContext();
 
-            var elements = await context.FileUnits.Where(d =>d.ProjectId==projId && d.Status == StatusFile.Archive && d.IsDeleted==false).ToListAsync();
+            var elements = await context.FileUnits
+                .Where(d =>d.ProjectId==projId && d.Status == StatusFile.Archive && d.IsDeleted==false)
+                .ToListAsync();
             var result = _mapper.Map<IEnumerable<FileDTO>>(elements);
             return result;
 

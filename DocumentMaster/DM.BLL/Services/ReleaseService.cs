@@ -25,7 +25,8 @@ namespace DM.BLL.Services
         public async Task<IEnumerable<ReleaseDTO>> GetAllAsync()
         {
             using var context = _contextFactory.CreateDbContext();
-            var releases = await context.Releases.Include(p => p.FileUnits).Include(t=>t.Creator).ToListAsync();
+            var releases = await context.Releases.Where(r=>r.IsRemoved==false).Include(p => p.FileUnits)
+                .Include(t=>t.Creator).Include(pr => pr.Project).ToListAsync();
             var result = _mapper.Map<IEnumerable<ReleaseDTO>>(releases);
             return result;
         }
@@ -33,8 +34,10 @@ namespace DM.BLL.Services
         public async Task<ReleaseDTO> GetItemByIdAsync(int id)
         {
             using var context = _contextFactory.CreateDbContext();
-            var item = await context.Releases.Where(c => c.Id == id)
-                .Include(p => p.FileUnits).Include(t => t.Creator).SingleAsync();
+            var item = await context.Releases.Where(c => c.Id == id && c.IsRemoved == false)
+                .Include(p => p.FileUnits)
+                .Include(t => t.Creator)
+                .Include(pr=>pr.Project).SingleAsync();
             if (item == null)
             {
                 return null;
@@ -45,7 +48,7 @@ namespace DM.BLL.Services
         public async Task<IEnumerable<ReleaseDTO>> GetItemByProjIdAsync(int id)
         {
             using var context = _contextFactory.CreateDbContext();
-            var items = await context.Releases.Where(c => c.ProjectId == id)
+            var items = await context.Releases.Where(c => c.ProjectId == id && c.IsRemoved == false)
                 .Include(p => p.FileUnits).Include(t => t.Creator)
                 .Include(k => k.Project).ToListAsync();
 
@@ -120,7 +123,19 @@ namespace DM.BLL.Services
             context.Releases.Update(element);
             await context.SaveChangesAsync();
         }
+        public async Task HideItemAsync(int id)
+        {
+            using var context = _contextFactory.CreateDbContext();
 
+            var element = context.Releases.Find(id);
+            
+            if (element != null)
+            {
+                element.IsRemoved = true;
+                context.Releases.Update(element);
+                await context.SaveChangesAsync();
+            }
+        }
         public async Task RemoveItemAsync(int id)
         {
             using var context = _contextFactory.CreateDbContext();
