@@ -29,5 +29,97 @@ namespace DM.BLL.Services
             var result = _mapper.Map<IEnumerable<ReleaseDTO>>(releases);
             return result;
         }
+
+        public async Task<ReleaseDTO> GetItemByIdAsync(int id)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var item = await context.Releases.Where(c => c.Id == id)
+                .Include(p => p.FileUnits).SingleAsync();
+            if (item == null)
+            {
+                return null;
+            }
+            var result = _mapper.Map<ReleaseDTO>(item);
+            return result;
+        }
+        public async Task<ReleaseDTO> AddItemAsync(ReleaseDTO relDTO)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            ICollection<FileUnit> files=new List<FileUnit>();
+
+            foreach (var f in relDTO.FilesIds)
+            {
+                files.Add(context.FileUnits.Find(f));
+            }
+
+            Release release = new Release
+            {
+                ProjectCode = relDTO.ProjectCode,
+                PersonId = relDTO.PersonId,
+                Description = relDTO.Description,
+                ProjectId = relDTO.ProjectId,
+                IsLocked=false,
+                IsRemoved=false,
+                FileUnits=  files
+            };
+            await context.Releases.AddAsync(release);
+            await context.SaveChangesAsync();
+            return await GetItemByIdAsync(release.Id);
+        }
+
+        public async Task UpdateItemAsync(ReleaseDTO relDTO)
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            ICollection<FileUnit> files = new List<FileUnit>();
+            foreach (var f in relDTO.FilesIds)
+            {
+                files.Add(context.FileUnits.Find(f));
+            }
+
+            var element = await context.Releases.Where(p => p.Id == relDTO.Id).Include(a => a.FileUnits)
+                .SingleAsync();
+            if (element is null)
+            {
+                element = new Release();
+                throw new ArgumentNullException($"Unknown {element.GetType().Name}");
+            }
+            element.ProjectCode = relDTO.ProjectCode;
+            element.IsLocked = relDTO.IsLocked;
+            
+
+            element.FileUnits = files;
+            context.Releases.Update(element);
+
+            await context.SaveChangesAsync();
+        }
+        public async Task LockUnlockItem(ReleaseDTO relDTO)
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            var element = context.Releases.Find(relDTO.Id);
+            if (element is null)
+            {
+                element = new Release();
+                throw new ArgumentNullException($"Unknown {element.GetType().Name}");
+            }
+            element.IsLocked = relDTO.IsLocked;
+
+            context.Releases.Update(element);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task RemoveItemAsync(int id)
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            var element = context.Releases.Find(id);
+            if (element != null)
+            {
+                context.Releases.Remove(element);
+                await context.SaveChangesAsync();
+            }
+        }
+
     }
 }

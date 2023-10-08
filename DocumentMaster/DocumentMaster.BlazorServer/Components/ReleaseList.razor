@@ -11,6 +11,8 @@
 
 <AuthorizeView>
     <Authorized>
+        <RadzenButton Icon="add_circle_outline" ButtonStyle="ButtonStyle.Secondary" Text="Добавить"
+                      Click="@InsertRow" Disabled=@(sectionToInsert != null) />
         <RadzenDataGrid Data="@Releases" TItem="ReleaseDTO" ValueChanged="@(args=>ValueChanged(args))" AllowVirtualization="true" Style="height:600px"
                         AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.And"
                         AllowSorting="true">
@@ -22,6 +24,19 @@
                 <RadzenDataGridColumn TItem="ReleaseDTO" Title="файлы" Width="40px">
                     <Template Context="release">
                         <RadzenButton Text="files" ButtonStyle="ButtonStyle.Secondary" Click=@(()=>SelectFilesDialog(release)) />
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="ReleaseDTO" Title="state" Width="40px">
+                    <Template Context="stat">
+                        @if (stat.IsLocked)
+                        {
+                            <RadzenButton Text="unlock" ButtonStyle="ButtonStyle.Secondary" Click=@(()=>LockRelease(stat)) />
+                        }
+
+                        else
+                        {
+                            <RadzenButton Text="lock" ButtonStyle="ButtonStyle.Secondary" Click=@(()=>LockRelease(stat)) />
+                        }
                     </Template>
                 </RadzenDataGridColumn>
 
@@ -38,6 +53,8 @@
     private PersonDTO CurrentPerson { get; set; } = new();
     private int CurrentReleaseId { get; set; }
     private bool DataChanged { get; set; }
+
+    private ReleaseDTO releaseToInsert { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -73,6 +90,20 @@
             release.FilesIds = ids;
             DataChanged = true;
         }
+        await ReleaseService.UpdateItemAsync(release);
+    }
+
+    private async Task LockRelease(ReleaseDTO release)
+    {
+        release.IsLocked = !release.IsLocked;
+        await ReleaseService.LockUnlockItem(release);
+    }
+
+    async Task InsertRow()
+    {
+        releaseToInsert = new ReleaseDTO();
+
+        Releases.;
     }
 
     void Open(string title, Type type, Dictionary<string, object> parameters, DialogOptions options)
