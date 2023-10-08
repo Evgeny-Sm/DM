@@ -35,5 +35,6 @@ namespace Models
         public DateTime CreateDate { get; set; }
         public bool IsOldVersion { get; set; }
         public string ProjectCode { get; set; } = string.Empty;
+        public bool IsInRelease { get; set; }
     }
 }

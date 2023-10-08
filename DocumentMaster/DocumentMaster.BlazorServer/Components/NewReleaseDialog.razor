@@ -1,0 +1,74 @@
+﻿@using DM.BLL.Services
+@using DM.DAL.Models
+@using Models
+@using Microsoft.EntityFrameworkCore;
+
+@inject DialogService DialogService
+
+<RadzenCard Style="width: 100%; overflow: hidden;">
+    <div class="row">
+        <div class="row mb-5">
+            <div class="col-md-4 align-items-center d-flex">
+                <RadzenLabel Text="шифр" />
+            </div>
+            <div class="col">
+                <RadzenTextBox style="width: 100%;" @bind-Value="newReleaseDTO.ProjectCode" Name="Code" />
+            </div>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-md-4 align-items-center d-flex">
+                <RadzenLabel Text="Описание" />
+            </div>
+            <div class="col">
+                <RadzenTextArea Style="width:inherit" @bind-Value="newReleaseDTO.Description" Name="Description" />
+            </div>
+        </div>
+
+    </div>
+    <div>
+        <RadzenButton Size="Radzen.ButtonSize.Small" Disabled=@IsSubmitting ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Ok" Click=@(args => SubmitRelease()) />
+    </div>
+</RadzenCard>
+
+
+@code {
+    [Parameter]
+    public ReleaseDTO? releaseToUpdate { get; set; }
+
+    private ReleaseDTO newReleaseDTO { get; set; } = new ReleaseDTO
+    {
+        ProjectCode  = string.Empty,
+        Description  = string.Empty
+    };
+
+    private bool IsSubmitting;
+
+    protected override void OnParametersSet()
+    {
+        if (releaseToUpdate is not null)
+        {
+            newReleaseDTO = releaseToUpdate;
+        }
+    }
+
+    private async Task SubmitRelease()
+    { 
+        if (IsSubmitting)
+        {
+            return;
+        }
+
+        try
+        {
+            IsSubmitting = true;
+            DialogService.Close(newReleaseDTO);
+
+        }
+        finally
+        { 
+            IsSubmitting = false;
+        }
+
+    }
+}

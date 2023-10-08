@@ -53,11 +53,6 @@
     private IList<PersonDTO> Persons { get; set; }
 
 
-
-
-
-
-
     protected override async void OnInitialized()
     {
         var p = await PersonService.GetPersonsAsync();

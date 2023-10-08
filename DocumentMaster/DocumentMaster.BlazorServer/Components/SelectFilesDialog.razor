@@ -1,0 +1,197 @@
+﻿@attribute [Authorize]
+
+@using DM.BLL.Services
+@using DM.DAL.Models
+@using Models
+@using Microsoft.EntityFrameworkCore
+
+@inject PersonService PersonService
+@inject FileService FileService
+@inject DialogService DialogService
+@inject IConfiguration Configuration
+@inject IJSRuntime JS
+@inject IWebHostEnvironment WebHostInvironment
+
+<AuthorizeView Roles="user,head">
+    <Authorized Context="Auth">
+        <div class="row">
+            <RadzenDataGrid Data="@files" TItem="FileDTO" AllowVirtualization="true" Style="height:600px"
+                            AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.And"
+                            AllowSorting="true">
+
+                <Columns>
+
+                    <RadzenDataGridColumn TItem="FileDTO" Property="Id" Title="Id" Width="40px" />
+                    <RadzenDataGridColumn TItem="FileDTO" Property="Name" Title="Название" Width="250px" />
+                    <RadzenDataGridColumn TItem="FileDTO" Property="ProjectCode" Title="Шифр" Width="100px" />
+                    <RadzenDataGridColumn TItem="FileDTO" Property="IsOldVersion" Title="Old_vers." Width="65px"
+                                          Type="typeof(bool)" FilterOperator="FilterOperator.Equals" />
+                    <RadzenDataGridColumn TItem="FileDTO" Property="ProjectId" Title="Проект" Width="60px" />
+                    @if (Release != null && !Release.IsLocked)
+                    {
+                        <RadzenDataGridColumn TItem="FileDTO" Title="выпуск" Width="40px">
+                            <Template Context="rel">
+                                <RadzenCheckBox @bind-Value=rel.IsInRelease Name="CheckBox1" TValue="bool" Change="@DataChange" />
+                            </Template>
+                        </RadzenDataGridColumn>
+                    }
+                </Columns>
+            </RadzenDataGrid>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-6 d-flex align-items-md-start justify-content-center">
+                @if (Release != null && !Release.IsLocked && Release.PersonId == CurrentPerson.Id)
+                {
+                    <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Save" Click="@Submit" />
+                }
+            </div>
+            <div class="col-md-6 d-flex align-items-md-start justify-content-center">
+                <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Light" Text="Скачать" Click="@DownloadFileFromStream" />
+            </div>
+        </div>
+    </Authorized>
+</AuthorizeView>
+
+<AuthorizeView Roles="admin">
+    <Authorized Context="Auth">
+        <div class="row">
+            <RadzenDataGrid Data="@files" TItem="FileDTO" AllowVirtualization="true" Style="height:600px"
+                            AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.And"
+                            AllowSorting="true">
+
+                <Columns>
+
+                    <RadzenDataGridColumn TItem="FileDTO" Property="Id" Title="Id" Width="40px" />
+                    <RadzenDataGridColumn TItem="FileDTO" Property="Name" Title="Название" Width="250px" />
+                    <RadzenDataGridColumn TItem="FileDTO" Property="ProjectCode" Title="Шифр" Width="100px" />
+                    <RadzenDataGridColumn TItem="FileDTO" Property="IsOldVersion" Title="Old_vers." Width="65px"
+                                          Type="typeof(bool)" FilterOperator="FilterOperator.Equals" />
+                    <RadzenDataGridColumn TItem="FileDTO" Property="ProjectId" Title="Проект" Width="60px" />
+                    @if (Release != null && !Release.IsLocked)
+                    {
+                        <RadzenDataGridColumn TItem="FileDTO" Title="выпуск" Width="40px">
+                            <Template Context="rel">
+                                <RadzenCheckBox @bind-Value=rel.IsInRelease Name="CheckBox1" TValue="bool" Change="@DataChange" />
+                            </Template>
+                        </RadzenDataGridColumn>
+                    }
+                </Columns>
+            </RadzenDataGrid>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-6 d-flex align-items-md-start justify-content-center">
+                @if (Release != null && !Release.IsLocked)
+                {
+                    <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Secondary" Text="Save" Click="@Submit" />
+                }
+            </div>
+            <div class="col-md-6 d-flex align-items-md-start justify-content-center">
+                <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Light" Text="Скачать" Click="@DownloadFileFromStream" />
+            </div>
+        </div>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+    [Parameter]
+    public ReleaseDTO? Release { get; set; }
+
+    private PersonDTO CurrentPerson { get; set; } = new();
+
+    private IEnumerable<FileDTO>? files { get; set; } = new List<FileDTO>();
+
+    private bool DataChanged { get; set; } = false;
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authenticationState;
+
+        CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Release is not null)
+        {
+            if (!Release.IsLocked)
+            {
+                files = await FileService.GetFilesInProjectAsync(Release.ProjectId);
+                foreach (var file in files)
+                {
+                    if (Release.FilesIds.Count > 0 && Release.FilesIds.Contains(file.Id))
+                    {
+                        file.IsInRelease = true;
+                    }
+                }
+            }
+            else
+            {
+                files = await FileService.GetFilesInReleaseAsync(Release.Id);
+            }
+        }
+
+    }
+
+    private void Submit()
+    {
+        List<int> numbers = new List<int>();
+
+        if (DataChanged)
+        {
+            numbers = files.Where(f => f.IsInRelease == true).Select(t => t.Id).ToList();
+        }
+
+        DialogService.Close(numbers);
+    }
+
+    private void DataChange()
+    {
+        DataChanged = true;
+    }
+
+    private async Task DownloadFileFromStream()
+    {
+        if (files != null)
+        {
+            if (!Release.IsLocked)
+            {
+                foreach (var f in files)
+                {
+                    if (f.IsInRelease)
+                    {
+                        var name = f.Name;
+                        var downloadPath = WebHostInvironment.WebRootPath + Configuration.GetRequiredSection("ProjectRootDir").Value
+                                            + $"\\{f.ProjectId}" + $"\\{name}";
+
+                        var fileStream = File.OpenRead(@$"{downloadPath}");
+
+                        using var streamRef = new DotNetStreamReference(stream: fileStream);
+                        await JS.InvokeVoidAsync("downloadFileFromStream", name, streamRef);
+                    }
+                }
+            }
+            else
+            {
+                foreach (var f in files)
+                {
+
+                    var name = f.Name;
+                    var downloadPath = WebHostInvironment.WebRootPath + Configuration.GetRequiredSection("ProjectRootDir").Value
+                                        + $"\\{f.ProjectId}" + $"\\{name}";
+
+                    var fileStream = File.OpenRead(@$"{downloadPath}");
+
+                    using var streamRef = new DotNetStreamReference(stream: fileStream);
+                    await JS.InvokeVoidAsync("downloadFileFromStream", name, streamRef);
+
+                }
+            }
+        }
+    }
+
+}

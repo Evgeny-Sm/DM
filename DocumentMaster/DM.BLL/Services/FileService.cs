@@ -42,6 +42,28 @@ namespace DM.BLL.Services
             return result;
 
         }
+        public async Task<IEnumerable<FileDTO>> GetFilesInProjectAsync(int projId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            var elements = await context.FileUnits
+                .Where(d =>d.ProjectId==projId && d.Status == StatusFile.Archive && d.IsDeleted==false)
+                .ToListAsync();
+            var result = _mapper.Map<IEnumerable<FileDTO>>(elements);
+            return result;
+
+        }
+        public async Task<IEnumerable<FileDTO>> GetFilesInReleaseAsync(int releaseId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            var release = await context.Releases.Where(d => d.Id == releaseId)
+                .Include(p => p.FileUnits).SingleAsync();
+            var elements = release.FileUnits;
+            var result = _mapper.Map<IEnumerable<FileDTO>>(elements);
+            return result;
+
+        }
 
         public async Task<FileDTO> GetItemByIdAsync(int id)
         {

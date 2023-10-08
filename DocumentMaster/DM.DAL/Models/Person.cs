@@ -21,6 +21,7 @@ namespace DM.DAL.Models
         public ICollection<Challenge> Challenges { get; set; }
         public ICollection<Question> Questions { get; set; }
         public ICollection<Note> Notes { get; set; }
+        public ICollection<Release> Releases { get; set; }
         public bool IsDeleted { get; set; } = false;
         public bool IsConfirmed { get; set; }=false;
         public Person()
@@ -28,6 +29,7 @@ namespace DM.DAL.Models
             Challenges= new List<Challenge>();
             Questions= new List<Question>();
             Notes= new List<Note>();
+            Releases = new List<Release>();
         }
     }
 }

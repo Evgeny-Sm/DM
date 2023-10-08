@@ -31,6 +31,10 @@ namespace DM.BLL.MapServices
                 ForMember("ProjectName", q=>q.MapFrom(p=>p.Project.Name));
             CreateMap<Note, NoteDTO>().ForMember("PersonIds", q => q.MapFrom(p => p.Persons.Select(s => s.Id).ToList())).
                                        ForMember("IsDone", n=>n.MapFrom(l=>l.NoteToDos.FirstOrDefault().IsDoing));
+            CreateMap<Release, ReleaseDTO>().ForMember("FilesIds", f => f.MapFrom(t => t.FileUnits.Select(s => s.Id).ToList()))
+                .ForMember("PersonName", p=>p.MapFrom(r=>$"{r.Creator.LastName} {r.Creator.FirstName.Substring(0, 1)}."))
+                .ForMember("MainIngId", p => p.MapFrom(m => m.Project.PersonId))
+                .ForMember("CreateDate", d=>d.MapFrom(k=>k.CreateDate.ToString("HH:mm|dd:MMM:yy")));
         }
     }
 }

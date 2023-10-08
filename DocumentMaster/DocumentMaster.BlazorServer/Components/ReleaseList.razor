@@ -1,0 +1,190 @@
+﻿@using DM.BLL.Services
+@using DM.DAL.Models
+@using DocumentMaster.BlazorServer.Pages
+@using Microsoft.EntityFrameworkCore
+@using Models
+
+@inject PersonService PersonService
+@inject ReleaseService ReleaseService
+@implements IDisposable
+@inject DialogService DialogService
+@inject ContextMenuService ContextMenuService
+
+
+<AuthorizeView>
+    <Authorized>
+        <div class="start-0">
+            <RadzenButton Icon="add_circle_outline" ButtonStyle="ButtonStyle.Secondary" Text="Добавить"
+                          Click="@InsertRelease" />
+        </div>
+        <RadzenDataGrid Data="@Releases"  CellContextMenu="@ShowContextMenuWithItems" TItem="ReleaseDTO" ValueChanged="@(args=>ValueChanged(args))" AllowVirtualization="true" Style="height:350px"
+                        AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.And"
+                        AllowSorting="true">
+            <Columns>
+                <RadzenDataGridColumn TItem="ReleaseDTO" Property="Id" Title="Id" Width="22px" />
+                <RadzenDataGridColumn TItem="ReleaseDTO" Property="ProjectCode" Title="шифр" Width="60px" />
+                <RadzenDataGridColumn TItem="ReleaseDTO" Property="PersonName" Title="создал" Width="40px" />
+                <RadzenDataGridColumn TItem="ReleaseDTO" Property="CreateDate" Title="дата" Width="45px" />
+                <RadzenDataGridColumn TItem="ReleaseDTO" Title="файлы" Width="45px">
+                    <Template Context="release">
+                        <RadzenButton Size="ButtonSize.Small" Text="files" ButtonStyle="ButtonStyle.Secondary" Click=@(()=>SelectFilesDialog(release)) />
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="ReleaseDTO" Title="state" Width="45px">
+                    <Template Context="stat">
+                        @if (stat.IsLocked)
+                        {
+                            <RadzenButton Size="ButtonSize.Small" Text="locked" ButtonStyle="ButtonStyle.Primary" Click=@(()=>LockRelease(stat)) />
+                        }
+
+                        else
+                        {
+                            <RadzenButton Size="ButtonSize.Small" Text="unlocked" ButtonStyle="ButtonStyle.Secondary" Click=@(()=>LockRelease(stat)) />
+                        }
+                    </Template>
+                </RadzenDataGridColumn>
+
+            </Columns>
+        </RadzenDataGrid>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+    [Parameter]
+    public List<ReleaseDTO> Releases { get; set; } = new List<ReleaseDTO>();
+    [Parameter]
+    public ProjectDTO Project { get; set; }
+    private PersonDTO CurrentPerson { get; set; } = new();
+    private int CurrentReleaseId { get; set; }
+    private bool DataChanged { get; set; }
+
+    private ReleaseDTO releaseToInsert { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authenticationState;
+
+        CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+        DialogService.OnOpen += Open;
+        DialogService.OnClose += Close;
+
+    }
+
+    private void ValueChanged(IList<ReleaseDTO> args)
+    {
+
+    }
+    private string GetName()
+    {
+        return string.Empty;
+    }
+    private async Task SelectFilesDialog(ReleaseDTO release)
+    {
+        List<int> ids = await DialogService.OpenAsync<SelectFilesDialog>($"Файлы на выпуск",
+              new Dictionary<string, object>() { { "Release", release } },
+              new DialogOptions()
+                  {
+                      Width = "1050px",
+                      Height = "750px",
+                      Resizable = true,
+                      Draggable = false,
+                      CloseDialogOnOverlayClick = true
+                  });
+        if (ids != null)
+        {
+            release.FilesIds = ids;
+            DataChanged = true;
+            await ReleaseService.UpdateItemAsync(release);
+        }
+
+    }
+
+    private async Task LockRelease(ReleaseDTO release)
+    {
+        if (release.MainIngId == CurrentPerson.Id || CurrentPerson.Role=="admin")
+        {
+            release.IsLocked = !release.IsLocked;
+            await ReleaseService.LockUnlockItem(release);
+        }
+    }
+
+    private async Task InsertRelease()
+    {
+        releaseToInsert = await DialogService.OpenAsync<NewReleaseDialog>($"выпуск",
+              new Dictionary<string, object>() { },
+              new DialogOptions()
+                  {
+                      Width = "800px",
+                      Height = "600px",
+                      Resizable = true,
+                      Draggable = false,
+                      CloseDialogOnOverlayClick = true
+                  });
+        if (releaseToInsert is not null)
+        {
+            releaseToInsert.PersonId = CurrentPerson.Id;
+            releaseToInsert.ProjectId = Project.Id;
+            releaseToInsert.MainIngId = Project.MainIngId;
+            var rel = await ReleaseService.AddItemAsync(releaseToInsert);
+            Releases.Add(rel);
+        }
+
+
+
+    }
+
+    void Open(string title, Type type, Dictionary<string, object> parameters, DialogOptions options)
+    {
+
+    }
+    void Close(dynamic result)
+    {
+
+        Dispose();
+    }
+
+    public void Dispose()
+    {
+        // The DialogService is a singleton so it is advisable to unsubscribe.
+        DialogService.OnOpen -= Open;
+        DialogService.OnClose -= Close;
+    }
+    void ShowContextMenuWithItems(DataGridCellMouseEventArgs<ReleaseDTO> args)
+    {
+        ReleaseDTO selectedRelease = args.Data;
+
+        if (!selectedRelease.IsLocked && (CurrentPerson.Role=="admin"|| CurrentPerson.Id==selectedRelease.MainIngId))
+            ContextMenuService.Open(args,
+                new List<ContextMenuItem> {
+                new ContextMenuItem(){ Text = "Remove", Value = new ContextMenuItemDTO(1,selectedRelease) },
+                         }, OnMenuItemClick);
+
+    }
+
+    void OnMenuItemClick(MenuItemEventArgs args)
+    {
+        ContextMenuItemDTO menuItem = (ContextMenuItemDTO)args.Value;
+        if (menuItem.menuNumber.Equals(1))
+        {
+            ReleaseService.HideItemAsync(menuItem.Rel.Id);
+            Releases.Remove(menuItem.Rel);
+            StateHasChanged();
+            ContextMenuService.Close();
+        }
+    }
+    
+
+    private struct ContextMenuItemDTO
+    {
+        public int menuNumber;
+        public ReleaseDTO Rel;
+        public ContextMenuItemDTO(int num, ReleaseDTO rel)
+        {
+            menuNumber = num;
+            Rel = rel;
+        }
+
+    }
+}
