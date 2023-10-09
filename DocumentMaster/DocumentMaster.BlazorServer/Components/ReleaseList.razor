@@ -22,15 +22,15 @@
                         AllowSorting="true">
             <Columns>
                 <RadzenDataGridColumn TItem="ReleaseDTO" Property="Id" Title="Id" Width="22px" />
-                <RadzenDataGridColumn TItem="ReleaseDTO" Property="ProjectCode" Title="шифр" Width="60px" />
+                <RadzenDataGridColumn TItem="ReleaseDTO" Property="ProjectCode" Title="шифр" Width="80px" />
                 <RadzenDataGridColumn TItem="ReleaseDTO" Property="PersonName" Title="создал" Width="40px" />
                 <RadzenDataGridColumn TItem="ReleaseDTO" Property="CreateDate" Title="дата" Width="45px" />
-                <RadzenDataGridColumn TItem="ReleaseDTO" Title="файлы" Width="45px">
+                <RadzenDataGridColumn TItem="ReleaseDTO" Title="файлы" Width="35px">
                     <Template Context="release">
                         <RadzenButton Size="ButtonSize.Small" Text="files" ButtonStyle="ButtonStyle.Secondary" Click=@(()=>SelectFilesDialog(release)) />
                     </Template>
                 </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="ReleaseDTO" Title="state" Width="45px">
+                <RadzenDataGridColumn TItem="ReleaseDTO" Title="state" Width="35px">
                     <Template Context="stat">
                         @if (stat.IsLocked)
                         {
@@ -43,6 +43,7 @@
                         }
                     </Template>
                 </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="ReleaseDTO" Property="Description" Title="Прим." Width="45px" />
 
             </Columns>
         </RadzenDataGrid>
@@ -112,7 +113,7 @@
 
     private async Task InsertRelease()
     {
-        releaseToInsert = await DialogService.OpenAsync<NewReleaseDialog>($"выпуск",
+        releaseToInsert = await DialogService.OpenAsync<NewReleaseDialog>($"добавить выпуск",
               new Dictionary<string, object>() { },
               new DialogOptions()
                   {
@@ -161,15 +162,49 @@
                 new ContextMenuItem(){ Text = "Remove", Value = new ContextMenuItemDTO(1,selectedRelease) },
                          }, OnMenuItemClick);
 
+        if (!selectedRelease.IsLocked && (CurrentPerson.Role == "admin" 
+        || CurrentPerson.Id == selectedRelease.MainIngId 
+        || CurrentPerson.Id == selectedRelease.PersonId))
+            ContextMenuService.Open(args,
+                new List<ContextMenuItem> {
+                new ContextMenuItem(){ Text = "Edit", Value = new ContextMenuItemDTO(2,selectedRelease) },
+                new ContextMenuItem(){ Text = "Remove", Value = new ContextMenuItemDTO(1,selectedRelease) },
+                             }, OnMenuItemClick);
+
     }
 
-    void OnMenuItemClick(MenuItemEventArgs args)
+    async void OnMenuItemClick(MenuItemEventArgs args)
     {
         ContextMenuItemDTO menuItem = (ContextMenuItemDTO)args.Value;
         if (menuItem.menuNumber.Equals(1))
         {
-            ReleaseService.HideItemAsync(menuItem.Rel.Id);
-            Releases.Remove(menuItem.Rel);
+            var res = await DialogService.Confirm("Are you sure?", "Removing", new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+            if (res == true)
+            {
+                ReleaseService.HideItemAsync(menuItem.Rel.Id);
+                Releases.Remove(menuItem.Rel);
+                StateHasChanged();
+                ContextMenuService.Close();
+            }
+        }
+        if (menuItem.menuNumber.Equals(2))
+        {
+            ReleaseDTO releaseFromEdit = await DialogService.OpenAsync<NewReleaseDialog>($"edit {menuItem.Rel.ProjectCode}",
+      new Dictionary<string, object>() { { "releaseToUpdate", menuItem.Rel } },
+      new DialogOptions()
+          {
+              Width = "450px",
+              Height = "400px",
+              Resizable = true,
+              Draggable = false,
+              CloseDialogOnOverlayClick = true
+          });
+            if (releaseFromEdit is not null)
+            {
+
+                await ReleaseService.UpdateItemAsync(releaseFromEdit);
+                menuItem.Rel = releaseFromEdit;
+            }
             StateHasChanged();
             ContextMenuService.Close();
         }

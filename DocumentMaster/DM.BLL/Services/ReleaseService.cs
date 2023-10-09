@@ -99,6 +99,7 @@ namespace DM.BLL.Services
                 throw new ArgumentNullException($"Unknown {element.GetType().Name}");
             }
             element.ProjectCode = relDTO.ProjectCode;
+            element.Description=relDTO.Description;
             element.IsLocked = relDTO.IsLocked;
             
 

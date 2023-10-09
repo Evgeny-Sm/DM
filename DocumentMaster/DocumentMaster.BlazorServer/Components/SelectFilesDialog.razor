@@ -11,6 +11,7 @@
 @inject IConfiguration Configuration
 @inject IJSRuntime JS
 @inject IWebHostEnvironment WebHostInvironment
+@inject NotificationService NotificationService
 
 <AuthorizeView Roles="user,head">
     <Authorized Context="Auth">
@@ -105,6 +106,7 @@
     private IEnumerable<FileDTO>? files { get; set; } = new List<FileDTO>();
 
     private bool DataChanged { get; set; } = false;
+    private bool IsLoading;
 
 
 
@@ -156,14 +158,40 @@
 
     private async Task DownloadFileFromStream()
     {
-        if (files != null)
+        if (IsLoading)
         {
-            if (!Release.IsLocked)
+            return;
+        }
+        int count = 0;
+        try
+        {
+            IsLoading = true;
+            if (files != null)
             {
-                foreach (var f in files)
+                
+                if (!Release.IsLocked)
                 {
-                    if (f.IsInRelease)
+                    foreach (var f in files)
                     {
+                        if (f.IsInRelease)
+                        {
+                            var name = f.Name;
+                            var downloadPath = WebHostInvironment.WebRootPath + Configuration.GetRequiredSection("ProjectRootDir").Value
+                                                + $"\\{f.ProjectId}" + $"\\{name}";
+
+                            var fileStream = File.OpenRead(@$"{downloadPath}");
+
+                            using var streamRef = new DotNetStreamReference(stream: fileStream);
+                            await JS.InvokeVoidAsync("downloadFileFromStream", name, streamRef);
+                            count++;
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var f in files)
+                    {
+
                         var name = f.Name;
                         var downloadPath = WebHostInvironment.WebRootPath + Configuration.GetRequiredSection("ProjectRootDir").Value
                                             + $"\\{f.ProjectId}" + $"\\{name}";
@@ -172,26 +200,28 @@
 
                         using var streamRef = new DotNetStreamReference(stream: fileStream);
                         await JS.InvokeVoidAsync("downloadFileFromStream", name, streamRef);
+                        count++;
                     }
                 }
             }
-            else
-            {
-                foreach (var f in files)
-                {
-
-                    var name = f.Name;
-                    var downloadPath = WebHostInvironment.WebRootPath + Configuration.GetRequiredSection("ProjectRootDir").Value
-                                        + $"\\{f.ProjectId}" + $"\\{name}";
-
-                    var fileStream = File.OpenRead(@$"{downloadPath}");
-
-                    using var streamRef = new DotNetStreamReference(stream: fileStream);
-                    await JS.InvokeVoidAsync("downloadFileFromStream", name, streamRef);
-
-                }
-            }
         }
+        finally
+        {
+            IsLoading = false;
+            ShowNotification(new NotificationMessage
+                {
+                    Style = "position: absolute; left: -400px;",
+                    Severity = NotificationSeverity.Success,
+                    Summary = "Загрузка окончена,",
+                    Detail = $"скачано файлов - {count}",
+                Duration = 4000
+                });
+        }
+    }
+
+    void ShowNotification(NotificationMessage message)
+    {
+        NotificationService.Notify(message);       
     }
 
 }

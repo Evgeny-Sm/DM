@@ -33,46 +33,22 @@
 <AuthorizeView>
     <Authorized>
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <ProjectList ProjectsGetCallBack="@SetSelectedProjects" />
             </div>
 
 
-            <div class="col-md-8">
+            <div class="col-md-6">
                 @if (SelectedProjects.Count != 0)
                 {
                     <div class="row">
-                        <div class="col-md-8">
+                        <div class="col-md-12">
                             <div class="row">
                                 <InfoProject SelectedProjects="@SelectedProjects" />
                             </div>
 
                             <div class="row">
                                 <ReleaseList Releases="@Releases" Project="@CurrProj" />
-                            </div>
-
-                        </div>
-                        @if (SelectedFiles.Count > 0)
-                        {
-                            <div class="col-md-4">
-                                <InfoFile SelectedFiles="@SelectedFiles" SetOldVersion="@SetVersionProperty" />
-                            </div>
-                        }
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-
-                            @if (SelectedFiles.Count != 0)
-                            {
-                                <div class="row">
-                                    <div>
-                                        <DownloadFile SelectedFiles="@SelectedFiles" />
-                                    </div>
-                                </div>
-                            }
-                            <div class="row">
-                                <FileList FilesGetCallBack="@SetSelectedFiles"
-                                      files="@_Files"> </FileList>
                             </div>
                         </div>
                     </div>
@@ -120,8 +96,6 @@
 
             SelectedFiles = new List<FileUnit>();
         }
-
-
     }
 
     private void SetSelectedFiles(IList<FileUnit> fileUnits)
@@ -139,28 +113,5 @@
         .Include(p => p.Person).Include(d => d.Department)
         .Include(p => p.Project).Include(s => s.Section)
         .OrderByDescending(f => f.Id).ToArray();
-    }
-
-    private void SetVersionProperty(bool val)
-    {
-        SelectedFiles.FirstOrDefault().IsOldVersion = val;
-    }
-    private void OnChangeVers(bool value)
-    {
-        if (_Files is not null)
-        {
-
-            if (CheckBoxOldVersions)
-            {
-                _Files = _Files.Where(t => t.IsOldVersion != true).OrderByDescending(f => f.Id).ToArray();
-                SelectedFiles = new List<FileUnit>();
-            }
-            else
-            {
-                _Files = GetFilesInProject(SelectedProjects.FirstOrDefault().Id).ToList();
-                SelectedFiles = new List<FileUnit>();
-            }
-        }
-
     }
 }
