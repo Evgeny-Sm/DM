@@ -17,7 +17,7 @@
             <RadzenButton Icon="add_circle_outline" ButtonStyle="ButtonStyle.Secondary" Text="Добавить"
                           Click="@InsertRelease" />
         </div>
-        <RadzenDataGrid Data="@Releases"  CellContextMenu="@ShowContextMenuWithItems" TItem="ReleaseDTO" ValueChanged="@(args=>ValueChanged(args))" AllowVirtualization="true" Style="height:350px"
+        <RadzenDataGrid Data="@Releases"  CellContextMenu="@ShowContextMenuWithItems" TItem="ReleaseDTO" ValueChanged="@(args=>ValueChanged(args))" AllowVirtualization="true" Style="height:550px"
                         AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.And"
                         AllowSorting="true">
             <Columns>
