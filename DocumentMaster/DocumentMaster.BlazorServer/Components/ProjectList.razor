@@ -6,6 +6,7 @@
 
 
 @inject ProjectService projectService
+@inject PersonService PersonService
 
 
 
@@ -17,6 +18,11 @@
             <Columns>
                 <RadzenDataGridColumn TItem="ProjectDTO" Property="Id" Title="Id" Width="30px" />
                 <RadzenDataGridColumn TItem="ProjectDTO" Property="Name" Title="Название" Width="170px" />
+                <RadzenDataGridColumn TItem="ProjectDTO" Title="ГИП" Width="60px">
+                    <Template Context="project">
+                        <RadzenLabel Text="@GetName(project)" />
+                    </Template>
+                </RadzenDataGridColumn>
                 <RadzenDataGridColumn TItem="ProjectDTO" Property="Client" Title="Заказчик" Width="80px" />
             </Columns>
         </RadzenDataGrid>
@@ -30,7 +36,15 @@
     [Parameter]
     public EventCallback<IList<ProjectDTO>> ProjectsGetCallBack { get; set; }
 
-        protected override async Task OnParametersSetAsync()
+    private IList<PersonDTO> Persons { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var p = await PersonService.GetPersonsAsync();
+        Persons = p.ToList();
+
+    }
+    protected override async Task OnParametersSetAsync()
     {
         if (_projects == null)
         {
@@ -42,4 +56,15 @@
     {
         await ProjectsGetCallBack.InvokeAsync(args);
     }
+
+    private string GetName(ProjectDTO project)
+    {
+        if (project is not null)
+        {
+            var pers = Persons.Where(p => p.Id == project.MainIngId).Single();
+            return $"{pers.LastName} {pers.FirstName.Substring(0, 1)}.";
+        }
+        return string.Empty;
+    }
+
 }
