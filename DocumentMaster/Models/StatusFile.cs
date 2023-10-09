@@ -19,4 +19,5 @@ namespace Models
         public const int Check1 = 2;
         public const int Check2 = 3;
     }
+
 }
