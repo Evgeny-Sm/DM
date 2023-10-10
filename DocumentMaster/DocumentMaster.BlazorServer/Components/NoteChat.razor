@@ -184,10 +184,6 @@
                      IsDone=false
                  };
              userMessages.Add(inputMes);
-             if (CurrentQuestion.IsDoing)
-             {
-                 await NoteService.AddToDoNoteAsync(noteId,CurrentPerson.Id);
-             }
              InvokeAsync(StateHasChanged);
          }
 
@@ -209,7 +205,19 @@
     }
     protected override async Task OnParametersSetAsync()
     {
-        await CompareMes();
+        var messages = await NoteService.GetItemsByQuestionIdForUserIdAsync(CurrentQuestion.Id, CurrentPerson.Id);
+        foreach (var mes in messages)
+        {
+            mes.IsCurrentUser = mes.UserName == CurrentPerson.UserName;
+            mes.PersonIds.Add(CurrentPerson.Id);
+            mes.PersonIds = mes.PersonIds.Distinct().ToList();
+            if (mes.HasFile)
+            {
+                mes.Path = $"/{configuration.GetRequiredSection("PathToQuestPictures").Value}/{CurrentQuestion.Id.ToString()}/{mes.Path}";
+            }
+            await NoteService.UpdateItemAsync(mes);
+        }
+        userMessages = messages.ToList();
     }
 
 
@@ -229,22 +237,7 @@
             await hubConnection.DisposeAsync();
         }
     }
-    private async Task CompareMes()
-    {
-        var messages = await NoteService.GetItemsByQuestionIdForUserIdAsync(CurrentQuestion.Id, CurrentPerson.Id);
-        foreach (var mes in messages)
-        {
-            mes.IsCurrentUser = mes.UserName == CurrentPerson.UserName;
-            mes.PersonIds.Add(CurrentPerson.Id);
-            mes.PersonIds = mes.PersonIds.Distinct().ToList();
-            if (mes.HasFile)
-            {
-                mes.Path = $"/{configuration.GetRequiredSection("PathToQuestPictures").Value}/{CurrentQuestion.Id.ToString()}/{mes.Path}";
-            }
-            await NoteService.UpdateItemAsync(mes);
-        }
-        userMessages = messages.ToList();
-    }
+
     private async Task SetPath(string fileName)
     {
         if (!String.IsNullOrEmpty(fileName))
