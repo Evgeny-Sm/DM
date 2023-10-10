@@ -93,7 +93,7 @@
     private string InputString { get; set; } = string.Empty;
 
 
-    protected override async void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
 
         using var context = contextFactory.CreateDbContext();

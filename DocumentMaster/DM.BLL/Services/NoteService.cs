@@ -43,7 +43,7 @@ namespace DM.BLL.Services
         public async Task<IEnumerable<NoteDTO>> GetItemsByQuestionIdForUserIdAsync(int questId, int userId)
         {
             using var context = _contextFactory.CreateDbContext();
-            var quests = await context.Notes.Include(n => n.Question).Where(n=>n.QuestionId==questId)
+            var quests = await context.Notes.Where(n=>n.QuestionId==questId)
                 .Include(p => p.Persons).Include(nt=>nt.NoteToDos.Where(ntd=>ntd.PersonId==userId))
                 .ToListAsync();
             var result = _mapper.Map<IEnumerable<NoteDTO>>(quests);
@@ -64,7 +64,38 @@ namespace DM.BLL.Services
             };
             await context.Notes.AddAsync(note);
             await context.SaveChangesAsync();
-            return await GetItemByIdAsync(note.Id);
+            SetNotesToDo(note.QuestionId, note.Id);
+            return _mapper.Map<NoteDTO>(note); ;
+        }
+
+        private async Task SetNotesToDo(int questId,int noteId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var persons = await context.QuestionsToDo.Where(q => q.QuestionId == questId && q.IsDoing)
+                .Select(q=>q.PersonId)
+                .ToListAsync();
+            if (persons.Count > 0)
+            {
+                foreach (var p in persons)
+                {
+                    try
+                    {               
+                        NoteToDo ntD = new NoteToDo
+                        {
+                            PersonId = p,
+                            NoteId = noteId,
+                            IsDoing = false
+                        };
+                        await context.NotesToDo.AddAsync(ntD);
+                        await context.SaveChangesAsync();
+                    }
+                    catch
+                    {
+                        return;
+                    }
+                }
+            }
+
         }
         public async Task UpdateItemAsync(NoteDTO noteDTO)
         {

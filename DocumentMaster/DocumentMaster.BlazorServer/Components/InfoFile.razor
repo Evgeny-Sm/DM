@@ -18,7 +18,7 @@
 
 <AuthorizeView Roles="user">
     <Authorized>
-        <RadzenCard MouseEnter="@(args => ShowTooltip(args))" Style="margin-bottom:20px">
+        <RadzenCard  Style="margin-bottom:20px">
             <b>Разработал: @Developer   </b>
             <b>Проверил: @Controller   </b>
             <div>Дата создания: @DateToCreate</div>
@@ -60,7 +60,7 @@
 </AuthorizeView>
 <AuthorizeView Roles="admin,head">
     <Authorized>
-        <RadzenCard MouseEnter="@(args => ShowTooltip(args))" Style="margin-bottom:20px">
+        <RadzenCard  Style="margin-bottom:20px">
             <b>Разработал: @Developer   </b>
             <b>Проверил: @Controller   </b>
             <div>Дата создания: @DateToCreate</div>
@@ -251,7 +251,7 @@
         }
         navManager.NavigateTo($"/Questions/{existingQuest}");
     }
-    void ShowTooltip(ElementReference elementReference, TooltipOptions options = null)
+    /*void ShowTooltip(ElementReference elementReference, TooltipOptions options = null)
     { 
         tooltipService.Open(elementReference, genPhrase(), options); 
     }
@@ -277,5 +277,5 @@
             return t.Ef[k];
         }
         return "??!";
-    }
+    }*/
 }
