@@ -176,7 +176,7 @@ namespace DM.BLL.Services
             
         }
 
-        public bool IsQuestionDoing(int questId, int personId)
+        public async Task<bool> IsQuestionDoing(int questId, int personId)
         {
             using var context = _contextFactory.CreateDbContext();
             var item = context.QuestionsToDo.Where(c => c.QuestionId == questId && c.PersonId == personId).ToList();
@@ -218,7 +218,8 @@ namespace DM.BLL.Services
             {
                 Directory.CreateDirectory($"{path}/{subPath}");
             }
-            return await GetItemByIdAsync(question.Id);
+            var result = _mapper.Map<QuestionDTO>(question);
+            return result;
         }
         public async Task UpdateItemAsync(QuestionDTO questionDTO)
         {

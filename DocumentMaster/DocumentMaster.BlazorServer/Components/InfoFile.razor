@@ -213,7 +213,7 @@
 
     }
 
-    private async void OnChange(bool value)
+    private async Task OnChange(bool value)
     {
         if (SelectedFiles is not null && SelectedFiles.Count > 0)
         {
@@ -227,7 +227,8 @@
         {
             return;
         }
-        var existingQuest = await QuestionService.CheckItemByNameContainsStringAsync(SelectedFiles.FirstOrDefault().Name.Substring(0, 6));
+        var existingQuest = await QuestionService.CheckItemByNameContainsStringAsync(SelectedFiles.FirstOrDefault()
+        .Name.Substring(0, 6));
         if (existingQuest is null)
         {
             List<int> ids = new List<int>

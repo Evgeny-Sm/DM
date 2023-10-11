@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace DM.BLL.Services
 {
@@ -92,7 +93,8 @@ namespace DM.BLL.Services
             };
             await context.Controls.AddAsync(control);
             await context.SaveChangesAsync();
-            return await GetControlByIdAsync(control.Id);
+            var result = _mapper.Map<ControlDTO>(control);
+            return result;
         }
         public async Task UpdateControlAsync(ControlDTO controlDTO)
         {

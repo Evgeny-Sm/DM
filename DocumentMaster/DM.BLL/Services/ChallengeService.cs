@@ -61,7 +61,8 @@ namespace DM.BLL.Services
             };
             await context.Challenges.AddAsync(chlg);
             await context.SaveChangesAsync();
-            return await GetItemByIdAsync(chlg.Id);
+            var result = _mapper.Map<ChallengeDTO>(chlg);
+            return result;
         }
          
         public async Task UpdateItemAsync(ChallengeDTO challengeDTO)
