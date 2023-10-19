@@ -43,8 +43,8 @@ namespace DM.BLL.Services
         public async Task<IEnumerable<NoteDTO>> GetItemsByQuestionIdForUserIdAsync(int questId, int userId)
         {
             using var context = _contextFactory.CreateDbContext();
-            var quests = await context.Notes.Where(n=>n.QuestionId==questId)
-                .Include(p => p.Persons).Include(nt=>nt.NoteToDos.Where(ntd=>ntd.PersonId==userId))
+            var quests = await context.Notes.Where(n => n.QuestionId == questId)
+                .Include(p => p.Persons).Include(nt => nt.NoteToDos.Where(ntd => ntd.PersonId == userId))
                 .ToListAsync();
             var result = _mapper.Map<IEnumerable<NoteDTO>>(quests);
             return result;
@@ -57,10 +57,10 @@ namespace DM.BLL.Services
                 UserName = noteDTO.UserName,
                 Content = noteDTO.Content,
                 DateTime = noteDTO.DateTime,
-                QuestionId=noteDTO.QuestionId,
+                QuestionId = noteDTO.QuestionId,
                 HasFile = noteDTO.HasFile,
                 Path = noteDTO.Path,
-                Persons = await context.Persons.Where(p => noteDTO.PersonIds.Contains(p.Id)).ToListAsync(),               
+                Persons = await context.Persons.Where(p => noteDTO.PersonIds.Contains(p.Id)).ToListAsync(),
             };
             await context.Notes.AddAsync(note);
             await context.SaveChangesAsync();
@@ -68,31 +68,33 @@ namespace DM.BLL.Services
             return _mapper.Map<NoteDTO>(note); ;
         }
 
-        private async Task SetNotesToDo(int questId,int noteId)
+        private async Task SetNotesToDo(int questId, int noteId)
         {
             using var context = _contextFactory.CreateDbContext();
             var persons = await context.QuestionsToDo.Where(q => q.QuestionId == questId && q.IsDoing)
-                .Select(q=>q.PersonId)
-                .ToListAsync();
-            if (persons.Count > 0)
+                .Select(q => q.PersonId)
+                .ToArrayAsync();
+            if (persons.Length > 0)
             {
-                foreach (var p in persons)
+                try
                 {
-                    try
-                    {               
+                    NoteToDo[] notes = new NoteToDo[persons.Length];
+                    for (int i = 0; i < persons.Length; i++)
+                    {
                         NoteToDo ntD = new NoteToDo
                         {
-                            PersonId = p,
+                            PersonId = persons[i],
                             NoteId = noteId,
                             IsDoing = false
                         };
-                        await context.NotesToDo.AddAsync(ntD);
-                        await context.SaveChangesAsync();
+                        notes[i] = ntD;
                     }
-                    catch
-                    {
-                        return;
-                    }
+                    await context.NotesToDo.AddRangeAsync(notes);
+                    await context.SaveChangesAsync();
+                }
+                catch
+                {
+                    return;
                 }
             }
 
@@ -101,7 +103,7 @@ namespace DM.BLL.Services
         {
             using var context = _contextFactory.CreateDbContext();
 
-            var element =await context.Notes.Where(p => p.Id == noteDTO.Id).Include(a => a.Persons)
+            var element = await context.Notes.Where(p => p.Id == noteDTO.Id).Include(a => a.Persons)
                 .SingleAsync();
             if (element is null)
             {
@@ -114,7 +116,30 @@ namespace DM.BLL.Services
             await context.SaveChangesAsync();
 
         }
-        public async Task UpdateNoteStateAsync(bool currstate,int noteid, int userid)
+        public async Task UpdateItemsArrayAsync(NoteDTO[] notesDTO)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            Note[] notes=new Note[notesDTO.Length];
+            for  (int i=0; i<notesDTO.Length; i++)
+            {
+
+                var element = await context.Notes.Where(p => p.Id == notesDTO[i].Id).Include(a => a.Persons)
+                    .SingleAsync();
+                if (element is null)
+                {
+                    element = new Note();
+                    throw new ArgumentNullException($"Unknown {element.GetType().Name}");
+                }
+                element.Persons = await context.Persons.Where(p => notesDTO[i].PersonIds.Contains(p.Id)).ToListAsync();
+                notes[i]=element;
+            }
+
+            context.Notes.UpdateRange(notes);
+
+            await context.SaveChangesAsync();
+
+        }
+        public async Task UpdateNoteStateAsync(bool currstate, int noteid, int userid)
         {
             try
             {
@@ -131,6 +156,7 @@ namespace DM.BLL.Services
             }
 
         }
+
 
         public async Task AddToDoNoteAsync(int noteId, int personId)
         {

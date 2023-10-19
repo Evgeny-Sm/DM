@@ -69,7 +69,8 @@ namespace DM.BLL.Services
                 Directory.CreateDirectory($"{path}/{subPath}");
             }
 
-            return await GetProjectByIdAsync(element.Id);
+            var result = _mapper.Map<ProjectDTO>(element);
+            return result;
         }
 
         public async Task UpdateProjectAsync(ProjectDTO unit)

@@ -71,7 +71,8 @@ namespace DM.BLL.Services
             };
             await context.Persons.AddAsync(person);
             await context.SaveChangesAsync();
-            return await GetPersonByIdAsync(person.Id);
+            var result = _mapper.Map<PersonDTO>(person);
+            return result;
         }
         public async Task UpdatePersonAsync(PersonDTO personDTO)
         {

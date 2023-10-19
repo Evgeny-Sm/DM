@@ -60,11 +60,5 @@ namespace DM.BLL.Services
                 await context.SaveChangesAsync();
             }
         }
-
-
-
-
-
-
     }
 }

@@ -114,7 +114,8 @@ namespace DM.BLL.Services
             };
             await context.FileUnits.AddAsync(element);
             await context.SaveChangesAsync();
-            return await GetItemByIdAsync(element.Id);
+            var result = _mapper.Map<FileDTO>(element);
+            return result;
         }
 
         public async Task<int> UpdateFileAsync(FileDTO fileDTO)

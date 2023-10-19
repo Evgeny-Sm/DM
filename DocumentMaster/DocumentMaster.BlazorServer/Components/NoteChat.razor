@@ -206,7 +206,8 @@
     protected override async Task OnParametersSetAsync()
     {
         var messages = await NoteService.GetItemsByQuestionIdForUserIdAsync(CurrentQuestion.Id, CurrentPerson.Id);
-        foreach (var mes in messages)
+        NoteDTO[] notes = messages.ToArray();
+        foreach (var mes in notes)
         {
             mes.IsCurrentUser = mes.UserName == CurrentPerson.UserName;
             mes.PersonIds.Add(CurrentPerson.Id);
@@ -214,9 +215,10 @@
             if (mes.HasFile)
             {
                 mes.Path = $"/{configuration.GetRequiredSection("PathToQuestPictures").Value}/{CurrentQuestion.Id.ToString()}/{mes.Path}";
-            }
-            await NoteService.UpdateItemAsync(mes);
+            }          
         }
+        NoteService.UpdateItemsArrayAsync(notes);
+
         userMessages = messages.ToList();
     }
 

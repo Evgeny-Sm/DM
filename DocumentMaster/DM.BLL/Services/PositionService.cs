@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace DM.BLL.Services
 {
@@ -48,7 +49,8 @@ namespace DM.BLL.Services
             };
             await context.Positions.AddAsync(position);
             await context.SaveChangesAsync();
-            return await GetPositiontByIdAsync(position.Id);
+            var result = _mapper.Map<PositionDTO>(position);
+            return result;
         }
 
         public async Task UpdateAsync(PositionDTO positionDTO)

@@ -50,7 +50,8 @@ namespace DM.BLL.Services
             };
             await context.Sections.AddAsync(section);
             await context.SaveChangesAsync();
-            return await GetItemByIdAsync(section.Id);
+            var result = _mapper.Map<SectionDTO>(section);
+            return result;
         }
 
         public async Task UpdateItemAsync(SectionDTO sectionDTO)

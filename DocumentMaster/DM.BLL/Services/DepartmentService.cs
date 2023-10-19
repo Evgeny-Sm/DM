@@ -55,7 +55,8 @@ namespace DM.BLL.Services
             };
             await context.Departments.AddAsync(department);
             await context.SaveChangesAsync();
-            return await GetDepartmentByIdAsync(department.Id);
+            var result = _mapper.Map<DepartmentDTO>(department);
+            return result;
 
         }
 

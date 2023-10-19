@@ -77,7 +77,8 @@ namespace DM.BLL.Services
             };
             await context.Releases.AddAsync(release);
             await context.SaveChangesAsync();
-            return await GetItemByIdAsync(release.Id);
+            var result = _mapper.Map<ReleaseDTO>(release);
+            return result;
         }
 
         public async Task UpdateItemAsync(ReleaseDTO relDTO)
