@@ -24,7 +24,7 @@ namespace DM.BLL.Services
             _configuration = configuration;
         }
 
-        public async Task<IEnumerable<QuestionDTO>> GetAllAsync()
+        public async Task<IEnumerable<QuestionDTO>> GetAllAsync(int persId)
         {
             using var context = _contextFactory.CreateDbContext();
             var quests = await context.Questions.Where(p => p.IsDeleted == false).Include(p => p.Persons)
@@ -32,10 +32,31 @@ namespace DM.BLL.Services
                 .Include(f => f.FileUnits)
                 .Include(p => p.Project).ToListAsync();
             var result = _mapper.Map<IEnumerable<QuestionDTO>>(quests);
+            foreach (var question in result)
+            {
+                var countUnread = quests.Where(q=>q.Id==question.Id).Single()
+                    .Notes.Select(n => n.Persons.Select(p => p.Id)).Where(t => !t.Contains(persId)).Count();
+                question.UnreadedCount= countUnread;
+
+                var item = context.QuestionsToDo
+                    .Where(c => c.QuestionId == question.Id && c.PersonId == persId && c.IsDoing).Count();
+                if (item > 0)
+                {
+                    var notesToDo = await context.NotesToDo.Include(n => n.Note)
+                        .Where(n => n.Note != null && n.Note.QuestionId == question.Id && n.PersonId == persId && !n.IsDoing)
+                        .ToListAsync();
+                    question.ToDoCount = notesToDo.Count;
+                }
+                else
+                {
+                    question.ToDoCount = 0;
+                }
+            }
+
             return result;
         }
 
-        public async Task<QuestionDTO> GetItemByIdAsync(int id)
+        public async Task<QuestionDTO> GetItemByIdAsync(int id, int persId)
         {
             using var context = _contextFactory.CreateDbContext();
             var checkItem = await context.Questions.FindAsync(id);
@@ -50,6 +71,25 @@ namespace DM.BLL.Services
                 .Include(p => p.Project).SingleAsync();
 
             var result = _mapper.Map<QuestionDTO>(item);
+
+            var countUnread = item.Notes.Select(n => n.Persons.Select(p => p.Id)).Where(t => !t.Contains(persId)).Count();
+            result.UnreadedCount = countUnread;
+
+            var QuestToDo = context.QuestionsToDo
+                    .Where(c => c.QuestionId == item.Id && c.PersonId == persId && c.IsDoing).Count();
+            if (QuestToDo > 0)
+            {
+                var notesToDo = await context.NotesToDo.Include(n => n.Note)
+                    .Where(n => n.Note != null && n.Note.QuestionId == item.Id && n.PersonId == persId && !n.IsDoing)
+                    .ToListAsync();
+                result.ToDoCount = notesToDo.Count;
+            }
+            else
+            {
+                result.ToDoCount = 0;
+            }
+
+
             return result;
         }
         public async Task<string> CheckItemByNameContainsStringAsync(string fileNumber)
@@ -146,16 +186,11 @@ namespace DM.BLL.Services
                 await context.SaveChangesAsync();
             }
 
-            await CreateNoteToDOsAsync(questId, personId);
-
-        }
-
-        private async Task CreateNoteToDOsAsync(int questId, int personId)
-        {
-            using var context = _contextFactory.CreateDbContext();
+            //
             var notes = await context.Notes.Where(n => n.QuestionId == questId).Include(t => t.NoteToDos).ToListAsync();
             if (notes.Count != 0)
             {
+                List<NoteToDo> notesToDo = new List<NoteToDo>();
                 foreach (var note in notes)
                 {
                     if (note.NoteToDos.Where(n => n.PersonId == personId).ToList().Count == 0)
@@ -166,11 +201,37 @@ namespace DM.BLL.Services
                             NoteId = note.Id,
                             IsDoing = false
                         };
-                        await context.NotesToDo.AddAsync(ntD);
-                        await context.SaveChangesAsync();
+                        notesToDo.Add(ntD);
                     }
-
                 }
+                await context.NotesToDo.AddRangeAsync(notesToDo);
+                await context.SaveChangesAsync();
+            }
+
+        }
+
+        private async Task CreateNoteToDOsAsync(int questId, int personId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var notes = await context.Notes.Where(n => n.QuestionId == questId).Include(t => t.NoteToDos).ToListAsync();
+            if (notes.Count != 0)
+            {
+                List<NoteToDo> notesToDo = new List<NoteToDo>();
+                foreach (var note in notes)
+                {
+                    if (note.NoteToDos.Where(n => n.PersonId == personId).ToList().Count == 0)
+                    {
+                        NoteToDo ntD = new NoteToDo
+                        {
+                            PersonId = personId,
+                            NoteId = note.Id,
+                            IsDoing = false
+                        };
+                        notesToDo.Add(ntD);
+                    }
+                }
+                await context.NotesToDo.AddRangeAsync(notesToDo);
+                await context.SaveChangesAsync();
 
             }
             

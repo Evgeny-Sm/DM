@@ -108,11 +108,11 @@
 
         if (id is null)
         {
-            QuestionDTOs = await QuestionService.GetAllAsync();         
+            QuestionDTOs = await QuestionService.GetAllAsync(CurrentPerson.Id);         
         }
         else
         {
-            CurrQuest =  await QuestionService.GetItemByIdAsync(int.Parse(id));
+            CurrQuest =  await QuestionService.GetItemByIdAsync(int.Parse(id), CurrentPerson.Id);
             if (CurrQuest is not null)
             {
                 QuestionDTOs = QuestionDTOs.Append(CurrQuest);
@@ -123,13 +123,7 @@
 
         if (QuestionDTOs is not null)
         {
-            foreach (var q in QuestionDTOs)
-            {
-                var i = await QuestionService.GetCountUnreaded(CurrentPerson.Id, q.Id);
-                var k = await QuestionService.GetCountToDo(CurrentPerson.Id, q.Id);
-                q.UnreadedCount = i;
-                q.ToDoCount = k;
-            }
+
 
             QuestionToView = QuestionDTOs.OrderByDescending(q => q.Id);
 

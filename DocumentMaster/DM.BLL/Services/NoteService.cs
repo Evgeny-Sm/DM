@@ -73,26 +73,28 @@ namespace DM.BLL.Services
             using var context = _contextFactory.CreateDbContext();
             var persons = await context.QuestionsToDo.Where(q => q.QuestionId == questId && q.IsDoing)
                 .Select(q => q.PersonId)
-                .ToListAsync();
-            if (persons.Count > 0)
+                .ToArrayAsync();
+            if (persons.Length > 0)
             {
-                foreach (var p in persons)
+                try
                 {
-                    try
+                    NoteToDo[] notes = new NoteToDo[persons.Length];
+                    for (int i = 0; i < persons.Length; i++)
                     {
                         NoteToDo ntD = new NoteToDo
                         {
-                            PersonId = p,
+                            PersonId = persons[i],
                             NoteId = noteId,
                             IsDoing = false
                         };
-                        await context.NotesToDo.AddAsync(ntD);
-                        await context.SaveChangesAsync();
+                        notes[i] = ntD;
                     }
-                    catch
-                    {
-                        return;
-                    }
+                    await context.NotesToDo.AddRangeAsync(notes);
+                    await context.SaveChangesAsync();
+                }
+                catch
+                {
+                    return;
                 }
             }
 
