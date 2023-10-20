@@ -26,7 +26,8 @@ namespace DocumentMaster.BlazorServer.Authentication
                 var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
             {
                 new Claim(ClaimTypes.Name,userSession.UserName),
-                new Claim(ClaimTypes.Role,userSession.Role)
+                new Claim(ClaimTypes.Role,userSession.Role),
+                new Claim(ClaimTypes.NameIdentifier,userSession.PersonId.ToString())
             }, "CustomAuth"
                     ));
                 return await Task.FromResult(new AuthenticationState(claimsPrincipal));
@@ -45,7 +46,8 @@ namespace DocumentMaster.BlazorServer.Authentication
                 claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
             {
                 new Claim(ClaimTypes.Name,userSession.UserName),
-                new Claim(ClaimTypes.Role,userSession.Role)
+                new Claim(ClaimTypes.Role,userSession.Role),
+                new Claim(ClaimTypes.NameIdentifier,userSession.PersonId.ToString())
             }));
             }
             else

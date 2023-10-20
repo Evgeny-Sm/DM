@@ -83,14 +83,14 @@
         collapseNavMenu = !collapseNavMenu;
     }
 
-    protected override async void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         var authState = await authenticationState;
         if (authState.User.Identities.FirstOrDefault().IsAuthenticated)
         {
             CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
 
-            UnreadedCount = await QuestionService.GetCountUnreaded(CurrentPerson.Id);
+            UnreadedCount =await QuestionService.GetCountUnreaded(CurrentPerson.Id);
 
             StateHasChanged();
         }

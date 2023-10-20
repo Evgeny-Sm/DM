@@ -38,8 +38,6 @@
 
 
 @code {
-    [CascadingParameter]
-    private Task<AuthenticationState> authenticationState { get; set; }
 
     [Parameter]
     public IEnumerable<FileUnit>? files { get; set; }
@@ -48,7 +46,7 @@
     public EventCallback<IList<FileUnit>> FilesGetCallBack { get; set; }
 
 
-    private PersonDTO CurrentPerson { get; set; }
+
 
     private IList<PersonDTO> Persons { get; set; }
 
@@ -58,9 +56,6 @@
         var p = await PersonService.GetPersonsAsync();
         Persons = p.ToList();
 
-        var authState = await authenticationState;
-
-        CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
     }
 
     protected override async Task OnParametersSetAsync()
