@@ -21,7 +21,7 @@
     private Task<AuthenticationState> authenticationState { get; set; }
 
 
-    private PersonDTO CurrentPerson { get; set; }
+    private PersonDTO CurrentPerson { get; set; } = new();
 
     RadzenScheduler<ChallengeDTO> scheduler;
 
@@ -32,13 +32,17 @@
     protected override async Task OnInitializedAsync()
     {
         var authState = await authenticationState;
-        CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+
+        CurrentPerson.Id = int.Parse(authState.User.Claims
+    .Where(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+    .FirstOrDefault().Value);
+
         if (CurrentPerson is not null)
         {
             Challenges = await ChallengeService.GetAllFofUserAsync(CurrentPerson.Id);
         }
         else
-        { 
+        {
             Challenges = await ChallengeService.GetAllAsync();
         }
     }
@@ -65,11 +69,11 @@
 
         if (data != null)
         {
-            data.PersonCreatorId=CurrentPerson.Id;
-            
+            data.PersonCreatorId = CurrentPerson.Id;
+
             data.PersonIds = data.PersonIds.Distinct().ToList();
-            var res=await ChallengeService.AddChallengeAsync(data);
-            Challenges=Challenges.Append(res);
+            var res = await ChallengeService.AddChallengeAsync(data);
+            Challenges = Challenges.Append(res);
             // Either call the Reload method or reassign the Data property of the Scheduler
             await scheduler.Reload();
 
@@ -88,8 +92,8 @@
             {
                 Challenges = Challenges.Where(c => c.Id != data.Id);
             }
-            if (!data.PersonIds.Contains(CurrentPerson.Id) && data.PersonCreatorId!=CurrentPerson.Id)
-            { 
+            if (!data.PersonIds.Contains(CurrentPerson.Id) && data.PersonCreatorId != CurrentPerson.Id)
+            {
                 Challenges = Challenges.Where(c => c.Id != data.Id);
             }
 
@@ -107,7 +111,7 @@
             args.Attributes["style"] = "background: red";
         }
         if (args.Data.PersonCreatorId == CurrentPerson.Id)
-        { 
+        {
             args.Attributes["style"] = "background: rgba(38,174,212,1)";
         }
     }
