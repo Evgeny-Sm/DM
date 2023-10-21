@@ -30,8 +30,7 @@
             <AuthorizeView>
                 <Authorized>
                     <div class="col">
-                        <span style="color:darkslateblue">@CurrentPerson.FirstName @CurrentPerson.LastName</span>
-                        <a @onclick="RedirectToCheck" href="javascript:void(0)"> На проверку: @CountToCheck</a>
+                        <span style="color:darkslateblue">@CurrentPerson.FirstName @CurrentPerson.LastName</span>                        
                     </div>
                     <a @onclick="Logout" href="javascript:void(0)">Logout</a>
                     <a @onclick="RedirectToUserInfo" href="javascript:void(0)">Settings</a>
@@ -53,18 +52,14 @@
 
     private PersonDTO CurrentPerson { get; set; } = new PersonDTO();
 
-    private int CountToCheck { get; set; }
 
-    protected override async void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         var authState = await authenticationState;
         if (authState.User.Identities.FirstOrDefault().IsAuthenticated)
         {
             CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
 
-            CountToCheck = await ControlService.GetCountControlsByIdAsync(CurrentPerson.Id);
-
-            StateHasChanged();
         }
 
     }
