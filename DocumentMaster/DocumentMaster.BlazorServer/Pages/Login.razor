@@ -42,14 +42,18 @@
 {
     private class Model
     {
-        public string UserName { get; set; }
-        public string Password { get; set; }
+        public string UserName { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
     }
     private Model model = new Model();
 
     private async Task Authenticate()
     {
-
+        if (model.UserName == string.Empty || model.Password == string.Empty)
+        {
+            await js.InvokeVoidAsync("alert", "Invalid User Name or Password");
+            return;
+        }
         var userAccount =await accountService.GetByUserName(model.UserName);
         var h = SecureData.GetHashData(model.Password);
 

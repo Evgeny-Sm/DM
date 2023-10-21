@@ -82,7 +82,7 @@
     [CascadingParameter]
     private Task<AuthenticationState> authenticationState { get; set; }
 
-    private PersonDTO CurrentPerson { get; set; }
+    private PersonDTO CurrentPerson { get; set; } = new();
 
     [Parameter]
     public ChallengeDTO Appointment { get; set; }
@@ -102,7 +102,9 @@
     protected override async Task OnInitializedAsync()
     {
         var authState = await authenticationState;
-        CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+        CurrentPerson.Id = int.Parse(authState.User.Claims
+            .Where(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+            .FirstOrDefault().Value);
         Persons = await PersonService.GetPersonsAsync();      
         StateHasChanged();
     }

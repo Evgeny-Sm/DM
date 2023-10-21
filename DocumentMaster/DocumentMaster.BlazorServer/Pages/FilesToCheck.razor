@@ -52,15 +52,16 @@
 
     private string Descripton { get; set; } = string.Empty;
 
-    private PersonDTO CurrentPerson { get; set; }
+    private PersonDTO CurrentPerson { get; set; } = new PersonDTO();
 
     protected override async Task OnInitializedAsync()
     {
         
         var authState = await authenticationState;
 
-        CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
-       
+        CurrentPerson.Id = int.Parse(authState.User.Claims
+            .Where(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+            .FirstOrDefault().Value);
 
         var controls =await ControlService.GetControlsToCheckAsync(CurrentPerson.Id);
 

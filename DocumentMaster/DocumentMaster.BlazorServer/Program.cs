@@ -52,6 +52,7 @@ builder.Services.AddScoped<QuestionService>();
 builder.Services.AddScoped<NoteService>();
 builder.Services.AddScoped<StatService>();
 builder.Services.AddScoped<ReleaseService>();
+builder.Services.AddScoped<NotifyService>();
 
 builder.Services.AddResponseCompression(opts=>{
     opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
