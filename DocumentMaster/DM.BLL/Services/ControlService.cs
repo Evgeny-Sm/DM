@@ -117,6 +117,33 @@ namespace DM.BLL.Services
 
         }
 
+        public async Task CompleteControlAsync(int fileId, int personId, ResultCheck resultCheck)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            try
+            {
+                Control control = await context.Controls
+                    .Where(c => c.FileUnitId == fileId && c.PersonId == personId && c.IsInAction == true)
+                    .FirstOrDefaultAsync();
+                control.IsConfirmed = resultCheck.IsConfirmed;
+                control.IsInAction = false;
+                control.Description = resultCheck.Description;
+                control.TimeForChecking += double.Parse(resultCheck.AdditionalTime);
+                control.DateTime = DateTime.Now;
+                context.Controls.Update(control);
+
+                var fileUnit = context.FileUnits.Find(fileId);
+                fileUnit.Status = resultCheck.IsConfirmed ? StatusFile.Archive : StatusFile.Work;
+                context.FileUnits.Update(fileUnit);
+                context.SaveChanges();
+            }
+            catch
+            {
+                return;
+            }
+
+        }
+
         public async Task RemoveControlAsync(int id)
         {
             using var context = _contextFactory.CreateDbContext();

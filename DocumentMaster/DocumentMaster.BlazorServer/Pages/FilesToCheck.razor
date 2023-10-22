@@ -48,31 +48,25 @@
 
     public IList<FileUnit>? files { get; set; }
 
-    private double AddTime { get; set; }
-
-    private string Descripton { get; set; } = string.Empty;
-
     private PersonDTO CurrentPerson { get; set; } = new PersonDTO();
 
     protected override async Task OnInitializedAsync()
     {
-        
+
         var authState = await authenticationState;
 
         CurrentPerson.Id = int.Parse(authState.User.Claims
             .Where(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
             .FirstOrDefault().Value);
 
-        var controls =await ControlService.GetControlsToCheckAsync(CurrentPerson.Id);
-
-        var fileNumbers = controls.Select(a => a.FileUnitId);
-
         using var context = contextFactory.CreateDbContext();
-        files = context.FileUnits.Where(f => f.Status == StatusFile.Checking && fileNumbers.Contains(f.Id)).Include(d => d.Department).Include(p => p.Person).
-        Include(p => p.Project).Include(s => s.Section).Include(c=>c.Controls)
-        .ToList();
-        
-        StateHasChanged();
+        files = await context.Controls
+        .Where(c => c.PersonId == CurrentPerson.Id && c.IsConfirmed == false && c.IsInAction == true)
+        .Include(f => f.FileUnit).ThenInclude(t => t.Project).Include(f => f.FileUnit).ThenInclude(d => d.Department)
+        .Include(f => f.FileUnit).ThenInclude(t => t.Person).Include(f => f.FileUnit).ThenInclude(d => d.Section)
+        .Include(f => f.FileUnit).ThenInclude(d => d.Controls)
+        .Select(f => f.FileUnit)
+        .ToListAsync();
 
     }
 
@@ -100,26 +94,8 @@
         {
             return;
         }
-
-        var c = await ControlService.GetActualControlForPersonAsync(SelectedFiles.FirstOrDefault().Id,CurrentPerson.Id);
-        c.IsConfirmed = res.IsConfirmed;
-        c.IsInAction = false;
-        c.TimeForChecking += double.Parse(res.AdditionalTime);
-        c.Description = res.Description;
-        c.DateTime = DateTime.Now;
-        await ControlService.UpdateControlAsync(c);
-
-        var f = await FileService.GetItemByIdAsync(SelectedFiles.FirstOrDefault().Id);
-        if (res.IsConfirmed)
-        {
-            f.Status = StatusFile.Archive;
-        }
-        else
-        {
-            f.Status = StatusFile.Work;
-        }
-        await FileService.UpdateFileAsync(f);
-
+        ControlService.CompleteControlAsync(SelectedFiles.FirstOrDefault().Id, CurrentPerson.Id, res);
+        
         files.Remove(SelectedFiles.First());
 
         SelectedFiles = new List<FileUnit>();
@@ -129,8 +105,6 @@
             NavigatetoToFiles();
         }
         
-        StateHasChanged();
-
     }
 
     private void NavigatetoToFiles()
