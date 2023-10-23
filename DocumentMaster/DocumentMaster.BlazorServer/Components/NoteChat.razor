@@ -24,53 +24,53 @@
             {
                 <p style="color:gray"> No messages </p>
             }
-            @if (CurrentQuestion.IsDoing==false)
+            @if (CurrentQuestion.IsDoing == false)
             {
-            @foreach (var userMessage in userMessages)
-            {
-                @if (userMessage.HasFile)
+                @foreach (var userMessage in userMessages)
                 {
-                    <RadzenCard Class="rz-background-color-primary-light rz-shadow-0 border-0 rz-p-8" Style="width: 250px" ContextMenu=@(args => ShowContextMenuWithItems(args, userMessage))>
-                        <div class="card shadow @(userMessage.IsCurrentUser? "color-green mr-5":"color-blue mr-5")" style="width: 12rem;font-size:small">
-                            <div class="card-header justify-content-end">
-                                @(userMessage.IsCurrentUser ? "Я" : @userMessage.UserName)
-                            </div>
-                            <div>
-                                <RadzenImage Path="@userMessage.Path" Style="width:500px; height:auto" />
-                            </div>
-                            <div class="card-footer">
-                                <span class="small justify-content-end">@userMessage.DateTime.ToString("HH:mm| MMM:dd")</span>
-                            </div>
-                        </div>
-                    </RadzenCard>
-                    <br />
-
-                }
-                else
-                {
-
-                    <div class="row mb-3 d-flex @(userMessage.IsCurrentUser? "justify-content-end":"")">
+                    @if (userMessage.HasFile)
+                    {
                         <RadzenCard Class="rz-background-color-primary-light rz-shadow-0 border-0 rz-p-8" Style="width: 250px" ContextMenu=@(args => ShowContextMenuWithItems(args, userMessage))>
-                            <div class="card shadow @(userMessage.IsCurrentUser? "color-green mr-5":"color-cornflowerblue mr-5")" style="width: 12rem;font-size:small">
-                                <div class="card-header">
+                            <div class="card shadow @(userMessage.IsCurrentUser? "color-green mr-5":"color-blue mr-5")" style="width: 12rem;font-size:small">
+                                <div class="card-header justify-content-end">
                                     @(userMessage.IsCurrentUser ? "Я" : @userMessage.UserName)
                                 </div>
-                                <ul class="list-group">
-                                    <li class="list-group-item @(userMessage.IsCurrentUser? "color-green":"color-cornflowerblue")">
-                                        @userMessage.Content
-                                    </li>
-                                </ul>
+                                <div>
+                                    <RadzenImage Path="@userMessage.Path" Style="width:500px; height:auto" />
+                                </div>
                                 <div class="card-footer">
                                     <span class="small justify-content-end">@userMessage.DateTime.ToString("HH:mm| MMM:dd")</span>
                                 </div>
                             </div>
                         </RadzenCard>
-                    </div>
-                    <br />
+                        <br />
+
+                    }
+                    else
+                    {
+
+                        <div class="row mb-3 d-flex @(userMessage.IsCurrentUser? "justify-content-end":"")">
+                            <RadzenCard Class="rz-background-color-primary-light rz-shadow-0 border-0 rz-p-8" Style="width: 250px" ContextMenu=@(args => ShowContextMenuWithItems(args, userMessage))>
+                                <div class="card shadow @(userMessage.IsCurrentUser? "color-green mr-5":"color-cornflowerblue mr-5")" style="width: 12rem;font-size:small">
+                                    <div class="card-header">
+                                        @(userMessage.IsCurrentUser ? "Я" : @userMessage.UserName)
+                                    </div>
+                                    <ul class="list-group">
+                                        <li class="list-group-item @(userMessage.IsCurrentUser? "color-green":"color-cornflowerblue")">
+                                            @userMessage.Content
+                                        </li>
+                                    </ul>
+                                    <div class="card-footer">
+                                        <span class="small justify-content-end">@userMessage.DateTime.ToString("HH:mm| MMM:dd")</span>
+                                    </div>
+                                </div>
+                            </RadzenCard>
+                        </div>
+                        <br />
+
+                    }
 
                 }
-
-            }
             }
             else
             {
@@ -91,7 +91,7 @@
                                 </div>
                             </div>
                             <div class="col-4 ">
-                                <RadzenCheckBox @bind-Value=@userMessage.IsDone Name="CheckBox1" TValue="bool" Change=@(args => OnChangeCheckBox(args, userMessage.Id)) />                             
+                                <RadzenCheckBox @bind-Value=@userMessage.IsDone Name="CheckBox1" TValue="bool" Change=@(args => OnChangeCheckBox(args, userMessage.Id)) />
                             </div>
                         </RadzenCard>
                         <br />
@@ -165,14 +165,23 @@
         DialogService.OnClose += Close;
 
         var authState = await authenticationState;
-        CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+
+        CurrentPerson.UserName = authState.User.Claims
+       .Where(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")
+       .FirstOrDefault().Value;
+
+        CurrentPerson.Id = int.Parse(authState.User.Claims
+     .Where(c => c.Type == "PersonId")
+     .FirstOrDefault().Value);
+
         hubConnection = new HubConnectionBuilder().WithUrl(Navigation.ToAbsoluteUri("/notehub"))
        .Build();
-        hubConnection.On<int, string, string, string, int>("ReceiveNote", async (questId, user, message, fileName, noteId) =>
+        hubConnection.On
+    <int, string, string, string, int>("ReceiveNote", async (questId, user, message, fileName, noteId) =>
      {
          if (questId == CurrentQuestion.Id)
          {
-             var inputMes=new NoteDTO
+             var inputMes = new NoteDTO
                  {
                      Id = noteId,
                      UserName = user,
@@ -181,7 +190,7 @@
                      DateTime = DateTime.Now,
                      Path = $"/{configuration.GetRequiredSection("PathToQuestPictures").Value}/{questId.ToString()}/{fileName}",
                      HasFile = !string.IsNullOrEmpty(fileName),
-                     IsDone=false
+                     IsDone = false
                  };
              userMessages.Add(inputMes);
              InvokeAsync(StateHasChanged);
@@ -189,7 +198,7 @@
 
      });
 
-        hubConnection.On<int,int>("RemoveNote", (questId,noteId) =>
+        hubConnection.On<int, int>("RemoveNote", (questId, noteId) =>
         {
             if (questId == CurrentQuestion.Id)
             {
@@ -215,7 +224,7 @@
             if (mes.HasFile)
             {
                 mes.Path = $"/{configuration.GetRequiredSection("PathToQuestPictures").Value}/{CurrentQuestion.Id.ToString()}/{mes.Path}";
-            }          
+            }
         }
         NoteService.UpdateItemsArrayAsync(notes);
 
@@ -251,7 +260,7 @@
     private async Task OnChangeCheckBox(bool args, int noteId)
     {
 
-         await NoteService.UpdateNoteStateAsync(args,noteId,CurrentPerson.Id);
+        await NoteService.UpdateNoteStateAsync(args, noteId, CurrentPerson.Id);
 
     }
 
@@ -263,20 +272,20 @@
             ContextMenuService.Open(args,
                 new List<ContextMenuItem> {
                 new ContextMenuItem(){ Text = "Remove", Value = new ContextMenuItemDTO(1,currentNote.Id) },
-                     }, OnMenuItemClick);
+                                 }, OnMenuItemClick);
 
         if (currentNote.IsCurrentUser && currentNote.HasFile)
             ContextMenuService.Open(args,
                 new List<ContextMenuItem> {
                 new ContextMenuItem(){ Text = "Open", Value = new ContextMenuItemDTO(2,currentNote.Id) },
                 new ContextMenuItem(){ Text = "Remove", Value = new ContextMenuItemDTO(1,currentNote.Id) },
-                     }, OnMenuItemClick);
+                                 }, OnMenuItemClick);
 
         if (!currentNote.IsCurrentUser && currentNote.HasFile)
             ContextMenuService.Open(args,
                 new List<ContextMenuItem> {
-                new ContextMenuItem(){ Text = "Open", Value = new ContextMenuItemDTO(2,currentNote.Id) },               
-                         }, OnMenuItemClick);
+                new ContextMenuItem(){ Text = "Open", Value = new ContextMenuItemDTO(2,currentNote.Id) },
+                                     }, OnMenuItemClick);
     }
 
     void OnMenuItemClick(MenuItemEventArgs args)
@@ -286,7 +295,7 @@
         {
             hubConnection.SendAsync("RemoveMessage", menuItem.noteId);
             ContextMenuService.Close();
-            
+
         }
 
         if (menuItem.menuNumber.Equals(2))

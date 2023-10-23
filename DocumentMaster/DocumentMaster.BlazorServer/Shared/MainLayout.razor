@@ -4,6 +4,7 @@
 @inject PersonService PersonService
 @inject ControlService ControlService
 
+
 @using DM.BLL.Services
 @using DocumentMaster.BlazorServer.Authentication
 @using Models
@@ -49,7 +50,6 @@
 {
     [CascadingParameter]
     private Task<AuthenticationState> authenticationState { get; set; }
-
     private PersonDTO CurrentPerson { get; set; } = new PersonDTO();
 
 
@@ -58,10 +58,14 @@
         var authState = await authenticationState;
         if (authState.User.Identities.FirstOrDefault().IsAuthenticated)
         {
-            CurrentPerson = await PersonService.GetPersonByNameAsync(authState.User.Identity.Name);
+            CurrentPerson.FirstName = authState.User.Claims
+            .Where(c => c.Type == "FirstName")
+            .FirstOrDefault().Value;
 
+            CurrentPerson.LastName = authState.User.Claims
+            .Where(c => c.Type == "LastName")
+            .FirstOrDefault().Value;
         }
-
     }
 
     private async Task Logout()

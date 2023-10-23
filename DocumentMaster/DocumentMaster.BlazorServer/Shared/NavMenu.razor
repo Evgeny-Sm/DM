@@ -90,7 +90,7 @@
         if (authState.User.Identities.FirstOrDefault().IsAuthenticated)
         {
             CurrentPerson.Id = int.Parse(authState.User.Claims
-            .Where(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+            .Where(c => c.Type == "PersonId")
             .FirstOrDefault().Value);
             NotifyCountDTO notifyCountDTO = new();
 

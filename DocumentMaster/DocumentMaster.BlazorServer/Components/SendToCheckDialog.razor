@@ -48,7 +48,7 @@
 
     private ControlDTO Control { get; set; } = new ControlDTO();
 
-    private IList<PersonDTO> Persons { get; set; }
+    private IEnumerable<PersonDTO> Persons { get; set; }
 
     private FileDTO FileDTOForSave { get; set; }
 
@@ -57,10 +57,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var p = await PersonService.GetPersonsAsync();
-        Persons = p.ToList();
-
-        StateHasChanged();
+        Persons = await PersonService.GetPersonsAsync();       
     }
 
 

@@ -75,7 +75,9 @@
             {
                 UserName = userAccount.UserName,
                 Role = userAccount.Role,
-                PersonId=userAccount.PersonId
+                PersonId=userAccount.PersonId,
+                FirstName=person.FirstName,
+                LastName=person.LastName
             });
             
         navManager.NavigateTo("/", true);
