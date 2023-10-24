@@ -22,12 +22,14 @@ Click=@OpenSendToCheckDialog />
     [Parameter]
     public EventCallback<bool> SendedToCheck { get; set; }
 
+    private bool IsSended { get; set; } = false;
 
 
 
 
 
-    protected override async void OnInitialized()
+
+    protected override void OnInitialized()
     {
         DialogService.OnOpen += Open;
         DialogService.OnClose += Close;
@@ -36,12 +38,17 @@ Click=@OpenSendToCheckDialog />
     private async Task OpenSendToCheckDialog()
     {
 
-        await DialogService.OpenAsync<SendToCheckDialog>($"На проверку",
+        var result= await DialogService.OpenAsync<SendToCheckDialog>($"На проверку",
               new Dictionary<string, object>() { { "SelectedFile", SelectedFiles.First() } },
-              new DialogOptions() { Width = "700px", Height = "550px", Resizable = true, Draggable = false, CloseDialogOnOverlayClick = true });
-    }
-    protected override void OnParametersSet()
-    {
+              new DialogOptions() 
+              { Width = "700px", Height = "550px", Resizable = true
+              , Draggable = false, CloseDialogOnOverlayClick = true });
+        if (result is not null)
+        {
+            IsSended = (bool)result;
+            SendedToCheck.InvokeAsync(IsSended);
+
+        }
 
     }
 
@@ -52,7 +59,6 @@ Click=@OpenSendToCheckDialog />
 
     void Close(dynamic result)
     {
-        SendedToCheck.InvokeAsync(true);
         Dispose();
     }
 
