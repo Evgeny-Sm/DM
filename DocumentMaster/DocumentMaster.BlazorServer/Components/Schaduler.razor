@@ -34,7 +34,7 @@
         var authState = await authenticationState;
 
         CurrentPerson.Id = int.Parse(authState.User.Claims
-    .Where(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+    .Where(c => c.Type == "PersonId")
     .FirstOrDefault().Value);
 
         if (CurrentPerson is not null)

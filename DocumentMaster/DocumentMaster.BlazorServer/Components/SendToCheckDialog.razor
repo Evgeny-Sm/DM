@@ -12,7 +12,7 @@
 
 
 <RadzenCard Style="width: 100%; overflow: hidden;">
-    <RadzenTemplateForm TItem="ControlDTO" Data="Control" Submit="@OnSubmit" InvalidSubmit=@OnInvalidSubmit>
+    
         <div class="row mb-5">
             <div class="col-md-4" style="align-self: center;">
                 <RadzenLabel Text="Выберите проверяющего" />
@@ -31,12 +31,10 @@
         </div>
        
         <br />
-
-
-
-        <RadzenButton ButtonType="ButtonType.Submit" Disabled=@IsSubmitting ButtonStyle="ButtonStyle.Secondary" Text="Submit"></RadzenButton>
-        <RadzenButton Click="@((args) => DialogService.Close())" ButtonStyle="ButtonStyle.Danger" Text="Cancel" Style="width: 120px" />
-    </RadzenTemplateForm>
+        <div class="d-inline">
+        <RadzenButton Disabled=@IsSubmitting ButtonStyle="ButtonStyle.Secondary" Click=@OnSubmit Text="Submit"></RadzenButton>
+        <RadzenButton Click="@((args) => DialogService.Close(false))" ButtonStyle="ButtonStyle.Danger" Text="Cancel" Style="width: 120px" />
+        </div>
 
 </RadzenCard>
 
@@ -48,19 +46,18 @@
 
     private ControlDTO Control { get; set; } = new ControlDTO();
 
-    private IList<PersonDTO> Persons { get; set; }
+    private IEnumerable<PersonDTO> Persons { get; set; }
 
     private FileDTO FileDTOForSave { get; set; }
+
+    private int ChoosenControllerId { get; set; }
 
 
     private bool IsSubmitting;
 
     protected override async Task OnInitializedAsync()
     {
-        var p = await PersonService.GetPersonsAsync();
-        Persons = p.ToList();
-
-        StateHasChanged();
+        Persons = await PersonService.GetPersonsAsync();       
     }
 
 
@@ -74,35 +71,21 @@
         try
         {
             IsSubmitting = true;
-        var f = await FileService.GetItemByIdAsync(SelectedFile.Id);  
-        f.Status = StatusFile.Checking;
+        await FileService.SendFileToCheckAsync(SelectedFile.Id,ChoosenControllerId);  
 
-
-        await FileService.UpdateFileAsync(f);
-
-        Control.FileUnitId = SelectedFile.Id;
-        Control.DateTime = DateTime.Now;
-        Control.IsConfirmed = false;
-        Control.IsInAction = true;
-
-        await ControlService.AddControlAsync(Control);
         }
         finally
         {
             IsSubmitting = false;
         }
 
-        DialogService.Close();
+        DialogService.Close(true);
 
     }
 
     void OnChangePerson(object value)
     {
-        Control.PersonId = (int)value;
-
-    }
-    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
-    {
+        ChoosenControllerId = (int)value;
 
     }
 

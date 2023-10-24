@@ -190,6 +190,33 @@ namespace DM.BLL.Services
             await context.SaveChangesAsync();
 
         }
+        public async Task SendFileToCheckAsync(int fileId, int controlerId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var element = await context.FileUnits.FindAsync(fileId);
+            if (element is null || element.Status!= StatusFile.Work)
+            {
+                element = new FileUnit();
+                throw new ArgumentNullException($"Unknown {element.GetType().Name}");
+            }
+            element.Status = StatusFile.Checking;
+            context.FileUnits.Update(element);
+
+            Control control = new Control()
+            {
+                FileUnitId = fileId,
+                PersonId = controlerId,
+                IsConfirmed = false,
+                IsInAction = true,
+                DateTime = DateTime.Now,
+                Description=string.Empty
+            };
+
+            await context.Controls.AddAsync(control);
+
+            await context.SaveChangesAsync();
+
+        }
 
         public async Task RemoveFile(int id)
         {
