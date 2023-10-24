@@ -47,7 +47,7 @@
                        
                     </div>
                 </RadzenCard>
-                <FileList files="@files"  FilesGetCallBack="@SetSelectedFiles"/>
+                <FileList FileWasRemoved="@SetFiles" files="@files" FilesGetCallBack="@SetSelectedFiles" />
             </div>
             <div class="col-md-4">
                 @if (SelectedFiles.Count != 0)

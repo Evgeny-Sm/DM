@@ -5,29 +5,32 @@
 @using Models
 @using System.Text.Json
 
-@inject FileService fileService
+@inject FileService FileService
 @inject PersonService PersonService
+@inject ContextMenuService ContextMenuService
+@inject DialogService DialogService
+
 
 
 
 <AuthorizeView>
     <Authorized>
-        <RadzenDataGrid Data="@files" TItem="FileUnit" ValueChanged="@(args=>ValueChanged(args))" AllowVirtualization="true" Style="height:600px"
+        <RadzenDataGrid Data="@files" CellContextMenu="@ShowContextMenuWithItems" TItem="FileUnit" ValueChanged="@(args=>ValueChanged(args))" AllowVirtualization="true" Style="height:600px"
                         AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.And"
-                        AllowSorting="true" >
+                        AllowSorting="true">
             <Columns>
                 <RadzenDataGridColumn TItem="FileUnit" Property="Id" Title="Id" Width="40px" />
                 <RadzenDataGridColumn TItem="FileUnit" Property="Name" Title="Название" Width="180px" />
                 <RadzenDataGridColumn TItem="FileUnit" Property="ProjectCode" Title="Шифр" Width="100px" />
                 <RadzenDataGridColumn TItem="FileUnit" Property="Status" Title="Статус" Width="50px" />
-                <RadzenDataGridColumn TItem="FileUnit"  Title="Разраб." Width="60px">
+                <RadzenDataGridColumn TItem="FileUnit" Title="Разраб." Width="60px">
                     <Template Context="file">
-                        <RadzenLabel Text="@GetName(file)"/>
+                        <RadzenLabel Text="@GetName(file)" />
                     </Template>
                 </RadzenDataGridColumn>
-                <RadzenDataGridColumn TItem="FileUnit" Property="IsOldVersion"  Title="Old_vers." Width="50px" 
-                Type="typeof(bool)" FilterOperator="FilterOperator.Equals"/> 
- 
+                <RadzenDataGridColumn TItem="FileUnit" Property="IsOldVersion" Title="Old_vers." Width="50px"
+                                      Type="typeof(bool)" FilterOperator="FilterOperator.Equals" />
+
                 <RadzenDataGridColumn TItem="FileUnit" Property="ProjectId" Title="Проект" Width="60px" />
             </Columns>
         </RadzenDataGrid>
@@ -38,6 +41,8 @@
 
 
 @code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
 
     [Parameter]
     public IEnumerable<FileUnit>? files { get; set; }
@@ -45,16 +50,27 @@
     [Parameter]
     public EventCallback<IList<FileUnit>> FilesGetCallBack { get; set; }
 
+    [Parameter]
+    public EventCallback<int> FileWasRemoved { get; set; }
+
+    private PersonDTO CurrentPerson { get; set; } = new();
 
 
 
-    private IList<PersonDTO> Persons { get; set; }
 
 
-    protected override async void OnInitialized()
+
+    protected override async Task OnInitializedAsync()
     {
-        var p = await PersonService.GetPersonsAsync();
-        Persons = p.ToList();
+        var authState = await authenticationState;
+
+        CurrentPerson.Id = int.Parse(authState.User.Claims
+            .Where(c => c.Type == "PersonId")
+            .FirstOrDefault().Value);
+
+        CurrentPerson.Role = authState.User.Claims
+            .Where(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")
+            .FirstOrDefault().Value;
 
     }
 
@@ -78,12 +94,54 @@
     }
 
     private void OnSelectedValChange(bool value)
-    { 
+    {
     }
 
     private void OnChange(bool value)
     {
 
     }
+
+    void ShowContextMenuWithItems(DataGridCellMouseEventArgs<FileUnit> args)
+    {
+        FileUnit selectedFile = args.Data;
+
+        if (selectedFile.Status == StatusFile.Work && CurrentPerson.Id == selectedFile.PersonId)
+            ContextMenuService.Open(args,
+                new List<ContextMenuItem> {
+                new ContextMenuItem(){ Text = "Remove", Value = new ContextMenuItemDTO(1,selectedFile) },
+                                 }, OnMenuItemClick);
+
+    }
+
+    async void OnMenuItemClick(MenuItemEventArgs args)
+    {
+        ContextMenuItemDTO menuItem = (ContextMenuItemDTO)args.Value;
+        if (menuItem.menuNumber.Equals(1))
+        {
+            ContextMenuService.Close();
+            var res = await DialogService.Confirm("Are you sure?", "Removing", new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+            if (res == true)
+            {
+                FileService.HideFile(menuItem.FileItem.Id);              
+                await FileWasRemoved.InvokeAsync(menuItem.FileItem.Id);
+
+            }
+        }
+       
+    }
+
+    private struct ContextMenuItemDTO
+    {
+        public int menuNumber;
+        public FileUnit FileItem;
+        public ContextMenuItemDTO(int num, FileUnit fl)
+        {
+            menuNumber = num;
+            FileItem = fl;
+        }
+
+    }
+
 
 }
