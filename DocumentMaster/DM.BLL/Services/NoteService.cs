@@ -43,10 +43,29 @@ namespace DM.BLL.Services
         public async Task<IEnumerable<NoteDTO>> GetItemsByQuestionIdForUserIdAsync(int questId, int userId)
         {
             using var context = _contextFactory.CreateDbContext();
-            var quests = await context.Notes.Where(n => n.QuestionId == questId)
-                .Include(p => p.Persons).Include(nt => nt.NoteToDos.Where(ntd => ntd.PersonId == userId))
-                .ToListAsync();
-            var result = _mapper.Map<IEnumerable<NoteDTO>>(quests);
+            var notes = context.Notes.Where(n => n.QuestionId == questId)
+                .Include(n => n.Question)
+                .Include(p => p.Persons)
+                .Include(nt => nt.NoteToDos.Where(ntd => ntd.PersonId == userId)).ToList();
+
+            if (notes.Any())
+            {
+                List<Note> notesToUpdate = notes.Where(n => !n.Persons.Select(p => p.Id).Contains(userId)).ToList();
+                if (notesToUpdate.Count > 0)
+                {
+                    var curPerson = context.Persons.Find(userId);
+                    foreach (var note in notesToUpdate)
+                    {
+                        note.Persons.Add(curPerson);
+                    }
+                    context.Notes.UpdateRange(notesToUpdate);
+
+                    await context.SaveChangesAsync();
+                }
+            }
+
+            var result = _mapper.Map<IEnumerable<NoteDTO>>(notes);
+
             return result;
         }
         public async Task<NoteDTO> AddItemAsync(NoteDTO noteDTO)
@@ -59,9 +78,9 @@ namespace DM.BLL.Services
                 DateTime = noteDTO.DateTime,
                 QuestionId = noteDTO.QuestionId,
                 HasFile = noteDTO.HasFile,
-                Path = noteDTO.Path,
-                Persons = await context.Persons.Where(p => noteDTO.PersonIds.Contains(p.Id)).ToListAsync(),
+                Path = noteDTO.Path,               
             };
+            note.Persons.Add(context.Persons.Find(noteDTO.PersonIds.FirstOrDefault()));
             await context.Notes.AddAsync(note);
             await context.SaveChangesAsync();
             SetNotesToDo(note.QuestionId, note.Id);
