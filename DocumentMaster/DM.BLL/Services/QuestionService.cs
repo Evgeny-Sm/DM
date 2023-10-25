@@ -37,19 +37,22 @@ namespace DM.BLL.Services
                 var countUnread = quests.Where(q=>q.Id==question.Id).Single()
                     .Notes.Select(n => n.Persons.Select(p => p.Id)).Where(t => !t.Contains(persId)).Count();
                 question.UnreadedCount= countUnread;
+                question.CreatorName = context.Persons.Where(p => p.Id == persId).Select(s => $"{s.FirstName} {s.LastName}").Single();
 
                 var item = context.QuestionsToDo
-                    .Where(c => c.QuestionId == question.Id && c.PersonId == persId && c.IsDoing).Count();
-                if (item > 0)
+                    .Where(c => c.QuestionId == question.Id && c.PersonId == persId && c.IsDoing);
+                if (item.Any())
                 {
                     var notesToDo = await context.NotesToDo.Include(n => n.Note)
                         .Where(n => n.Note != null && n.Note.QuestionId == question.Id && n.PersonId == persId && !n.IsDoing)
                         .ToListAsync();
                     question.ToDoCount = notesToDo.Count;
+                    question.IsDoing=true;
                 }
                 else
                 {
                     question.ToDoCount = 0;
+                    question.IsDoing=false;
                 }
             }
 
@@ -74,19 +77,22 @@ namespace DM.BLL.Services
 
             var countUnread = item.Notes.Select(n => n.Persons.Select(p => p.Id)).Where(t => !t.Contains(persId)).Count();
             result.UnreadedCount = countUnread;
+            result.CreatorName = context.Persons.Where(p => p.Id == persId).Select(s => $"{s.FirstName} {s.LastName}").Single();
 
             var QuestToDo = context.QuestionsToDo
-                    .Where(c => c.QuestionId == item.Id && c.PersonId == persId && c.IsDoing).Count();
-            if (QuestToDo > 0)
+                    .Where(c => c.QuestionId == item.Id && c.PersonId == persId && c.IsDoing);
+            if (QuestToDo.Any())
             {
                 var notesToDo = await context.NotesToDo.Include(n => n.Note)
                     .Where(n => n.Note != null && n.Note.QuestionId == item.Id && n.PersonId == persId && !n.IsDoing)
                     .ToListAsync();
                 result.ToDoCount = notesToDo.Count;
+                result.IsDoing = true;
             }
             else
             {
                 result.ToDoCount = 0;
+                result.IsDoing = false;
             }
 
 
