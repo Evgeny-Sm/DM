@@ -19,6 +19,6 @@ namespace Models
         public string Path { get; set; } = string.Empty;
         public bool IsCurrentUser { get; set; }
         public bool IsDone { get; set; }
-
+        
     }
 }

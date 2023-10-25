@@ -3,7 +3,7 @@
 @using Microsoft.AspNetCore.SignalR.Client
 @using Models
 
-@inject NavigationManager Navigation
+
 @inject IJSRuntime JS
 @inject ProtectedSessionStorage sessionStorage
 @inject PersonService PersonService
@@ -146,11 +146,15 @@
 @code {
     [CascadingParameter]
     private Task<AuthenticationState> authenticationState { get; set; }
+
     [Parameter]
     public QuestionDTO CurrentQuestion { get; set; }
 
+    [Parameter]
+    public HubConnection hubConnection { get; set; }
+
     private PersonDTO CurrentPerson { get; set; } = new();
-    private HubConnection hubConnection;
+
     private List<NoteDTO> userMessages = new List<NoteDTO>();
     private string messageInput;
     private string userNameInput { get; set; }
@@ -171,11 +175,9 @@
        .FirstOrDefault().Value;
 
         CurrentPerson.Id = int.Parse(authState.User.Claims
-     .Where(c => c.Type == "PersonId")
-     .FirstOrDefault().Value);
+        .Where(c => c.Type == "PersonId")
+        .FirstOrDefault().Value);
 
-        hubConnection = new HubConnectionBuilder().WithUrl(Navigation.ToAbsoluteUri("/notehub"))
-       .Build();
         hubConnection.On
     <int, string, string, string, int>("ReceiveNote", async (questId, user, message, fileName, noteId) =>
      {
@@ -226,8 +228,6 @@
                 mes.Path = $"/{configuration.GetRequiredSection("PathToQuestPictures").Value}/{CurrentQuestion.Id.ToString()}/{mes.Path}";
             }
         }
-        NoteService.UpdateItemsArrayAsync(notes);
-
         userMessages = messages.ToList();
     }
 
@@ -236,7 +236,7 @@
     {
         if (!string.IsNullOrEmpty(messageInput))
         {
-            await hubConnection.SendAsync("SendMessage", CurrentQuestion.Id, CurrentPerson.UserName, messageInput, string.Empty);
+            await hubConnection.SendAsync("SendMessage", CurrentQuestion.Id, CurrentPerson.UserName, messageInput, string.Empty,CurrentPerson.Id);
             messageInput = string.Empty;
         }
         await JS.InvokeAsync<string>("ScrollToBottom", "chatContainer");
@@ -253,7 +253,7 @@
     {
         if (!String.IsNullOrEmpty(fileName))
 
-            await hubConnection.SendAsync("SendMessage", CurrentQuestion.Id, CurrentPerson.UserName, string.Empty, fileName);
+            await hubConnection.SendAsync("SendMessage", CurrentQuestion.Id, CurrentPerson.UserName, string.Empty, fileName, CurrentPerson.Id);
 
     }
 

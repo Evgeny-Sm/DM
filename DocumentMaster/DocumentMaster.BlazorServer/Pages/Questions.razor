@@ -3,12 +3,14 @@
 @attribute [Authorize]
 
 @using DM.BLL.Services
+@using Microsoft.AspNetCore.SignalR.Client
 @using Models
 @using DM.DAL.Models
 @using DocumentMaster.BlazorServer.Pages
 @using Microsoft.EntityFrameworkCore
 @using System.Text.Json
 
+@inject NavigationManager Navigation
 @inject PersonService PersonService
 @inject QuestionService QuestionService
 @inject DialogService DialogServices
@@ -70,7 +72,7 @@
                 <div class="row">
                     @if (SelectedQuestion is not null )
                     {
-                        <NoteChat CurrentQuestion="@SelectedQuestion" />
+                        <NoteChat hubConnection="@hubConnection" CurrentQuestion="@SelectedQuestion" />
                     }
                 </div>
             </div>
@@ -99,11 +101,14 @@
     private string InputString { get; set; } = string.Empty;
     private bool CheckBox { get; set; }
 
+    private HubConnection hubConnection;
 
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await authenticationState;
+        hubConnection = new HubConnectionBuilder().WithUrl(Navigation.ToAbsoluteUri("/notehub"))
+       .Build();
 
         CurrentPerson.Id = int.Parse(authState.User.Claims
             .Where(c => c.Type == "PersonId")
