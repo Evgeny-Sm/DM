@@ -42,25 +42,23 @@
     private ResultCheck ResultCheck { get; set; } = new();
 
 
-    private async void Submit()
+    private  void Submit()
     {
 
         if (!double.TryParse(ResultCheck.AdditionalTime, out double t))
         {
-            await JS.InvokeVoidAsync("alert", "Введите время на доработку в часах или 0");
-            return;
+            ResultCheck.AdditionalTime = "0";
         }
         ResultCheck.IsConfirmed = true;
 
         DialogService.Close(ResultCheck);
 
     }
-    private async void Denied()
+    private  void Denied()
     {
         if (!double.TryParse(ResultCheck.AdditionalTime, out double t))
         {
-            await JS.InvokeVoidAsync("alert", "Введите время на доработку в часах или 0");
-            return;
+            ResultCheck.AdditionalTime = "0";
         }
         ResultCheck.IsConfirmed = false;
 

@@ -47,7 +47,7 @@
                        
                     </div>
                 </RadzenCard>
-                <FileList FileWasRemoved="@SetFiles" files="@files" FilesGetCallBack="@SetSelectedFiles" />
+                <FileList FileWasRemoved="@SetFiles" FileWasReset="@ResetFile" files="@files" FilesGetCallBack="@SetSelectedFiles" />
             </div>
             <div class="col-md-4">
                 @if (SelectedFiles.Count != 0)
@@ -59,14 +59,10 @@
                             <SendToCheckButton SendedToCheck="@SetCurrentStatus" SelectedFiles="@SelectedFiles"/>
                             <ReloadFileButton SelectedFiles="@SelectedFiles"/>                          
                         }
-                        @if (IsReadyToCheck || CurrentPerson.Role=="admin")
-                        {
-                            <HideFileButton FileWasRemoved="@SetFiles" SelectedFiles="@SelectedFiles" />
-                        }
+
                     </div>
                     <InfoFile SelectedFiles="@SelectedFiles" SetOldVersion="@SetVersionProperty"/>
-                    <RecoverButton FileWasRecover="@SetFiles" SelectedFiles="@SelectedFiles" />
-                    <ResetFileButton FileWasReset="@SetFiles" SelectedFiles="@SelectedFiles" />
+                    <RecoverButton FileWasRecover="@SetFiles" SelectedFiles="@SelectedFiles" />                  
                 }
             </div>
         </div>
@@ -205,6 +201,12 @@
     private void SetFiles(int id)
     {
         files = files.Where(f => f.Id != id);
+        SelectedFiles = new List<FileUnit>();
+    }
+
+    private void ResetFile(int id)
+    {
+        files.Where(f => f.Id == id).Single().Status = StatusFile.Work;
         SelectedFiles = new List<FileUnit>();
     }
 
