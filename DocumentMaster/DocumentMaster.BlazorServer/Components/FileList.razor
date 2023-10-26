@@ -53,6 +53,9 @@
     [Parameter]
     public EventCallback<int> FileWasRemoved { get; set; }
 
+    [Parameter]
+    public EventCallback<int> FileWasReset { get; set; }
+
     private PersonDTO CurrentPerson { get; set; } = new();
 
 
@@ -106,11 +109,18 @@
     {
         FileUnit selectedFile = args.Data;
 
-        if (selectedFile.Status == StatusFile.Work && CurrentPerson.Id == selectedFile.PersonId)
+        if (selectedFile.Status == StatusFile.Work
+            && (CurrentPerson.Id == selectedFile.PersonId || CurrentPerson.Role == "admin"))
             ContextMenuService.Open(args,
                 new List<ContextMenuItem> {
                 new ContextMenuItem(){ Text = "Remove", Value = new ContextMenuItemDTO(1,selectedFile) },
-                                 }, OnMenuItemClick);
+                                     }, OnMenuItemClick);
+
+        if (selectedFile.Status != StatusFile.Work && CurrentPerson.Role == "admin")
+            ContextMenuService.Open(args,
+                new List<ContextMenuItem> {
+                new ContextMenuItem(){ Text = "Reset", Value = new ContextMenuItemDTO(2,selectedFile) },
+                                         }, OnMenuItemClick);
 
     }
 
@@ -123,12 +133,20 @@
             var res = await DialogService.Confirm("Are you sure?", "Removing", new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
             if (res == true)
             {
-                FileService.HideFile(menuItem.FileItem.Id);              
+                FileService.HideFile(menuItem.FileItem.Id);
                 await FileWasRemoved.InvokeAsync(menuItem.FileItem.Id);
 
             }
         }
-       
+        if (menuItem.menuNumber.Equals(2))
+        {
+            ContextMenuService.Close();
+
+            FileService.ResetFileAsync(menuItem.FileItem.Id,CurrentPerson.Id);
+            await FileWasReset.InvokeAsync(menuItem.FileItem.Id);
+
+        }
+
     }
 
     private struct ContextMenuItemDTO

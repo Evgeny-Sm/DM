@@ -81,6 +81,7 @@ builder.Services.AddServerSideBlazor().AddHubOptions(options =>
     options.MaximumReceiveMessageSize = 300000000;
 }); ;
 builder.Services.AddScoped<ProtectedSessionStorage>();
+builder.Services.AddScoped<ProtectedLocalStorage>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 
 builder.Services.AddHttpContextAccessor();
