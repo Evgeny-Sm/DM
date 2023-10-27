@@ -19,5 +19,6 @@ namespace Models
         public int ProjectId { get; set; }
         public bool IsLocked { get; set; }
         public bool IsRemoved { get; set; }
+        public string ProjectName { get; set; } = string.Empty;
     }
 }

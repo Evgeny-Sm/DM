@@ -35,6 +35,7 @@ namespace DM.BLL.MapServices
             CreateMap<Release, ReleaseDTO>().ForMember("FilesIds", f => f.MapFrom(t => t.FileUnits.Select(s => s.Id).ToList()))
                 .ForMember("PersonName", p=>p.MapFrom(r=>$"{r.Creator.LastName} {r.Creator.FirstName.Substring(0, 1)}."))
                 .ForMember("MainIngId", p => p.MapFrom(m => m.Project.PersonId))
+                .ForMember("ProjectName", p => p.MapFrom(m => m.Project.Name))
                 .ForMember("CreateDate", d=>d.MapFrom(k=>k.CreateDate.ToString("HH:mm|dd:MMM:yy")));
         }
     }

@@ -148,9 +148,22 @@ namespace DM.BLL.Services
             catch
             {
                 return 0;
-            };
-          
+            };         
         }
+        public async Task<List<string>> GetDoingPersonsSaync(int questId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            List<string> names = new();
+            var items =await context.QuestionsToDo
+                    .Where(c => c.QuestionId == questId && c.IsDoing)
+                    .Include(p => p.Person).Select(p=>p.Person).Distinct().ToListAsync();
+            foreach (var n in items)
+            {
+                names.Add($"{n.LastName} {n.FirstName.Substring(0, 1)}.");
+            }
+            return names;
+        }
+
         public async Task<int> GetCountToDo(int personId, int questId)
         {
             using var context = _contextFactory.CreateDbContext();

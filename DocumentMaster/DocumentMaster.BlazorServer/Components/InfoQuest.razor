@@ -119,7 +119,7 @@
     {
         if (CurrentQuestion is not null && !string.IsNullOrEmpty(CurrentQuestion.Title))
         {
-           
+
             Developer = CurrentQuestion.CreatorName;
 
             DateToCreate = CurrentQuestion.DateTime.ToString("HH:mm|dd:MMM:yy");
@@ -199,10 +199,11 @@
     }
     private async Task OnClickAddToDo()
     { 
-        IList<PersonDTO> data = await DialogServices.OpenAsync<AddPersonsToWorkDialog>("Add another person", new Dictionary<string, object>(),
+        IList<PersonDTO> data = await DialogServices.OpenAsync<AddPersonsToWorkDialog>("Add another person", 
+        new Dictionary<string, object>() { { "CurrentQuestion", CurrentQuestion } },
       new DialogOptions()
           {
-              Width = "400px",
+              Width = "500px",
               Height = "300px",
               Resizable = true,
               Draggable = false,

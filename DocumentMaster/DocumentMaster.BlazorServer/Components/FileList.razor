@@ -15,7 +15,7 @@
 
 <AuthorizeView>
     <Authorized>
-        <RadzenDataGrid Data="@files" CellContextMenu="@ShowContextMenuWithItems" TItem="FileUnit" ValueChanged="@(args=>ValueChanged(args))" AllowVirtualization="true" Style="height:600px"
+        <RadzenDataGrid Data="@files" CellContextMenu="@ShowContextMenuWithItems" TItem="FileUnit" ValueChanged="@(args=>ValueChanged(args))" AllowVirtualization="true" Style=@Height
                         AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.And"
                         AllowSorting="true">
             <Columns>
@@ -48,6 +48,9 @@
     public IEnumerable<FileUnit>? files { get; set; }
 
     [Parameter]
+    public string Height { get; set; } = "height:700px";
+
+    [Parameter]
     public EventCallback<IList<FileUnit>> FilesGetCallBack { get; set; }
 
     [Parameter]
@@ -77,9 +80,12 @@
 
     }
 
-    protected override async Task OnParametersSetAsync()
+    protected override void OnParametersSet()
     {
-
+        if (files == null)
+        {
+            files = new List<FileUnit>();
+        }
     }
 
     private async void ValueChanged(IList<FileUnit> args)
