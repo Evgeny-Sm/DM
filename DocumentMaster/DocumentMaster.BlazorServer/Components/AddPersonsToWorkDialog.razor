@@ -3,6 +3,7 @@
 
 @inject DialogService DialogService
 @inject PersonService PersonService
+@inject QuestionService QuestionService
 
 <div class="container">
     <div class="row justify-content-start g-1">
@@ -16,17 +17,27 @@
                     <RadzenDropDownDataGridColumn Property="LastName" Title="LastName" Width="80px" />
                 </Columns>
             </RadzenDropDownDataGrid>
+            @foreach (var p in ChoosenPersons)
+            {
+                <div>
+                    <span style="color:cornflowerblue"> @p.LastName @p.FirstName </span>
+                    <button type="button" @onclick=@(args=>RemoveFromChallenge(p)) class="btn-close"></button>
+                </div>
+            }
+        </div>
+        <div class="col-md-4">
+            <span style="color:black"> В работе: </span>
+            @foreach (var p in DoingPersons)
+            {
+                <div>
+                    <span style="color:darkblue"> @p </span>       
+                </div>
+            }
         </div>
 
     </div>
 
-    @foreach (var p in ChoosenPersons)
-    {
-        <div>
-            <span style="color:cornflowerblue"> @p.LastName @p.FirstName </span>
-            <button type="button" @onclick=@(args=>RemoveFromChallenge(p)) class="btn-close"></button>
-        </div>
-    }
+
 
 </div>
 <RadzenTemplateForm TItem="IList<PersonDTO>" Data="@ChoosenPersons" Submit=@OnSubmit>
@@ -40,10 +51,14 @@
 
 
 @code {
+    [Parameter]
+    public QuestionDTO CurrentQuestion { get; set; }
 
     private IEnumerable<PersonDTO> Persons = new List<PersonDTO>();
 
     private IList<PersonDTO> ChoosenPersons = new List<PersonDTO>();
+
+    private IList<string> DoingPersons = new List<string>();
 
     private int ChoosenPersonId { get; set; }
 
@@ -52,12 +67,11 @@
     protected override async Task OnInitializedAsync()
     {
         Persons = await PersonService.GetPersonsAsync();
-        StateHasChanged();
     }
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
-
+        DoingPersons = await QuestionService.GetDoingPersonsSaync(CurrentQuestion.Id);
     }
 
     private void OnSubmit(IList<PersonDTO> persons)
@@ -70,7 +84,7 @@
     {
         ChoosenPersonId = (int)value;
         if (ChoosenPersonId != 0)
-        {      
+        {
             ChoosenPersons.Add(Persons.Where(p => p.Id == ChoosenPersonId).Single());
         }
     }

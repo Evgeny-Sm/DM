@@ -12,11 +12,12 @@
 @inject IJSRuntime JS
 @inject IWebHostEnvironment WebHostInvironment
 @inject NotificationService NotificationService
+@inject ContextMenuService ContextMenuService
 
 <AuthorizeView Roles="user,head">
     <Authorized Context="Auth">
         <div class="row">
-            <RadzenDataGrid Data="@files" TItem="FileDTO" AllowVirtualization="true" Style="height:600px"
+            <RadzenDataGrid CellContextMenu="@ShowContextMenuWithItems" Data="@files" TItem="FileDTO" AllowVirtualization="true" Style="height:600px"
                             AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.And"
                             AllowSorting="true">
 
@@ -57,7 +58,7 @@
 <AuthorizeView Roles="admin">
     <Authorized Context="Auth">
         <div class="row">
-            <RadzenDataGrid Data="@files" TItem="FileDTO" AllowVirtualization="true" Style="height:600px"
+            <RadzenDataGrid Data="@files" CellContextMenu="@ShowContextMenuWithItems" TItem="FileDTO" AllowVirtualization="true" Style="height:600px"
                             AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.And"
                             AllowSorting="true">
 
@@ -170,7 +171,7 @@
             IsLoading = true;
             if (files != null)
             {
-                
+
                 if (!Release.IsLocked)
                 {
                     foreach (var f in files)
@@ -180,12 +181,14 @@
                             var name = f.Name;
                             var downloadPath = WebHostInvironment.WebRootPath + Configuration.GetRequiredSection("ProjectRootDir").Value
                                                 + $"\\{f.ProjectId}" + $"\\{name}";
+                            if (File.Exists((@$"{downloadPath}")))
+                            {
+                                var fileStream = File.OpenRead(@$"{downloadPath}");
 
-                            var fileStream = File.OpenRead(@$"{downloadPath}");
-
-                            using var streamRef = new DotNetStreamReference(stream: fileStream);
-                            await JS.InvokeVoidAsync("downloadFileFromStream", name, streamRef);
-                            count++;
+                                using var streamRef = new DotNetStreamReference(stream: fileStream);
+                                await JS.InvokeVoidAsync("downloadFileFromStream", name, streamRef);
+                                count++;
+                            }
                         }
                     }
                 }
@@ -197,12 +200,14 @@
                         var name = f.Name;
                         var downloadPath = WebHostInvironment.WebRootPath + Configuration.GetRequiredSection("ProjectRootDir").Value
                                             + $"\\{f.ProjectId}" + $"\\{name}";
+                        if (File.Exists((@$"{downloadPath}")))
+                        {
+                            var fileStream = File.OpenRead(@$"{downloadPath}");
 
-                        var fileStream = File.OpenRead(@$"{downloadPath}");
-
-                        using var streamRef = new DotNetStreamReference(stream: fileStream);
-                        await JS.InvokeVoidAsync("downloadFileFromStream", name, streamRef);
-                        count++;
+                            using var streamRef = new DotNetStreamReference(stream: fileStream);
+                            await JS.InvokeVoidAsync("downloadFileFromStream", name, streamRef);
+                            count++;
+                        }
                     }
                 }
             }
@@ -219,6 +224,60 @@
                 Duration = 4000
                 });
         }
+    }
+
+
+    void ShowContextMenuWithItems(DataGridCellMouseEventArgs<FileDTO> args)
+    {
+        FileDTO selectedFile = args.Data;
+
+        ContextMenuService.Open(args,
+            new List<ContextMenuItem> {
+                new ContextMenuItem(){ Text = "Download", Value = selectedFile },
+                                         }, OnMenuItemClick);
+
+
+    }
+
+    async void OnMenuItemClick(MenuItemEventArgs args)
+    {
+        FileDTO f = (FileDTO)args.Value;
+        ContextMenuService.Close();
+        await DownloadFileFromStream(f);
+    }
+
+    private struct ContextMenuItemDTO
+    {
+        public int menuNumber;
+        public FileUnit FileItem;
+        public ContextMenuItemDTO(int num, FileUnit fl)
+        {
+            menuNumber = num;
+            FileItem = fl;
+        }
+
+    }
+
+    private async Task DownloadFileFromStream(FileDTO fileDTO)
+    {
+        try
+        {
+            var name = fileDTO.Name;
+            var downloadPath = WebHostInvironment.WebRootPath + Configuration.GetRequiredSection("ProjectRootDir").Value
+                                + $"\\{fileDTO.ProjectId}" + $"\\{name}";
+            if (File.Exists((@$"{downloadPath}")))
+            {
+                var fileStream = File.OpenRead(@$"{downloadPath}");
+
+                using var streamRef = new DotNetStreamReference(stream: fileStream);
+                await JS.InvokeVoidAsync("downloadFileFromStream", name, streamRef);
+            }
+        }
+        finally
+        {
+            
+        }
+
     }
 
     void ShowNotification(NotificationMessage message)

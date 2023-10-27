@@ -5,6 +5,7 @@
 
 @inject DialogService DialogService
 @inject ProjectService ProjectService
+@inject IJSRuntime js
 
 <RadzenCard Style="width: 100%; overflow: hidden;">
     <div class="row mb-5">
@@ -12,21 +13,21 @@
         {
             <div class="row mb-5">
                 <div class="col-md-4">
-                <RadzenLabel Text="Проект" />
-            </div>
-            <div class="col-md-8 ">
-                <RadzenDropDownDataGrid Name="Project" TValue="ProjectDTO" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
+                    <RadzenLabel Text="Проект" />
+                </div>
+                <div class="col-md-8 ">
+                    <RadzenDropDownDataGrid Name="Project" TValue="ProjectDTO" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="true"
                                         Data=@(Projects) Style="width: 100%" AllowColumnResize="true"
                                         TextProperty="Name" ValueProperty="Id" AllowFilteringByAllStringColumns="true"
                                         Change=@(args => OnChangeProject(args))>
-                    <Columns>
-                        <RadzenDropDownDataGridColumn Property="Id" Title="ID" Width="100px" />
-                        <RadzenDropDownDataGridColumn Property="Name" Title="Name" Width="200px" />
-                    </Columns>
-                </RadzenDropDownDataGrid>
+                        <Columns>
+                            <RadzenDropDownDataGridColumn Property="Id" Title="ID" Width="100px" />
+                            <RadzenDropDownDataGridColumn Property="Name" Title="Name" Width="200px" />
+                        </Columns>
+                    </RadzenDropDownDataGrid>
 
+                </div>
             </div>
-        </div>
         }
 
         <div class="row mb-5">
@@ -61,10 +62,10 @@
     private IEnumerable<ProjectDTO> Projects { get; set; }
 
     private ReleaseDTO newReleaseDTO { get; set; } = new ReleaseDTO
-    {
-        ProjectCode  = string.Empty,
-        Description  = string.Empty
-    };
+        {
+            ProjectCode = string.Empty,
+            Description = string.Empty
+        };
 
     private bool IsSubmitting;
 
@@ -78,9 +79,15 @@
     }
 
     private async Task SubmitRelease()
-    { 
+    {
         if (IsSubmitting)
         {
+            return;
+        }
+
+        if (newReleaseDTO.Id == 0)
+        {
+            await js.InvokeVoidAsync("alert", "Выберете проект");
             return;
         }
 
@@ -91,7 +98,7 @@
 
         }
         finally
-        { 
+        {
             IsSubmitting = false;
         }
 

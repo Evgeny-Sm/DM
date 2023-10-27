@@ -9,7 +9,7 @@
 @inject IJSRuntime JS
 @inject IWebHostEnvironment WebHostInvironment
 
-<RadzenButton Click=@(args => DownloadFileFromStream())  ButtonStyle="ButtonStyle.Secondary" Text="Скачать"  />
+<RadzenButton Click=@(args => DownloadFileFromStream()) ButtonStyle="ButtonStyle.Secondary" Text="Скачать" />
 
 @code {
     [Parameter]
@@ -24,11 +24,13 @@
             var name = SelectedFiles.FirstOrDefault().Name;
             var downloadPath = WebHostInvironment.WebRootPath + Configuration.GetRequiredSection("ProjectRootDir").Value
                                 + $"\\{SelectedFiles.FirstOrDefault().ProjectId}" + $"\\{name}";
+            if (File.Exists((@$"{downloadPath}")))
+            {
+                var fileStream = File.OpenRead(@$"{downloadPath}");
 
-            var fileStream = File.OpenRead(@$"{downloadPath}");
-
-            using var streamRef = new DotNetStreamReference(stream: fileStream);
-            await JS.InvokeVoidAsync("downloadFileFromStream", name, streamRef);
+                using var streamRef = new DotNetStreamReference(stream: fileStream);
+                await JS.InvokeVoidAsync("downloadFileFromStream", name, streamRef);
+            }
         }
     }
 
