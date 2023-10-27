@@ -15,7 +15,7 @@
 
 <AuthorizeView>
     <Authorized>
-        <RadzenDataGrid Data="@files" CellContextMenu="@ShowContextMenuWithItems" TItem="FileUnit" ValueChanged="@(args=>ValueChanged(args))" AllowVirtualization="true" Style="height:600px"
+        <RadzenDataGrid Data="@files" CellContextMenu="@ShowContextMenuWithItems" TItem="FileUnit" ValueChanged="@(args=>ValueChanged(args))" AllowVirtualization="true" Style=@Height
                         AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.And"
                         AllowSorting="true">
             <Columns>
@@ -46,6 +46,9 @@
 
     [Parameter]
     public IEnumerable<FileUnit>? files { get; set; }
+
+    [Parameter]
+    public string Height { get; set; } = "height:700px";
 
     [Parameter]
     public EventCallback<IList<FileUnit>> FilesGetCallBack { get; set; }

@@ -21,10 +21,17 @@
 
 
 <div class="row">
-    <div class="col-md-4">
+
+    <div class="col-md-6">
 
         <AddProjectButton />
 
+    </div>
+    <div class="col-md-6">
+        @if (SelectedFiles.Count != 0)
+        {
+            <DownloadFile SelectedFiles="@SelectedFiles" />
+        }
     </div>
 
 
@@ -48,7 +55,8 @@
                             </div>
 
                             <div class="row">
-                                
+                                <FileList Height="height:690px" FilesGetCallBack="@SetSelectedFiles"
+                                      files="@_Files"> </FileList>
                             </div>
                         </div>
                     </div>
@@ -69,13 +77,12 @@
 
     private IEnumerable<ProjectDTO> _projects { get; set; }
 
-    private List<ReleaseDTO> Releases { get; set; }
     private ProjectDTO CurrProj { get; set; } = new();
 
     private bool CheckBoxOldVersions = false;
 
 
-    protected override async void OnInitialized()
+    protected override void OnInitialized()
     {
         SelectedProjects = new List<ProjectDTO>();
         SelectedFiles = new List<FileUnit>();
@@ -91,8 +98,6 @@
             SelectedProjects = projects;
             CurrProj = projects.FirstOrDefault();
             _Files = GetFilesInProject(projects.FirstOrDefault().Id).ToList();
-            var rel = await ReleaseService.GetItemByProjIdAsync(CurrProj.Id);
-            Releases = rel.ToList();
 
             SelectedFiles = new List<FileUnit>();
         }
