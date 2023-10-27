@@ -80,9 +80,12 @@
 
     }
 
-    protected override async Task OnParametersSetAsync()
+    protected override void OnParametersSet()
     {
-
+        if (files == null)
+        {
+            files = new List<FileUnit>();
+        }
     }
 
     private async void ValueChanged(IList<FileUnit> args)
