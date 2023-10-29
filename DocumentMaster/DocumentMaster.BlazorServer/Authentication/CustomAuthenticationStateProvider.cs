@@ -16,11 +16,12 @@ namespace DocumentMaster.BlazorServer.Authentication
         }
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
+           
             try
             {
                 var userSessionStorageResult = await _localStorage.GetAsync<UserSession>("UserSession");
                 var userSession = userSessionStorageResult.Success ? userSessionStorageResult.Value : null;
-                if (userSession == null)
+                if (userSession == null||(DateTime.Now.Subtract(userSession.DateTime)>TimeSpan.FromDays(1)))
                 {
                     return await Task.FromResult(new AuthenticationState(_anonymous));
                 }
