@@ -85,7 +85,7 @@
             return;
         }
 
-        if (newReleaseDTO.Id == 0)
+        if (newReleaseDTO.ProjectId == 0)
         {
             await js.InvokeVoidAsync("alert", "Выберете проект");
             return;
