@@ -21,16 +21,22 @@
     {
         if (SelectedFiles != null)
         {
-            var name = SelectedFiles.FirstOrDefault().Name;
-            var downloadPath = WebHostInvironment.WebRootPath + Configuration.GetRequiredSection("ProjectRootDir").Value
-                                + $"\\{SelectedFiles.FirstOrDefault().ProjectId}" + $"\\{name}";
-            if (File.Exists((@$"{downloadPath}")))
+            try
             {
+                var name = SelectedFiles.FirstOrDefault().Name;
+                var downloadPath = WebHostInvironment.WebRootPath + Configuration.GetRequiredSection("ProjectRootDir").Value
+                                    + $"\\{SelectedFiles.FirstOrDefault().ProjectId}" + $"\\{name}";
+
                 var fileStream = File.OpenRead(@$"{downloadPath}");
 
                 using var streamRef = new DotNetStreamReference(stream: fileStream);
                 await JS.InvokeVoidAsync("downloadFileFromStream", name, streamRef);
             }
+            catch
+            { 
+                await JS.InvokeVoidAsync("alert", "ошибка загрузки файла");
+            }
+
         }
     }
 

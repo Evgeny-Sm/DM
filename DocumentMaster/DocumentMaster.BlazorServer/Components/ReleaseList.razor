@@ -116,7 +116,7 @@
         }
     }
 
-    private async Task InsertRelease()
+    private async void InsertRelease()
     {
         releaseToInsert = await DialogService.OpenAsync<NewReleaseDialog>($"добавить выпуск",
               new Dictionary<string, object>() { },
@@ -135,6 +135,9 @@
             releaseToInsert.MainIngId = Project.MainIngId;
             var rel = await ReleaseService.AddItemAsync(releaseToInsert);
             Releases.Add(rel);
+            Releases.OrderByDescending(r => r.Id);
+            StateHasChanged();
+
         }
 
 
