@@ -166,6 +166,8 @@
             rel.PersonName = $"{CurrentPerson.LastName} {CurrentPerson.FirstName.Substring(0, 1)}.";
             rel.ProjectName = releaseToInsert.ProjectName;
             Releases.Add(rel);
+            Releases=Releases.OrderByDescending(r => r.Id).ToList();
+
 
         }
 
