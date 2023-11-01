@@ -138,7 +138,7 @@
         }
         else
         {           
-            if (release.PersonId == CurrentPerson.Id)
+            if (release.PersonId == CurrentPerson.Id || CurrentPerson.Role == "admin")
             {
                 release.IsLocked = !release.IsLocked;
                 await ReleaseService.LockUnlockItem(release);
