@@ -65,7 +65,7 @@
     private PersonDTO CurrentPerson { get; set; } = new();
 
     private int CurrentReleaseId { get; set; }
-    private bool DataChanged { get; set; }
+
 
     private ReleaseDTO releaseToInsert { get; set; }
 
@@ -120,7 +120,7 @@
         if (ids != null)
         {
             release.FilesIds = ids;
-            DataChanged = true;
+
             await ReleaseService.UpdateItemAsync(release);
         }
 
