@@ -149,9 +149,12 @@
         if (DataChanged)
         {
             numbers = files.Where(f => f.IsInRelease == true).Select(t => t.Id).ToList();
+            DialogService.Close(numbers);
         }
-
-        DialogService.Close(numbers);
+        else
+        {
+            DialogService.Close();
+        }
     }
 
     private void DataChange()
